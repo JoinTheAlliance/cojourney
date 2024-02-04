@@ -106,7 +106,6 @@ const AgentBinding = ({ roomData }: Props) => {
       });
 
       if (goals.length === 0) {
-        console.log("creating goal");
         await createGoal({
           supabase: runtime.supabase,
           userIds: [userId, agentId],

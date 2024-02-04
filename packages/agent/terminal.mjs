@@ -4,7 +4,7 @@
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 
-dotenv.config({ path: "../../.env" });
+dotenv.config({ path: ".env" });
 
 import readline from "readline";
 import chalk from "chalk";
@@ -66,7 +66,7 @@ async function start() {
     debugMode: DEBUG,
     userId: userUUID,
     agentId: agentUUID,
-    serverurl: SERVER_URL,
+    serverUrl: SERVER_URL,
     supabase,
   });
 
