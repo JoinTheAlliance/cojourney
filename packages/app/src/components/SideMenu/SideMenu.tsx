@@ -4,14 +4,11 @@ import {
   Navbar,
   Title,
 } from "@mantine/core";
-import { useNavigate } from "react-router";
 import { useMediaQuery } from "@mantine/hooks";import useGlobalStore from "../../store/useGlobalStore";
 import useSideMenuStyles from "./SideMenu.styles";
 import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen";
 
 const SideMenu = (): JSX.Element => {
-  const navigate = useNavigate();
-
   const {
     app,
     setApp,
@@ -47,7 +44,7 @@ const SideMenu = (): JSX.Element => {
                   secondaryActiveSideMenu: "Settings/Account",
                   isMobileMenuOpen: false,
                 });
-                navigate("/account");
+                location.href = "/account";
               }
             }
             radius="xl"
