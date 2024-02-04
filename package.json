@@ -10,6 +10,12 @@
   "workspaces": [
     "packages/*"
   ],
+  "nohoist": [
+    "**/electron",
+    "**/electron/**",
+    "**/electron-vite",
+    "**/electron-vite/**"
+  ],
   "scripts": {
     "dev": "workspaces-run --parallel -- npm run dev",
     "build": "npm run build --workspaces --if-present",
