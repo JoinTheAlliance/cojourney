@@ -1,0 +1,28 @@
+{
+  "name": "cojourney",
+  "description": "We're going to make it. Together.",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Cojourney (https://cojourney.app)",
+  "repository": "https://github.com/cojourneyai/cojourney",
+  "bugs": "https://github.com/cojourneyai/cojourney/issues",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "workspaces-run --parallel -- npm run dev",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "coverage": "npm run coverage --workspaces --if-present",
+    "types": "npm run types --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present"
+  },
+  "devDependencies": {
+    "vite-plugin-cachedir": "^1.1.1"
+  },
+  "dependencies": {
+    "workspaces-run": "^1.0.2"
+  }
+}

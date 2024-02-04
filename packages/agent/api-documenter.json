@@ -1,0 +1,18 @@
+/**
+ * Config file for API Documenter.  For more info, please visit: https://api-extractor.com
+ */
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-documenter.schema.json",
+
+  /**
+   * Configures how the documentation will be generated.
+   */
+  "outputTarget": "markdown",
+
+  /**
+   * Specifies what type of newlines API Extractor should use when writing output files.
+   *
+   * DEFAULT VALUE: "crlf"
+   */
+  "newlineKind": "lf"
+}

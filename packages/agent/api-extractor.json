@@ -1,0 +1,108 @@
+/**
+ * Config file for API Extractor.  For more info, please visit: https://api-extractor.com
+ */
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
+  /**
+   * (REQUIRED) Specifies the .d.ts file to be used as the starting point for analysis.  API Extractor
+   * analyzes the symbols exported by this module.
+   */
+  "mainEntryPointFilePath": "<projectFolder>/types/index.d.ts",
+
+  /**
+   * A list of NPM package names whose exports should be treated as part of this package.
+   */
+  "bundledPackages": [],
+
+  /**
+   * Configures how the API report file (*.api.md) will be generated.
+   */
+  "apiReport": {
+    /**
+     * (REQUIRED) Whether to generate an API report.
+     */
+    "enabled": true,
+
+    /**
+     * Specifies the folder where the API report file is written.
+     * The file name portion is determined by the \"reportFileName\" setting.
+     * The API report file is normally tracked by Git.
+     * Changes to it can be used to trigger a branch policy, e.g. for an API review.
+     * The path is resolved relative to the folder of the config file that contains
+     * the setting; to change this, prepend a folder token such as \"<projectFolder>\".
+     */
+    "reportFolder": "<projectFolder>/temp/"
+  },
+
+  /**
+   * Configures how the doc model file (*.api.json) will be generated.
+   */
+  "docModel": {
+    /**
+     * (REQUIRED) Whether to generate a doc model file.
+     */
+    "enabled": true
+  },
+
+  /**
+   * Configures how the .d.ts rollup file will be generated.
+   */
+  "dtsRollup": {
+    /**
+     * (REQUIRED) Whether to generate the .d.ts rollup file.
+     */
+    "enabled": true,
+
+    /**
+     * Specifies the output path for a .d.ts rollup file to be generated without any trimming.
+     * This file will include all declarations that are exported by the main entry point.
+     *
+     * If the path is an empty string, then this file will not be written.
+     *
+     * The path is resolved relative to the folder of the config file that contains the setting; to change this,
+     * prepend a folder token such as "<projectFolder>".
+     *
+     * DEFAULT VALUE: "<projectFolder>/dist/<unscopedPackageName>.d.ts"
+     */
+    "untrimmedFilePath": "<projectFolder>/dist/index.d.ts"
+  },
+
+  /**
+   * Configures how the tsdoc-metadata.json file will be generated.
+   */
+  "tsdocMetadata": {
+    /**
+     * Whether to generate the tsdoc-metadata.json file.
+     */
+    "enabled": false
+  },
+
+  /**
+   * Specifies what type of newlines API Extractor should use when writing output files.
+   *
+   * DEFAULT VALUE: "crlf"
+   */
+  "newlineKind": "lf",
+
+  /**
+   * Configures how API Extractor reports error and warning messages produced during analysis.
+   */
+  "messages": {
+    /**
+     * Configures handling of messages from the TSDoc parser (i.e. code comment syntax)
+     */
+    "tsdocMessageReporting": {
+      // By default, errors  are shown on the console and will break a production build
+      "default": {"logLevel": "warning"},
+
+      // Write unsupported and undefined tags into the API review file
+      "tsdoc-undefined-tag": {"logLevel": "none", "addToApiReportFile": true},
+      "tsdoc-unsupported-tag": {"logLevel": "none", "addToApiReportFile": true},
+
+      // "The `}` character should be escaped using a backslash to avoid confusion
+      // with a TSDoc inline tag."
+      "tsdoc-escape-right-brace": {"logLevel": "none"}
+    }
+  }
+}

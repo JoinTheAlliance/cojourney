@@ -1,0 +1,33 @@
+.DS_Store
+
+# production
+dist
+
+.env
+.env.local
+
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# temporary files
+temp
+types
+
+# code coverage directories
+coverage
+.nyc_output
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
