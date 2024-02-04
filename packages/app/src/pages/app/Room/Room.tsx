@@ -22,7 +22,11 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
   const { classes } = useRoomStyles();
   const {
     currentRoom: { roomData, isRoomMember },
+
   } = useGlobalStore();
+
+  console.log('roomId', roomId)
+  console.log('roomData', roomData)
 
   // TODO:
   // if the room data participates include our default agent, we will render the AI room instead :)
@@ -50,7 +54,7 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 
   return (
     <div>
-      <AgentBinding roomData={roomData}/>
+      {/* <AgentBinding roomData={roomData}/> */}
         <div className={classes.headerContainer}>
           <RoomHeader />
         </div>

@@ -45,58 +45,57 @@ const router = createBrowserRouter([
 
 const App = (): JSX.Element => {
   const colorScheme = useColorScheme();
-
   const { preferences } = useGlobalStore();
 
   return (
-    <PostHogProvider
-      apiKey={constants.posthogApiKey}
-      options={{
-        api_host: "https://app.posthog.com",
-      }}
-    >
-      <SessionContextProvider supabaseClient={supabase}>
-        <MantineProvider
-          theme={{
-            // @ts-ignore
-            colorScheme:
-              preferences.theme === "system" ? colorScheme : preferences.theme,
-            primaryColor: "blue",
-            defaultRadius: "md",
-            colors: {
-              // override dark colors to change them for all components
-              dark: [
-                "#c2c2c2",
-                "#a7a7a7",
-                "#7e7e7e",
-                "#636363",
-                "#474747",
-                "#3f3f3f",
-                "#202020",
-                "#1a1a1a",
-                "#141414",
-                "#111111",
-              ],
-            },
-            components: {
-              Button: {
-                defaultProps: {
-                  size: "xs",
-                  color: "blue",
-                },
+    <SessionContextProvider supabaseClient={supabase}>
+      <MantineProvider
+        theme={{
+          // @ts-ignore
+          colorScheme:
+            preferences.theme === "system" ? colorScheme : preferences.theme,
+          primaryColor: "blue",
+          defaultRadius: "md",
+          colors: {
+            // override dark colors to change them for all components
+            dark: [
+              "#c2c2c2",
+              "#a7a7a7",
+              "#7e7e7e",
+              "#636363",
+              "#474747",
+              "#3f3f3f",
+              "#202020",
+              "#1a1a1a",
+              "#141414",
+              "#111111",
+            ],
+          },
+          components: {
+            Button: {
+              defaultProps: {
+                size: "xs",
+                color: "blue",
               },
             },
+          },
+        }}
+        withGlobalStyles
+      >
+        <PostHogProvider
+          apiKey={constants.posthogApiKey}
+          options={{
+            api_host: "https://app.posthog.com",
           }}
-          withGlobalStyles
         >
           <Notifications />
           <ModalsProvider>
             <RouterProvider router={router} />
             <LoadingOverlay />
           </ModalsProvider>
-        </MantineProvider>
-      </SessionContextProvider>
-    </PostHogProvider>
+        </PostHogProvider>
+      </MantineProvider>
+    </SessionContextProvider>
   );
 };
 

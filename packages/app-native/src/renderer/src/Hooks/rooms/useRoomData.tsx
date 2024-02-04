@@ -47,7 +47,7 @@ const useRoomData = ({ roomId }: Props) => {
         setCurrentRoom({ roomNotFound: true, isLoading: false });
         return;
       }
-
+      console.log('roomDataReq', roomDataReq)
       setCurrentRoom({ roomData: roomDataReq });
 
       const { data: participantsData, error: participantsError } =
