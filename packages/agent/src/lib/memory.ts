@@ -7,7 +7,6 @@ const defaultMatchThreshold = 75
 const defaultMatchCount = 10
 
 export class Memory extends EventTarget {
-  name?: any
   embedding?: any[]
   user_ids?: any
   content?: any
@@ -20,7 +19,6 @@ export class Memory extends EventTarget {
     id?: any
     user_id: any
     created_at?: any
-    name: any
     content: any
     embedding?: any
     user_ids: any
@@ -28,7 +26,6 @@ export class Memory extends EventTarget {
   }) {
     super()
 
-    this.name = opts?.name ?? '' // conversation name identifier
     this.embedding = embeddingZeroVector
     this.user_ids = opts?.user_ids ?? []
     this.content = opts?.content ?? ''
@@ -45,7 +42,6 @@ export class Memory extends EventTarget {
       user_id,
       content,
       created_at,
-      name,
       embedding,
       user_ids,
       room_id,
@@ -54,7 +50,6 @@ export class Memory extends EventTarget {
       user_id,
       room_id,
       content,
-      name,
       embedding,
       created_at,
       user_ids,
@@ -101,53 +96,29 @@ export class MemoryManager {
     return memory
   }
 
-  async getMemoriesByName(name: any) {
-    const {tableName} = this.schema
-
-    const result = (await this.runtime.supabase
-      .from(tableName)
-      .select('*')
-      .eq('name', name)
-      .order('created_at', {
-        ascending: true,
-      })) as {data: any[]}
-    const memories = this.#formatMemories(result.data)
-    return memories
-  }
-
   async getMemoriesByIds({
     userIds,
-    name = '',
     count,
   }: {
     userIds: any
-    name: string
     count: any
   }) {
     const result = await this.runtime.supabase.rpc('get_memories', {
-      query_name: name,
       query_table_name: this.schema.tableName,
       query_user_ids: userIds,
       query_count: count,
     })
     if (result.error) {
-      console.warn('*** error getting memories', {
-        query_name: name,
-        query_table_name: this.schema.tableName,
-        // map userIds to strings
-        query_user_ids: userIds.map((userId: any) => `${userId}`),
-        query_count: count,
-      })
       throw new Error(JSON.stringify(result.error))
     }
     if (!result.data) {
       console.warn('data was null, no memories found for', {
         userIds,
-        name,
         count,
       })
+      return [];
     }
-    const memories = this.#formatMemories(result.data ?? [])
+    const memories = this.#formatMemories(result.data)
     return memories
   }
 
@@ -171,7 +142,6 @@ export class MemoryManager {
       id,
       user_id,
       content,
-      name,
       embedding,
       created_at,
       user_ids,
@@ -182,7 +152,6 @@ export class MemoryManager {
       user_id,
       content,
       created_at,
-      name,
       embedding,
       user_ids,
       room_id,
@@ -191,21 +160,18 @@ export class MemoryManager {
 
   async searchMemoriesByEmbedding(embedding: any, opts: any = {}) {
     const {
-      name = null,
       match_threshold = defaultMatchThreshold,
       match_count = defaultMatchCount,
       userIds = [],
     } = opts
     const result = await this.runtime.supabase.rpc('search_memories', {
       query_table_name: this.schema.tableName,
-      query_name: name,
       query_user_ids: userIds,
       query_embedding: embedding, // Pass the embedding you want to compare
       query_match_threshold: match_threshold, // Choose an appropriate threshold for your data
       query_match_count: match_count, // Choose the number of matches
     })
     if (result.error) {
-      console.warn('*** error getting memories', result.error)
       throw new Error(JSON.stringify(result.error))
     }
 
@@ -218,7 +184,6 @@ export class MemoryManager {
     const result = await this.runtime.supabase.from(tableName).upsert(rawMemory)
     const {error} = result
     if (error) {
-      console.error('upsert error', error)
       throw new Error(JSON.stringify(error))
     }
   }
@@ -233,14 +198,12 @@ export class MemoryManager {
       .eq('id', memoryId)
     const {error} = result
     if (error) {
-      console.error('remove error', error)
       throw new Error(JSON.stringify(error))
     }
   }
 
   async countMemoriesByUserIds({userIds}: {userIds: any}) {
     const result = await this.runtime.supabase.rpc('count_memories', {
-      query_name: '',
       query_table_name: this.schema.tableName,
       query_user_ids: userIds,
     })

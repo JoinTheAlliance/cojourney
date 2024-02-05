@@ -56,12 +56,15 @@ const defaultGoal = {
 
 interface Props {
   roomData: any;
+  setInputHandler: any;
 }
 
-const AgentBinding = ({ roomData }: Props) => {
+const AgentBinding = ({ roomData, setInputHandler }: Props) => {
   const [agentRuntime, setAgentRuntime] = useState<AgentRuntime | null>(null);
   const supabase = useSupabaseClient();
-
+  const [lastMessageCount, setLastMessageCount] = useState(0);
+  const [lastRoomId, setLastRoomId] = useState("");
+  const [initialized, setInitialized] = useState(false);
   const {
     currentRoom: { messages, roomParticipants },
     user: { uid },
@@ -71,7 +74,20 @@ const AgentBinding = ({ roomData }: Props) => {
 
   useEffect(() => {
     if (!supabase || !userId) return;
+    if(initialized) return;
+    setInitialized(true);
+        // if roomData ID same as lastRoomId
+    // and messages length is same as lastMessageCount, return
+    if (
+      roomData?.id === lastRoomId &&
+      messages?.length === lastMessageCount
+    ) {
+      return;
+    }
+    setLastRoomId(roomData?.id);
+    setLastMessageCount(messages?.length || 0);
     async function startAgent(): Promise<void> {
+      if(agentRuntime) return;
       console.log("messages", messages);
       console.log("roomParticipants", roomParticipants);
 
@@ -143,8 +159,7 @@ const AgentBinding = ({ roomData }: Props) => {
       }
 
       // Function to simulate agent's response
-      // TODO: bind to realtime channel
-      const respond = async (content: any) => {
+      setInputHandler(async (content: any) => {
         resetLoop(); // reset the update interval early to prevent async update race
         await onMessage(
           {
@@ -160,11 +175,10 @@ const AgentBinding = ({ roomData }: Props) => {
           },
           runtime,
         );
-        resetLoop(); // reset again
-      };
+        // resetLoop(); // reset again
+      });
 
       registerHandler(async () => {
-        resetLoop();
         await onMessage(
           {
             name: userName,
@@ -178,7 +192,6 @@ const AgentBinding = ({ roomData }: Props) => {
           },
           runtime,
         );
-        resetLoop();
       });
 
       startLoop(updateInterval);

@@ -40,8 +40,9 @@ export const initialize = () => {
 
   function callTimeout() {
     clearTimeout(timeout as NodeJS.Timeout)
-    timeout = setTimeout(() => {
-      updateHandlers.forEach((handler) => handler())
+    timeout = setTimeout(async () => {
+      clearTimeout(timeout as NodeJS.Timeout)
+      await updateHandlers.forEach((handler) => handler())
       callTimeout()
     }, updateInterval)
   }
@@ -78,6 +79,19 @@ export const initialize = () => {
 export const onMessage = async (message: any, runtime: any) => {
   const {content: senderContent} = message
   const {senderId, agentId, eventType, userIds, room_id} = message
+
+  if (eventType === 'message' && !senderContent) {
+    console.warn('Sender content null, skipping')
+    return
+  }
+
+  if (eventType === 'update') {
+    // read the last messages
+    // if the last 3 messages are from the agent, or the last message from the agent has the WAIT action, then we should skip
+    const currentMessages = runtime.getState();
+    console.log('currentMessages', currentMessages)
+
+  }
 
   const senderAction = message.action || 'null'
 
@@ -314,17 +328,23 @@ export const onMessage = async (message: any, runtime: any) => {
       if (runtime.debugMode) {
         console.log(chalk.magenta(claim.claim))
       }
-      const reflectionMemory = await runtime.reflectionManager.bakeMemory(
-        new Memory({
-          user_ids: userIds,
-          user_id: agentId,
-          name: `${userIds.join(':')}:reflections`,
-          content: claim.claim,
-          room_id,
-        })
-      )
+      claim.claim = claim.claim.trim()
+      if (claim.claim.length > 0) {
+        const reflectionMemory = await runtime.reflectionManager.bakeMemory(
+          new Memory({
+            user_ids: userIds,
+            user_id: agentId,
+            content: claim.claim,
+            room_id,
+          })
+        )
 
-      await runtime.reflectionManager.upsertRawMemory(reflectionMemory.toJSON())
+        await runtime.reflectionManager.upsertRawMemory(
+          reflectionMemory.toJSON()
+        )
+      } else {
+        console.warn('Empty reflection, skipping')
+      }
     }
     if (runtime.debugMode) {
       console.log(
@@ -336,23 +356,14 @@ export const onMessage = async (message: any, runtime: any) => {
   }
 
   async function _storeMemories(responseData: any) {
-    const responseMemory = new Memory({
-      user_ids: userIds,
-      user_id: agentId,
-      name: `${userIds.join(':')}:conversation`,
-      content: responseData,
-      room_id,
-    })
-
-    responseMemory.embedding = embeddingZeroVector
-
-    if (eventType === 'message' && senderContent) {
+    let _senderContent = senderContent?.trim()
+    // first, store the sender memory if it exists
+    if (eventType === 'message' && _senderContent) {
       const senderMemory = new Memory({
         user_ids: userIds,
         user_id: senderId,
-        name: `${userIds.join(':')}:conversation`,
         // TODO: handle messages on actions, for example in the user interface
-        content: {content: senderContent, action: senderAction},
+        content: {content: _senderContent, action: senderAction},
         room_id,
       })
       senderMemory.embedding = embeddingZeroVector
@@ -360,7 +371,22 @@ export const onMessage = async (message: any, runtime: any) => {
       await runtime.messageManager.upsertRawMemory(senderMemory.toJSON())
     }
 
-    await runtime.messageManager.upsertRawMemory(responseMemory.toJSON())
+    console.log('storing response memory', responseData)
+    responseData.content = responseData.content.trim()
+    if (responseData.content) {
+      const responseMemory = new Memory({
+        user_ids: userIds,
+        user_id: agentId,
+        content: responseData,
+        room_id,
+      })
+
+      responseMemory.embedding = embeddingZeroVector
+
+      await runtime.messageManager.upsertRawMemory(responseMemory.toJSON())
+    } else {
+      console.warn('Empty response, skipping')
+    }
   }
 
   /**
@@ -408,6 +434,7 @@ export const onMessage = async (message: any, runtime: any) => {
 
     // Process fetched data
     const actors = formatMessageActors({actors: actorsData})
+
     const recentMessages = formatMessages({
       actors: actorsData,
       messages: recentMessagesData.map((memory: {toJSON: () => any}) => {
