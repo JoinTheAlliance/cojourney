@@ -25,7 +25,7 @@ const UploadProfileImage = ({
         maxSize={3 * 1024 ** 2}
         multiple={false}
         onDrop={(files): void => {
-          setImage(files[0]);
+          setImage(files[0] as any);
         }}
         onReject={(): void => {
           showNotification({

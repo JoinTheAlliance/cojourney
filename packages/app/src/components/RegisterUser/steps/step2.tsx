@@ -44,7 +44,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       return
     }
 
-    let IMAGE_URL = null;
+    let IMAGE_URL = "";
 
     if (profileImage) {
       const { data: imageUploadData, error } = await supabase.storage

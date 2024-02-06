@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Memory, MemoryManager } from "./memory";
+import { MemoryManager } from "./memory";
 
 // create a typescrip tinterface for opts
 export interface AgentRuntimeOpts {

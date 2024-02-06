@@ -30,7 +30,7 @@
   "scripts": {
     "dev": "rollup -c -w",
     "dev:terminal": "node terminal.mjs",
-    "build": "rollup -c",
+    "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "test": "jest",
     "test:dev": "jest --watchAll",
