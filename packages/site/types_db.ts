@@ -26,7 +26,7 @@ export interface Database {
           {
             foreignKeyName: "customers_id_fkey"
             columns: ["id"]
-            referencedRelation: "users"
+            referencedRelation: "accounts_private"
             referencedColumns: ["id"]
           }
         ]
@@ -169,12 +169,12 @@ export interface Database {
           {
             foreignKeyName: "subscriptions_user_id_fkey"
             columns: ["user_id"]
-            referencedRelation: "users"
+            referencedRelation: "accounts_private"
             referencedColumns: ["id"]
           }
         ]
       }
-      users: {
+      accounts_private: {
         Row: {
           avatar_url: string | null
           billing_address: Json | null
@@ -198,9 +198,9 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "users_id_fkey"
+            foreignKeyName: "accounts_private_id_fkey"
             columns: ["id"]
-            referencedRelation: "users"
+            referencedRelation: "accounts_private"
             referencedColumns: ["id"]
           }
         ]

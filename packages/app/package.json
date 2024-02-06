@@ -5,8 +5,10 @@
   "main": "./dist",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "tsc && vite build",
+    "dev": "concurrently \"vite dev\" && \"dev:lib\"",
+    "dev:lib": "BUILD_TYPE=library vite dev",
+    "build": "tsc && concurrently \"vite build\" && \"build:lib\"",
+    "build:lib": "BUILD_TYPE=library vite build",
     "preview": "vite preview",
     "lint": "npx eslint src && tsc",
     "generate-types": "npx supabase gen types typescript --project-id jnpimfbtbogiuqydflkh > types/database.types.ts"

@@ -2,7 +2,7 @@
 * USERS
 * Note: This table contains user data. Users should only be able to view and update their own data.
 */
-create table users (
+create table accounts_private (
   -- UUID from auth.users
   id uuid references auth.users not null primary key,
   full_name text,
@@ -12,11 +12,11 @@ create table users (
   -- Stores your customer's payment instruments.
   payment_method jsonb
 );
-alter table users
+alter table accounts_private
   enable row level security;
-create policy "Can view own user data." on users
+create policy "Can view own user data." on accounts_private
   for select using (auth.uid() = id);
-create policy "Can update own user data." on users
+create policy "Can update own user data." on accounts_private
   for update using (auth.uid() = id);
 
 /**
@@ -26,7 +26,7 @@ create function public.handle_new_user()
 returns trigger as
 $$
   begin
-    insert into public.users (id, full_name, avatar_url)
+    insert into public.accounts_private (id, full_name, avatar_url)
     values (new.id, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
     return new;
   end;

@@ -38,7 +38,7 @@ const RoomHeader = (): JSX.Element => {
                     <div>
                       <UserAvatarWithIndicator
                         // @ts-ignore
-                        image={participant.userData.image_url}
+                        image={participant.userData.avatar_url}
                         size={40}
                         // @ts-ignore
                         user_email={participant.userData.email}

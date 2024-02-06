@@ -157,7 +157,7 @@ const Message = ({ message }: Props): JSX.Element => {
                     // @ts-ignore
                     id: message.userData.id || "",
                     // @ts-ignore
-                    imageUrl: message.userData.image_url || "",
+                    imageUrl: message.userData.avatar_url || "",
                     // @ts-ignore
                     name: message.userData.name || "",
                   }}
@@ -167,7 +167,7 @@ const Message = ({ message }: Props): JSX.Element => {
                     user_email={message.userData.email}
                     size={30}
                     // @ts-ignore
-                    image={message.userData.image_url}
+                    image={message.userData.avatar_url}
                   />
                 </UserPopup>
               </div>

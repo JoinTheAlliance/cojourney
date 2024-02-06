@@ -28,7 +28,7 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
           <UserPopup
             user={{
               email: friendData.email || "",
-              imageUrl: friendData.image_url || "",
+              imageUrl: friendData.avatar_url || "",
               name: friendData.name || "",
               id: friendData.id || "",
             }}
@@ -52,7 +52,7 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
             >
               <UserAvatarWithIndicator
                 // @ts-ignore
-                image={friendData.image_url}
+                image={friendData.avatar_url}
                 size={40}
                 // @ts-ignore
                 user_email={friendData.email}

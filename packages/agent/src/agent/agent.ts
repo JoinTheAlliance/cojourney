@@ -88,9 +88,26 @@ export const onMessage = async (message: any, runtime: any) => {
   if (eventType === 'update') {
     // read the last messages
     // if the last 3 messages are from the agent, or the last message from the agent has the WAIT action, then we should skip
-    const currentMessages = runtime.getState();
-    console.log('currentMessages', currentMessages)
+    const currentMessages = runtime.getState().recentMessagesData ?? '[]';
+    console.log('currentMessages', currentMessages);
 
+    // if the last three messages were from the agent, then we should skip
+    const lastThreeMessages = JSON.parse(currentMessages).slice(-3);
+    console.log('lastThreeMessages', lastThreeMessages);
+    const lastThreeMessagesFromAgent = lastThreeMessages.filter((message: any) => message.user_id === agentId);
+    console.log('lastThreeMessagesFromAgent', lastThreeMessagesFromAgent);
+    if (lastThreeMessagesFromAgent.length === 3) {
+      return console.log('Skipping because last three messages from agent');
+    }
+
+    // if the last two messages had the WAIT action from current agent, then we should skip
+    const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2);
+    console.log('lastTwoMessagesFromAgent', lastTwoMessagesFromAgent);
+    const lastTwoMessagesFromAgentWithWaitAction = lastTwoMessagesFromAgent.filter((message: any) => message.content.action === 'WAIT');
+    console.log('lastTwoMessagesFromAgentWithWaitAction', lastTwoMessagesFromAgentWithWaitAction);
+    if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
+      return console.log('Skipping because last two messages from agent had WAIT action');
+    }
   }
 
   const senderAction = message.action || 'null'
@@ -371,7 +388,6 @@ export const onMessage = async (message: any, runtime: any) => {
       await runtime.messageManager.upsertRawMemory(senderMemory.toJSON())
     }
 
-    console.log('storing response memory', responseData)
     responseData.content = responseData.content.trim()
     if (responseData.content) {
       const responseMemory = new Memory({
@@ -462,7 +478,9 @@ export const onMessage = async (message: any, runtime: any) => {
       actors,
       goals,
       recentMessages,
+      recentMessagesData,
       recentReflections,
+      recentReflectionsData,
       relevantReflections,
       actionNames: runtime
         .getActions()
