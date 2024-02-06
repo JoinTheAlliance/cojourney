@@ -1,3 +1,6 @@
+import { createClient } from "@supabase/supabase-js";
+import jwt from '@tsndr/cloudflare-worker-jwt';
+
 class Handler {
   method;
   regex;
@@ -10,7 +13,7 @@ class Handler {
     method = '*',
     regex = /^/,
     hostRegex = /^/,
-    fn = async () => { },
+    fn = async ({req, env, match, userId, supabase}) => { },
     isServerless = false,
     serverLessEndpoint = ''
   } = {}) {
@@ -72,7 +75,27 @@ class Server {
           handlerFound = true;
           try {
             req.pathname = pathname;
-            return await fn({ req, env, match: matchUrl, host: matchHost });
+
+            const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_API_KEY, {
+              auth: {
+                persistSession: false
+              }
+            });
+
+            const token = request.headers.get('Authorization') &&
+              request.headers.get('Authorization').replace('Bearer ', '');
+            
+            const out = await jwt.decode(token)
+
+            userId = out?.payload?.sub || out?.payload?.id || out?.id;
+
+            if(!userId) {
+              return new Response('Unauthorized', { status: 401 });
+            }
+
+            console.log('userId', userId)
+
+            return await fn({ req, env, match: matchUrl, host: matchHost, userId, supabase });
           } catch (err) {
             return new Response(err.stack, { status: 500 });
           }
@@ -82,7 +105,7 @@ class Server {
 
     if (!handlerFound) {
       // Default handler if no other handlers are called
-      return new Response(JSON.stringify({ "content": "Hello world!" }), {
+      return new Response(JSON.stringify({ "content": "No route handler found for this path" }), {
         headers: { 'Content-Type': 'application/json', ...headers },
         status: 200
       });
