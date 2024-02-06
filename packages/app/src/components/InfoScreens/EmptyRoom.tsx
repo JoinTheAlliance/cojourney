@@ -1,3 +1,4 @@
+import React from "react";
 import { Flex } from "@mantine/core";
 
 const EmptyRoom = (): JSX.Element => {
@@ -6,7 +7,7 @@ const EmptyRoom = (): JSX.Element => {
       direction="column"
       justify="center"
       align="center"
-      sx={{ height: "70%" }}
+      style={{ height: "70%" }}
     >
       <h1>No messages... yet</h1>
     </Flex>

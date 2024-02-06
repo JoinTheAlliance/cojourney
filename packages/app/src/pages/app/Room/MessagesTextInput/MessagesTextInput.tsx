@@ -153,7 +153,7 @@ const MessagesTextInput = ({ roomChannel, inputHandler }: Props): JSX.Element =>
         spellCheck="false"
         autoComplete="off"
       />
-      <Text size={12}>{getUsersTypingMessage()}</Text>
+      <Text size="sm">{getUsersTypingMessage()}</Text>
     </form>
   );
 };

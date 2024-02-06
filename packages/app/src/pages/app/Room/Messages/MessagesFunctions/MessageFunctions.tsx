@@ -26,7 +26,7 @@ const MessageFunctions = ({
           label="Edit"
         >
           <ActionIcon onClick={handleEdit}>
-            <Edit size={14} />
+            <Edit size="sm" />
           </ActionIcon>
         </Tooltip>
       )}

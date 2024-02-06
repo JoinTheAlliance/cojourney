@@ -52,7 +52,7 @@ const Step1 = ({ nextStep }: IStepProps): JSX.Element => {
       />
       <Flex justify="end">
         <Button
-          rightIcon={<ArrowRight size={16} />}
+          rightSection={<ArrowRight size={16} />}
           type="submit"
         >
           Next

@@ -48,7 +48,7 @@ const FriendsPendingList = (): JSX.Element => {
 
         return (
           <Flex
-            sx={{
+            style={{
               padding: 5,
               borderRadius: 5,
               cursor: "pointer",
@@ -87,7 +87,7 @@ const FriendsPendingList = (): JSX.Element => {
                 </Flex>
                 <Text
                   c="dimmed"
-                  size={14}
+                  size="sm"
                   lineClamp={1}
                 >
                   {friendData.email}
@@ -113,10 +113,10 @@ const FriendsPendingList = (): JSX.Element => {
                 {isLoading && loadingElement === friendship.id ? (
                   <Loader
                     color="red"
-                    size={14}
+                    size="sm"
                   />
                 ) : (
-                  <X size={14} />
+                  <X size="sm" />
                 )}
               </Button>
             </Tooltip>

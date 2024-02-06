@@ -1,7 +1,7 @@
 import { ActionIcon, Burger, Drawer } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Outlet, useLocation } from "react-router-dom";
 import { Database } from "../../../types/database.types";

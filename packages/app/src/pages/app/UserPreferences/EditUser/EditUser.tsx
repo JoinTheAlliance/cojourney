@@ -42,11 +42,12 @@ const EditUser = (): JSX.Element => {
 
     if (!session?.user.id) {
       setIsSavingChanges(false);
-      return showNotification({
+      showNotification({
         title: "Error, unable to save information.",
         message:
           "Please reload the page, if the error persists try logging out and back in.",
       });
+      return
     }
 
     let IMAGE_URL = imageUrl;
@@ -60,10 +61,11 @@ const EditUser = (): JSX.Element => {
         });
 
       if (error) {
-        return showNotification({
+        showNotification({
           title: "Error.",
           message: error.message,
         });
+        return
       }
 
       const { data: imageUrlData } = await supabase.storage
@@ -71,10 +73,11 @@ const EditUser = (): JSX.Element => {
         .getPublicUrl(imageUploadData.path);
 
       if (!imageUrlData) {
-        return showNotification({
+        showNotification({
           title: "Error.",
           message: "Unable to get image URL",
         });
+        return
       }
 
       IMAGE_URL = imageUrlData.publicUrl;
@@ -166,7 +169,7 @@ const EditUser = (): JSX.Element => {
       />
       <Flex justify="flex-end">
         <Button
-          leftIcon={<Save size={16} />}
+          leftSection={<Save size={16} />}
           loading={isSavingChanges}
           type="submit"
         >

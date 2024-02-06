@@ -1,6 +1,6 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/styles";
 
-const useRoomStyles = createStyles((theme) => ({
+const useRoomStyles = createStyles((theme: any) => ({
   headerContainer: {
     position: "relative",
     backgroundColor:

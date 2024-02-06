@@ -16,6 +16,9 @@
     "**/electron-vite",
     "**/electron-vite/**"
   ],
+  "resolutions": {
+    "@types/react": "^18.2.0"
+  },
   "scripts": {
     "dev": "workspaces-run --parallel -- npm run dev",
     "build": "npm run build --workspaces --if-present",

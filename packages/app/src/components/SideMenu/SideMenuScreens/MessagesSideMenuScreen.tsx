@@ -30,7 +30,7 @@ const MessagesSideMenuScreen = (): JSX.Element => {
             mr={10}
             size={20}
           />
-          <Text size={14}>Updating...</Text>
+          <Text size="sm">Updating...</Text>
         </Flex>
       </Collapse>
       {unreadDms !== 0 && app.messageAccordionSelected !== "dms" && (
@@ -49,7 +49,7 @@ const MessagesSideMenuScreen = (): JSX.Element => {
           setApp({ messageAccordionSelected: value });
         }}
         value={app.messageAccordionSelected}
-        sx={{
+        style={{
           marginLeft: 10,
           marginRight: 10,
           ".mantine-Accordion-content": {

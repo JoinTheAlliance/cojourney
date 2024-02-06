@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { MemoryManager } from "./memory";
+import { Memory, MemoryManager } from "./memory";
 
 // create a typescrip tinterface for opts
 export interface AgentRuntimeOpts {
@@ -30,6 +30,7 @@ export class AgentRuntime {
   debugMode: boolean;
   supabase: SupabaseClient;
   messageManager: MemoryManager;
+  descriptionManager: MemoryManager;
   reflectionManager: MemoryManager;
   messageHandlers: any[];
   actionHandlers: any[];
@@ -49,6 +50,13 @@ export class AgentRuntime {
       runtime: this,
       schema: {
         tableName: "messages",
+      },
+    });
+
+    this.descriptionManager = new MemoryManager({
+      runtime: this,
+      schema: {
+        tableName: "descriptions",
       },
     });
 

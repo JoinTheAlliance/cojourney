@@ -1,6 +1,6 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/styles";
 
-const useMessageStyles = createStyles((theme) => ({
+const useMessageStyles = createStyles((theme: any) => ({
   messageDiv: {
     borderRadius: "0.5rem",
     position: "relative",

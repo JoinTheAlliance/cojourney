@@ -1,10 +1,11 @@
 import React from "react";
 import {
   Avatar,
-  Navbar,
   Title,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";import useGlobalStore from "../../store/useGlobalStore";
+import { AppShell } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import useGlobalStore from "../../store/useGlobalStore";
 import useSideMenuStyles from "./SideMenu.styles";
 import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen";
 
@@ -23,11 +24,10 @@ const SideMenu = (): JSX.Element => {
   // const hasMoreThanOneFriend = friends.length > 1 || requests.length > 0 || pending.length > 0;
 
   return (
-    <Navbar
+    <AppShell.Navbar
       className={classes.container}
-      width={{ sm: 400 }}
     >
-      <Navbar.Section
+      <AppShell.Section
         className={classes.wrapper}
         grow
       >
@@ -53,8 +53,8 @@ const SideMenu = (): JSX.Element => {
 
           <FriendsSideMenuScreen />
         </div>
-      </Navbar.Section>
-    </Navbar>
+      </AppShell.Section>
+    </AppShell.Navbar>
   );
 };
 

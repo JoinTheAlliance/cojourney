@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
-    "paths": {}
+    "paths": {
+      "react": [ "./node_modules/@types/react" ],
+    }
   }
 }

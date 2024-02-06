@@ -32,17 +32,19 @@ const useGetRoomMessages = () => {
     console.log('*** data', data)
 
     if (error) {
-      return showNotification({
+      showNotification({
         title: "Error",
         message: "Unable to get messages",
       });
+      return
     }
 
     if (data.length === 0) {
-      return setCurrentRoom({
+      setCurrentRoom({
         messages: [],
         isLoadingMessages: false,
       });
+      return
     }
 
     const reversedMessages = data.reverse();

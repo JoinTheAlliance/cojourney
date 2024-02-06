@@ -7,6 +7,7 @@ import {
   Text,
   Title,
   useMantineTheme,
+  useMantineColorScheme
 } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -23,6 +24,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
   const session = useSession();
   const supabase = useSupabaseClient<Database>();
   const theme = useMantineTheme();
+  const colorScheme = useMantineColorScheme();
 
   const { user, setUser } = useGlobalStore();
 
@@ -34,11 +36,12 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
 
     if (!session?.user.id) {
       setIsLoadingSavingData(false);
-      return showNotification({
+      showNotification({
         title: "Error, unable to save information.",
         message:
           "Please reload the page, if the error persists try logging out and back in.",
       });
+      return
     }
 
     let IMAGE_URL = null;
@@ -51,10 +54,11 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
           upsert: true,
         });
       if (error) {
-        return showNotification({
+        showNotification({
           title: "Error.",
           message: error.message,
         });
+        return
       }
 
       const { data: imageUrlData } = await supabase.storage
@@ -62,10 +66,11 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
         .getPublicUrl(imageUploadData.path);
 
       if (!imageUrlData) {
-        return showNotification({
+        showNotification({
           title: "Error.",
           message: "Unable to get image URL",
         });
+        return
       }
 
       IMAGE_URL = imageUrlData.publicUrl;
@@ -74,10 +79,11 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
     if (!user.name || !session.user.email) {
       setIsLoadingSavingData(false);
 
-      return showNotification({
+      showNotification({
         title: "Error",
         message: "Unexpected error",
       });
+      return
     }
 
     const { error } = await supabase.from("accounts").insert({
@@ -147,7 +153,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
           radius="50%"
           size={120}
           bg={
-            theme.colorScheme === "dark"
+            colorScheme.colorScheme === "dark"
               ? theme.colors.dark[7]
               : theme.colors.gray[2]
           }
@@ -155,7 +161,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
         />
         <Box>
           <Title size={20}>Your default profile picture</Title>
-          <Text size={14}>
+          <Text size="sm">
             This will be your default profile picture if no other is provided
           </Text>
         </Box>
@@ -167,7 +173,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       />
       <Flex justify="space-between">
         <Button
-          leftIcon={<ArrowLeft size={16} />}
+          leftSection={<ArrowLeft size={16} />}
           onClick={(): void => prevStep()}
           variant="outline"
         >
@@ -179,7 +185,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
           onClick={(): void => {
             handleSubmit();
           }}
-          rightIcon={<Flag size={16} />}
+          rightSection={<Flag size={16} />}
         >
           Finish
         </Button>

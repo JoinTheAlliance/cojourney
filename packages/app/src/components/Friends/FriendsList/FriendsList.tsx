@@ -1,13 +1,12 @@
-import { Flex, Text, Title, useMantineTheme } from "@mantine/core";
+import { Flex, Text, Title, useMantineTheme, useMantineColorScheme } from "@mantine/core";
 import React from "react";
 import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator";
 import getFriend from "../../../utils/getFriend";
 import UserPopup from "../../UserPopup/UserPopup";
 
-// @ts-ignore
 const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element => {
   const theme = useMantineTheme();
-
+  const colorScheme = useMantineColorScheme();
   if (friends.length === 0) {
     return (
       <p>No friends yet!</p>
@@ -35,13 +34,13 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
             key={friendship.id}
           >
             <Flex
-              sx={{
+              style={{
                 padding: 5,
                 borderRadius: 5,
                 cursor: "pointer",
                 ":hover": {
                   backgroundColor:
-                    theme.colorScheme === "dark"
+                    colorScheme.colorScheme === "dark"
                       ? theme.colors.dark[6]
                       : theme.colors.gray[1],
                 },
@@ -73,7 +72,7 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
                 <Text
                   lineClamp={1}
                   c="dimmed"
-                  size={14}
+                  size="sm"
                 >
                   {/* @ts-ignore */}
                   {friendData.email}

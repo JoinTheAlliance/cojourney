@@ -3,7 +3,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Save, User } from "react-feather";
 import { useForm } from "react-hook-form";
 import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage";
@@ -43,11 +43,12 @@ const UserPreferences = (): JSX.Element => {
 
     if (!session?.user.id) {
       setIsSavingChanges(false);
-      return showNotification({
+      showNotification({
         title: "Error, unable to save information.",
         message:
           "Please reload the page, if the error persists try logging out and back in.",
       });
+      return
     }
 
     let IMAGE_URL = imageUrl;
@@ -61,10 +62,11 @@ const UserPreferences = (): JSX.Element => {
         });
 
       if (error) {
-        return showNotification({
+        showNotification({
           title: "Error.",
           message: error.message,
         });
+        return
       }
 
       const { data: imageUrlData } = await supabase.storage
@@ -72,10 +74,11 @@ const UserPreferences = (): JSX.Element => {
         .getPublicUrl(imageUploadData.path);
 
       if (!imageUrlData) {
-        return showNotification({
+        showNotification({
           title: "Error.",
           message: "Unable to get image URL",
         });
+        return
       }
 
       IMAGE_URL = imageUrlData.publicUrl;
@@ -190,7 +193,7 @@ const UserPreferences = (): JSX.Element => {
       <Flex justify="flex-end">
       <Button
         mr={'auto'}
-        leftIcon={<User />}
+        leftSection={<User />}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -202,7 +205,7 @@ const UserPreferences = (): JSX.Element => {
         Logout
       </Button>
         <Button
-          leftIcon={<Save size={16} />}
+          leftSection={<Save size={16} />}
           loading={isSavingChanges}
           type="submit"
         >

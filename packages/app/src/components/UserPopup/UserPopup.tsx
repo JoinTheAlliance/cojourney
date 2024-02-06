@@ -59,7 +59,7 @@ const UserPopup = ({ user, children }: Props): JSX.Element => {
     //   <Menu.Dropdown
     //     p={20}
     //     ml={10}
-    //     sx={{ maxWidth: 250 }}
+    //     style={{ maxWidth: 250 }}
     //   >
     //     <Flex
     //       p={20}
@@ -81,9 +81,9 @@ const UserPopup = ({ user, children }: Props): JSX.Element => {
     //         {user.id === uid ? `You (${user.name})` : user.name}
     //       </Title>
     //       <Text
-    //         size={12}
+    //         size="sm"
     //         lineClamp={1}
-    //         sx={{ maxWidth: "100%" }}
+    //         style={{ maxWidth: "100%" }}
     //       >
     //         {user.email}
     //       </Text>
@@ -103,7 +103,7 @@ const UserPopup = ({ user, children }: Props): JSX.Element => {
     //           <Button
     //             loading={isLoading}
     //             fullWidth
-    //             leftIcon={<MessageSquare size={14} />}
+    //             leftSection={<MessageSquare size="sm" />}
     //             onClick={() => {
     //               const friendship = friends.find((friend) => {
     //                 return friend.user_a === uid || friend.user_b === uid;
@@ -124,7 +124,7 @@ const UserPopup = ({ user, children }: Props): JSX.Element => {
     //             fullWidth
     //             color="red"
     //             variant="light"
-    //             leftIcon={<X size={14} />}
+    //             leftSection={<X size="sm" />}
     //             onClick={() => {
     //               const friendship = friends.find((friend) => {
     //                 return friend.user_a === uid || friend.user_b === uid;

@@ -42,7 +42,7 @@ const FriendsRequestsList = (): JSX.Element => {
 
         return (
           <Flex
-            sx={{
+            style={{
               padding: 5,
               borderRadius: 5,
               cursor: "pointer",
@@ -82,7 +82,7 @@ const FriendsRequestsList = (): JSX.Element => {
                 <Text
                   lineClamp={1}
                   c="dimmed"
-                  size={14}
+                  size="sm"
                 >
                   {friendData.email}
                 </Text>
@@ -113,7 +113,6 @@ const FriendsRequestsList = (): JSX.Element => {
                       friendship,
                     });
                   }}
-                  icon={<UserPlus size={16} />}
                 >
                   Accept
                 </Menu.Item>
@@ -127,7 +126,6 @@ const FriendsRequestsList = (): JSX.Element => {
                       friendship,
                     });
                   }}
-                  icon={<Trash size={16} />}
                 >
                   Decline Request
                 </Menu.Item>
