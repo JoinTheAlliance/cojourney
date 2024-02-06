@@ -85,28 +85,35 @@ export const onMessage = async (message: any, runtime: any) => {
     return
   }
 
-  if (eventType === 'update') {
+  if (
+    eventType === 'update' &&
+    runtime.getState().recentMessagesData.length > 2
+  ) {
     // read the last messages
     // if the last 3 messages are from the agent, or the last message from the agent has the WAIT action, then we should skip
-    const currentMessages = runtime.getState().recentMessagesData ?? '[]';
-    console.log('currentMessages', currentMessages);
-
-    // if the last three messages were from the agent, then we should skip
-    const lastThreeMessages = JSON.parse(currentMessages).slice(-3);
-    console.log('lastThreeMessages', lastThreeMessages);
-    const lastThreeMessagesFromAgent = lastThreeMessages.filter((message: any) => message.user_id === agentId);
-    console.log('lastThreeMessagesFromAgent', lastThreeMessagesFromAgent);
+    const currentMessages = runtime.getState().recentMessagesData ?? []
+    const lastThreeMessages = currentMessages.slice(-3)
+    const lastThreeMessagesFromAgent = lastThreeMessages.filter(
+      (message: any) => message.user_id === agentId
+    )
     if (lastThreeMessagesFromAgent.length === 3) {
-      return console.log('Skipping because last three messages from agent');
+      return console.log('Skipping because last three messages from agent')
     }
-
     // if the last two messages had the WAIT action from current agent, then we should skip
-    const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2);
-    console.log('lastTwoMessagesFromAgent', lastTwoMessagesFromAgent);
-    const lastTwoMessagesFromAgentWithWaitAction = lastTwoMessagesFromAgent.filter((message: any) => message.content.action === 'WAIT');
-    console.log('lastTwoMessagesFromAgentWithWaitAction', lastTwoMessagesFromAgentWithWaitAction);
+    const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2)
+    console.log('lastTwoMessagesFromAgent', lastTwoMessagesFromAgent)
+    const lastTwoMessagesFromAgentWithWaitAction =
+      lastTwoMessagesFromAgent.filter(
+        (message: any) => message.content.action === 'WAIT'
+      )
+    console.log(
+      'lastTwoMessagesFromAgentWithWaitAction',
+      lastTwoMessagesFromAgentWithWaitAction
+    )
     if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
-      return console.log('Skipping because last two messages from agent had WAIT action');
+      return console.log(
+        'Skipping because last two messages from agent had WAIT action'
+      )
     }
   }
 
