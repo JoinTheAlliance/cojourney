@@ -87,7 +87,7 @@ export const onMessage = async (message: any, runtime: any) => {
 
   if (
     eventType === 'update' &&
-    runtime.getState().recentMessagesData.length > 2
+    runtime.getState().recentMessagesData?.length > 2
   ) {
     // read the last messages
     // if the last 3 messages are from the agent, or the last message from the agent has the WAIT action, then we should skip

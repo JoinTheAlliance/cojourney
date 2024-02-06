@@ -29,6 +29,8 @@ const useGetRoomMessages = () => {
       .limit(50)
       .order("created_at", { ascending: false });
 
+    console.log('*** data', data)
+
     if (error) {
       return showNotification({
         title: "Error",

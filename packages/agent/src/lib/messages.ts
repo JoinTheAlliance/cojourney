@@ -92,7 +92,7 @@ export const formatMessages = ({ messages, actors }: any) => {
 export const formatReflections = (reflections: any[]) => {
   // format conversation as a string
   const messageStrings = reflections.reverse().map((reflection: { toJSON: () => { (): any; new(): any; content: any; }; }) => {
-    const header = `${reflection.toJSON().content}`;
+    const header = `blah`; // `${reflection.toJSON().content}`;
     return header;
   });
   const finalMessageStrings = messageStrings.join("\n");
