@@ -53,9 +53,9 @@ const getSupabase = (access_token?: string) => {
   }
 
 export const getMe = async (session: { access_token: string | undefined }) => {
-    const { data: { user }, error} = await getSupabase(session.access_token).auth.getUser()
+    const { data: { user }, error} = await getSupabase(session?.access_token).auth.getUser()
     if (error) {
-        await getSupabase(session.access_token).auth.signOut();
+        await getSupabase(session?.access_token).auth.signOut();
         console.log('*** error', error)
       return null;
     } else {
@@ -71,7 +71,7 @@ async function startApplication() {
     // Assuming session information is stored in the .cjrc file
     const userData = JSON.parse(fs.readFileSync(configFile).toString());
     const session = userData?.session;
-    const supabase = getSupabase(session.access_token);
+    const supabase = getSupabase(session?.access_token);
     let user = null as any;
     if (session) {
         // Get user information or perform any other session-related initialization here
