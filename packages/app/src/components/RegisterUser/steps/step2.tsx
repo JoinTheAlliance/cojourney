@@ -7,7 +7,6 @@ import {
   Text,
   Title,
   useMantineTheme,
-  useMantineColorScheme
 } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -24,7 +23,6 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
   const session = useSession();
   const supabase = useSupabaseClient<Database>();
   const theme = useMantineTheme();
-  const colorScheme = useMantineColorScheme();
 
   const { user, setUser } = useGlobalStore();
 
@@ -36,15 +34,14 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
 
     if (!session?.user.id) {
       setIsLoadingSavingData(false);
-      showNotification({
+      return showNotification({
         title: "Error, unable to save information.",
         message:
           "Please reload the page, if the error persists try logging out and back in.",
       });
-      return
     }
 
-    let IMAGE_URL = "";
+    let IMAGE_URL = null;
 
     if (profileImage) {
       const { data: imageUploadData, error } = await supabase.storage
@@ -54,11 +51,10 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
           upsert: true,
         });
       if (error) {
-        showNotification({
+        return showNotification({
           title: "Error.",
           message: error.message,
         });
-        return
       }
 
       const { data: imageUrlData } = await supabase.storage
@@ -66,11 +62,10 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
         .getPublicUrl(imageUploadData.path);
 
       if (!imageUrlData) {
-        showNotification({
+        return showNotification({
           title: "Error.",
           message: "Unable to get image URL",
         });
-        return
       }
 
       IMAGE_URL = imageUrlData.publicUrl;
@@ -79,11 +74,10 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
     if (!user.name || !session.user.email) {
       setIsLoadingSavingData(false);
 
-      showNotification({
+      return showNotification({
         title: "Error",
         message: "Unexpected error",
       });
-      return
     }
 
     const { error } = await supabase.from("accounts").insert({
@@ -153,7 +147,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
           radius="50%"
           size={120}
           bg={
-            colorScheme.colorScheme === "dark"
+            theme.colorScheme === "dark"
               ? theme.colors.dark[7]
               : theme.colors.gray[2]
           }
@@ -161,7 +155,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
         />
         <Box>
           <Title size={20}>Your default profile picture</Title>
-          <Text size="sm">
+          <Text size={14}>
             This will be your default profile picture if no other is provided
           </Text>
         </Box>
@@ -173,7 +167,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       />
       <Flex justify="space-between">
         <Button
-          leftSection={<ArrowLeft size={16} />}
+          leftIcon={<ArrowLeft size={16} />}
           onClick={(): void => prevStep()}
           variant="outline"
         >
@@ -185,7 +179,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
           onClick={(): void => {
             handleSubmit();
           }}
-          rightSection={<Flag size={16} />}
+          rightIcon={<Flag size={16} />}
         >
           Finish
         </Button>

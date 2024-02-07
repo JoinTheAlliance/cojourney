@@ -43,12 +43,11 @@ const UserPreferences = (): JSX.Element => {
 
     if (!session?.user.id) {
       setIsSavingChanges(false);
-      showNotification({
+      return showNotification({
         title: "Error, unable to save information.",
         message:
           "Please reload the page, if the error persists try logging out and back in.",
       });
-      return
     }
 
     let IMAGE_URL = imageUrl;
@@ -62,11 +61,10 @@ const UserPreferences = (): JSX.Element => {
         });
 
       if (error) {
-        showNotification({
+        return showNotification({
           title: "Error.",
           message: error.message,
         });
-        return
       }
 
       const { data: imageUrlData } = await supabase.storage
@@ -74,11 +72,10 @@ const UserPreferences = (): JSX.Element => {
         .getPublicUrl(imageUploadData.path);
 
       if (!imageUrlData) {
-        showNotification({
+        return showNotification({
           title: "Error.",
           message: "Unable to get image URL",
         });
-        return
       }
 
       IMAGE_URL = imageUrlData.publicUrl;
@@ -193,7 +190,7 @@ const UserPreferences = (): JSX.Element => {
       <Flex justify="flex-end">
       <Button
         mr={'auto'}
-        leftSection={<User />}
+        leftIcon={<User />}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -205,7 +202,7 @@ const UserPreferences = (): JSX.Element => {
         Logout
       </Button>
         <Button
-          leftSection={<Save size={16} />}
+          leftIcon={<Save size={16} />}
           loading={isSavingChanges}
           type="submit"
         >

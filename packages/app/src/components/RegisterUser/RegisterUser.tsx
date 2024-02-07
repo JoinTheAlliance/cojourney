@@ -29,6 +29,7 @@ const RegisterUser = (): JSX.Element => {
     <div className={classes.content}>
       <Stepper
         active={current}
+        breakpoint="sm"
         onStepClick={(): null => null}
       >
         <Stepper.Step

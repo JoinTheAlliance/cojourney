@@ -25,6 +25,7 @@ const ChangeThemeModal = (): JSX.Element => {
           });
         }}
         placeholder="Dark's better..."
+        withinPortal
       />
       <Divider
         mb={10}

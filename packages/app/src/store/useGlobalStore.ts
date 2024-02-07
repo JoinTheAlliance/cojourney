@@ -169,7 +169,6 @@ const useGlobalStore = create<IGlobalState>()(
           supabase,
         }): Promise<void> => {
           const formattedMessage = newMessage;
-          console.log('formattedMessage', formattedMessage)
 
           const { data: user, error } = await supabase
             .from("accounts")

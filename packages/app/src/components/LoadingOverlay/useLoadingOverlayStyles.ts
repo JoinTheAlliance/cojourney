@@ -1,6 +1,6 @@
-import { createStyles } from "@mantine/styles";
+import { createStyles } from "@mantine/core";
 
-const useLoadingOverlayStyles = createStyles((theme: any) => ({
+const useLoadingOverlayStyles = createStyles((theme) => ({
   backdrop: {
     height: "100vh",
     width: "100vw",

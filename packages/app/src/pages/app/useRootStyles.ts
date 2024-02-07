@@ -1,6 +1,6 @@
-import { createStyles } from "@mantine/styles";
+import { createStyles } from "@mantine/core";
 
-const useRootStyles = createStyles((theme: any) => ({
+const useRootStyles = createStyles((theme) => ({
   container: {
     marginLeft: 400,
     "@media (max-width: 900px)": {

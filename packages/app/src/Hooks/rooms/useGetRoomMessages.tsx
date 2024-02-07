@@ -29,22 +29,18 @@ const useGetRoomMessages = () => {
       .limit(50)
       .order("created_at", { ascending: false });
 
-    console.log('*** data', data)
-
     if (error) {
-      showNotification({
+      return showNotification({
         title: "Error",
         message: "Unable to get messages",
       });
-      return
     }
 
     if (data.length === 0) {
-      setCurrentRoom({
+      return setCurrentRoom({
         messages: [],
         isLoadingMessages: false,
       });
-      return
     }
 
     const reversedMessages = data.reverse();

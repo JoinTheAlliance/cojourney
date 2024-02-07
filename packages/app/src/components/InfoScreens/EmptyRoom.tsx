@@ -7,7 +7,7 @@ const EmptyRoom = (): JSX.Element => {
       direction="column"
       justify="center"
       align="center"
-      style={{ height: "70%" }}
+      sx={{ height: "70%" }}
     >
       <h1>No messages... yet</h1>
     </Flex>

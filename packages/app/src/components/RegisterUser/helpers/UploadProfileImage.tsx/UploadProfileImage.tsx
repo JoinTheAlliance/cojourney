@@ -25,7 +25,7 @@ const UploadProfileImage = ({
         maxSize={3 * 1024 ** 2}
         multiple={false}
         onDrop={(files): void => {
-          setImage(files[0] as any);
+          setImage(files[0]);
         }}
         onReject={(): void => {
           showNotification({
@@ -35,6 +35,8 @@ const UploadProfileImage = ({
         }}
       >
         <Group
+          position="center"
+          spacing="xl"
           style={{ minHeight: 120, pointerEvents: "none" }}
         >
           <Dropzone.Accept>
@@ -76,7 +78,7 @@ const UploadProfileImage = ({
           <Flex justify="end">
             <Button
               color="red"
-              leftSection={<Trash size={16} />}
+              leftIcon={<Trash size={16} />}
               onClick={(): void => {
                 setImage(null);
                 if (setImageUrl) setImageUrl(null);
@@ -121,7 +123,7 @@ const UploadProfileImage = ({
       {returnCorrectComponent()}
       <Text
         color="dimmed"
-        size="sm"
+        size={12}
       >
       </Text>
     </>

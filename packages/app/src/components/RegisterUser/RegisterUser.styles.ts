@@ -1,4 +1,4 @@
-import { createStyles } from "@mantine/styles";
+import { createStyles } from "@mantine/core";
 
 const useRegisterUserStyles = createStyles(() => ({
   content: {

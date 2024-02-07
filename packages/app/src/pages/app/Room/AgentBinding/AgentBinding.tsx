@@ -144,7 +144,7 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
         },
       );
 
-      agentActions.forEach((action: any) => {
+      agentActions.forEach((action) => {
         // console.log('action', action)
         runtime.registerActionHandler(action);
       });
@@ -153,7 +153,7 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
         console.log(
             `Actions registered: ${runtime
               .getActions()
-              .map((a: any) => a.name)
+              .map((a) => a.name)
               .join(", ")}`,
         );
       }

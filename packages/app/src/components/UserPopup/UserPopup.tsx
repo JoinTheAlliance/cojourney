@@ -18,7 +18,7 @@ interface Props {
   };
 }
 
-const UserPopup = ({ /* user, */ children }: Props): JSX.Element => {
+const UserPopup = ({ user, children }: Props): JSX.Element => {
   const {
     relationships: { friends },
     setApp,
@@ -59,7 +59,7 @@ const UserPopup = ({ /* user, */ children }: Props): JSX.Element => {
     //   <Menu.Dropdown
     //     p={20}
     //     ml={10}
-    //     style={{ maxWidth: 250 }}
+    //     sx={{ maxWidth: 250 }}
     //   >
     //     <Flex
     //       p={20}
@@ -81,9 +81,9 @@ const UserPopup = ({ /* user, */ children }: Props): JSX.Element => {
     //         {user.id === uid ? `You (${user.name})` : user.name}
     //       </Title>
     //       <Text
-    //         size="sm"
+    //         size={12}
     //         lineClamp={1}
-    //         style={{ maxWidth: "100%" }}
+    //         sx={{ maxWidth: "100%" }}
     //       >
     //         {user.email}
     //       </Text>
@@ -103,7 +103,7 @@ const UserPopup = ({ /* user, */ children }: Props): JSX.Element => {
     //           <Button
     //             loading={isLoading}
     //             fullWidth
-    //             leftSection={<MessageSquare size="sm" />}
+    //             leftIcon={<MessageSquare size={14} />}
     //             onClick={() => {
     //               const friendship = friends.find((friend) => {
     //                 return friend.user_a === uid || friend.user_b === uid;
@@ -124,7 +124,7 @@ const UserPopup = ({ /* user, */ children }: Props): JSX.Element => {
     //             fullWidth
     //             color="red"
     //             variant="light"
-    //             leftSection={<X size="sm" />}
+    //             leftIcon={<X size={14} />}
     //             onClick={() => {
     //               const friendship = friends.find((friend) => {
     //                 return friend.user_a === uid || friend.user_b === uid;

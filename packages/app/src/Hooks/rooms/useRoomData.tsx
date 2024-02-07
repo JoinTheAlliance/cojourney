@@ -56,8 +56,6 @@ const useRoomData = ({ roomId }: Props) => {
           .select("*, userData:accounts(*)")
           .eq("room_id", roomDataReq.id);
 
-      console.log('participantsData', participantsData)
-
       if (!participantsData || participantsError) {
         setCurrentRoom({ isLoading: false });
 

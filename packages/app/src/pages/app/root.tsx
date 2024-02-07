@@ -47,9 +47,9 @@ const Root = (): JSX.Element => {
   }
 
   useEffect(() => {
-    console.log('initialState', initialState)
     if (!session) return;
     if (!location) return;
+
     if (location.pathname === "/") {
       setCurrentRoom(initialState.currentRoom);
       setApp({

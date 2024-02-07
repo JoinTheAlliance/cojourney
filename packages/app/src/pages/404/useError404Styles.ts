@@ -1,6 +1,6 @@
-import { createStyles, rem } from "@mantine/styles";
+import { createStyles, rem } from "@mantine/core";
 
-const useError404Styles = createStyles((theme: any) => ({
+const useError404Styles = createStyles((theme) => ({
   root: {
     backgroundColor: theme.fn.variant({
       variant: "filled",

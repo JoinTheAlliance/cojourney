@@ -29,7 +29,7 @@ const useHandleFriendsRequests = () => {
 
   const handleSendFriendRequest = async ({
     friendId,
-    // friendEmail,
+    friendEmail,
   }: ISendFriendRequest): Promise<void> => {
     setIsLoading(true);
 

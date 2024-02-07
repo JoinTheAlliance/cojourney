@@ -174,7 +174,7 @@ const Message = ({ message }: Props): JSX.Element => {
               <div style={{ marginLeft: 10 }}>
                 <Text
                   c="dimmed"
-                  size="sm"
+                  size={14}
                 >
                   {/* @ts-ignore */}
                   {`${message.userData.name} - ${moment(
@@ -204,7 +204,7 @@ const Message = ({ message }: Props): JSX.Element => {
                     }}
                   >
                     <Textarea
-                      style={{ maxWidth: "calc(100vw - 100px)", width: 600 }}
+                      sx={{ maxWidth: "calc(100vw - 100px)", width: 600 }}
                       autosize
                       className={classes.edit_input}
                       onChange={

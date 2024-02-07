@@ -1,6 +1,6 @@
-import { createStyles } from "@mantine/styles";
+import { createStyles } from "@mantine/core";
 
-const useSideMenuStyles = createStyles((theme: any) => ({
+const useSideMenuStyles = createStyles((theme) => ({
   wrapper: {
     display: "flex",
   },

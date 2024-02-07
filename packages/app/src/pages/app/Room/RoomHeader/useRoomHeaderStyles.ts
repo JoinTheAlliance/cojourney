@@ -1,6 +1,6 @@
-import { createStyles } from "@mantine/styles";
+import { createStyles } from "@mantine/core";
 
-const useRoomHeaderStyles = createStyles((theme: any) => ({
+const useRoomHeaderStyles = createStyles((theme) => ({
   container: {
     padding: 10,
     display: "flex",

@@ -23,8 +23,7 @@ const Error404 = (): JSX.Element => {
         <Title className={classes.title}>Listen here, partner.</Title>
         <Text
           size="lg"
-          /* align to the center */
-          style={{ textAlign: "center" }}
+          align="center"
           className={classes.description}
         >
           I&apos;m gettin&apos; real tired of this, partner! The blasted page
