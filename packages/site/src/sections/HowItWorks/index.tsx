@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-
 const data = [
 	{
 		step: "01",
@@ -43,8 +41,8 @@ const HowItWorks: React.FC = ({}) => {
 			</div>
 
 			<div className="flex items-center justify-center gap-4">
-				<Button>Get a Free Demo</Button>
-				<Button variant="outline">See Pricing</Button>
+				<span>Get a Free Demo</span>
+				<span>See Pricing</span>
 			</div>
 		</div>
 	);

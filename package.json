@@ -7,32 +7,30 @@
   "repository": "https://github.com/cojourneyai/cojourney",
   "bugs": "https://github.com/cojourneyai/cojourney/issues",
   "license": "MIT",
-  "workspaces": [
-    "packages/*"
-  ],
-  "nohoist": [
-    "**/electron",
-    "**/electron/**",
-    "**/electron-vite",
-    "**/electron-vite/**"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**electron**"
+    ]
+  },
   "resolutions": {
     "@types/react": "^18.2.0"
   },
   "scripts": {
-    "dev": "workspaces-run --parallel -- npm run dev",
-    "cj": "cd packages/terminal && yarn run dev:terminal",
-    "build": "npm run build --workspaces --if-present",
-    "test": "npm test --workspaces --if-present",
-    "coverage": "npm run coverage --workspaces --if-present",
-    "types": "npm run types --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "format": "npm run format --workspaces --if-present"
+    "dev": "lerna run dev --ignore @cojourney/app-native --ignore @cojourney/docs --ignore @cojourney/site",
+    "dev:all": "lerna run dev",
+    "cj": "cd packages/terminal && npm run dev:terminal",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "coverage": "lerna run coverage",
+    "types": "lerna run types",
+    "lint": "lerna run lintt",
+    "format": "lerna run format"
   },
   "devDependencies": {
+    "lerna": "^8.1.2",
     "vite-plugin-cachedir": "^1.1.1"
-  },
-  "dependencies": {
-    "workspaces-run": "^1.0.2"
   }
 }

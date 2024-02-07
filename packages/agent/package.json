@@ -25,7 +25,8 @@
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
-    "dev": "rollup -c -w",
+    "dev": "rollup -c",
+    "dev:watch": "rollup -c -w",
     "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "test": "jest",
@@ -96,8 +97,7 @@
   },
   "engines": {
     "node": ">= 18.0.0",
-    "npm": ">= 8.6.0",
-    "yarn": ">= 1.20.x"
+    "npm": ">= 8.6.0"
   },
   "buildOptions": {
     "name": "index"

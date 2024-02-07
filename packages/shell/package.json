@@ -28,8 +28,9 @@
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
-    "dev": "rollup -c -w",
-    "dev:terminal": "yarn run build && node --no-warnings terminal.mjs",
+    "dev": "rollup -c",
+    "dev:watch": "rollup -c -w",
+    "dev:terminal": "npm run build && node --no-warnings terminal.mjs",
     "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "test": "jest",
@@ -47,6 +48,7 @@
     "clean": "rimraf types types temp dist coverage"
   },
   "dependencies": {
+    "@cojourney/agent": "^0.0.1",
     "@supabase/supabase-js": "^2.39.3",
     "@types/inquirer": "^9.0.7",
     "@types/node-notifier": "^8.0.5",
@@ -107,8 +109,7 @@
   },
   "engines": {
     "node": ">= 18.0.0",
-    "npm": ">= 8.6.0",
-    "yarn": ">= 1.20.x"
+    "npm": ">= 8.6.0"
   },
   "buildOptions": {
     "name": "index"

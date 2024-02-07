@@ -24,7 +24,7 @@ export interface AgentRuntimeOpts {
  */
 export class AgentRuntime {
   #recentMessageCount = 8;
-  serverUrl = "";
+  serverUrl = "http://localhost:7998";
   #state = {};
   token: string | null;
   debugMode: boolean;

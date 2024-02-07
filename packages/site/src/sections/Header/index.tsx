@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 
 const Header = () => {
@@ -14,9 +12,9 @@ const Header = () => {
 				expenses with our supafast app.
 			</p>
 			<div className="flex items-center justify-center gap-6 mb-[50px]">
-				<Button variant="default">Get a Free Demo</Button>
+				Get a Free Demo
 				<Link href="/#pricing">
-					<Button variant="secondary">See Pricing</Button>
+					See Pricing
 				</Link>
 			</div>
 

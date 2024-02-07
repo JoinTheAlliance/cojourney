@@ -1,7 +1,6 @@
 import { FC } from "react";
 import Pricing from "..";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 const PricingCard: FC<Pricing> = (props) => {
@@ -51,7 +50,7 @@ const PricingCard: FC<Pricing> = (props) => {
 					);
 				})}
 			</div>
-			<Button className="w-[80%] mx-auto">{props.button}</Button>
+			<span className="w-[80%] mx-auto">{props.button}</span>
 		</div>
 	);
 };

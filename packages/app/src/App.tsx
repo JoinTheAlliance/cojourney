@@ -52,8 +52,7 @@ const App = (): JSX.Element => {
       <MantineProvider
         theme={{
           // @ts-ignore
-          colorScheme:
-            preferences.theme === "system" ? colorScheme : preferences.theme,
+          colorScheme,
           primaryColor: "blue",
           defaultRadius: "md",
           colors: {
