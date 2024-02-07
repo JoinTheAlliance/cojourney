@@ -29,7 +29,7 @@
   "sideEffects": false,
   "scripts": {
     "dev": "rollup -c -w",
-    "dev:terminal": "node --no-warnings terminal.mjs",
+    "dev:terminal": "yarn run build && node --no-warnings terminal.mjs",
     "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "test": "jest",

@@ -53,10 +53,10 @@ const getSupabase = (access_token?: string) => {
   }
 
 export const getMe = async (session: { access_token: string | undefined }) => {
-    console.log(session)
     const { data: { user }, error} = await getSupabase(session.access_token).auth.getUser()
     if (error) {
-      console.log(error)
+        await getSupabase(session.access_token).auth.signOut();
+        console.log('*** error', error)
       return null;
     } else {
       return user;
@@ -65,14 +65,13 @@ export const getMe = async (session: { access_token: string | undefined }) => {
 
 // Main application logic
 // Main application logic
-async function startApplication(_supabase?: any) {
+async function startApplication() {
     console.log(chalk.green('Starting application...'));
 
     // Assuming session information is stored in the .cjrc file
     const userData = JSON.parse(fs.readFileSync(configFile).toString());
     const session = userData?.session;
-    console.log('session.access_token', session.access_token)
-    const supabase = _supabase ?? getSupabase(session.access_token);
+    const supabase = getSupabase(session.access_token);
     let user = null as any;
     if (session) {
         // Get user information or perform any other session-related initialization here
@@ -219,8 +218,17 @@ function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any, agentI
 
 // Function to handle user login or signup
 async function handleUserInteraction() {
-    if (!fs.existsSync(configFile)) {
-        console.log(chalk.yellow('No configuration file found. Please log in or sign up.'));
+    let user;
+
+    if(fs.existsSync(configFile)){
+        // try to read the file as json
+        const userData = JSON.parse(fs.readFileSync(configFile).toString());
+        const session = userData?.session;
+        user = await getMe(session);
+    }
+    
+    if (!user) {
+        console.log(chalk.yellow('Please log in or sign up.'));
         const { action } = await inquirer.prompt([{
             type: 'list',
             name: 'action',
@@ -236,6 +244,9 @@ async function handleUserInteraction() {
     } else {
         console.log(chalk.green('Configuration file found. You are already logged in.'));
         await startApplication(); // Start the application if already logged in
+
+        
+        
     }
 }
 
@@ -264,13 +275,11 @@ async function loginUser() {
             password: credentials.password,
         });
 
-        console.log('data', data)
-
         if (error) throw error;
 
         fs.writeFileSync(configFile, JSON.stringify({ session: data.session }));
         console.log(chalk.green('Login successful! Configuration saved.'));
-        await startApplication(supabase); // Start the application after login
+        await startApplication(); // Start the application after login
     } catch (error: any) {
         console.error(chalk.red(`Login failed: ${error.message}`));
     }

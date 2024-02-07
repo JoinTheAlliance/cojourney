@@ -22,11 +22,7 @@ Then respond with a JSON object containing a field for description in a JSON blo
 
 Your response must include the JSON block.`
 
-const handler = async (message: any, state: any, runtime: any) => {
-  console.log('profile update message', message)
-
-  console.log('state is', state)
-  
+const handler = async (_message: any, state: any, runtime: any) => {
   // 
 
   // TODO:
@@ -86,13 +82,8 @@ const handler = async (message: any, state: any, runtime: any) => {
       .single();
     const { data: relationshipRecord, error: error2 } = response2;
     if(error2) {
-      console.error('error getting relationship', error2)
       return
     }
-
-    console.log('relationshipRecord is', relationshipRecord)
-
-    console.log('userRecord is', userRecord)
 
     const descriptionMemory = new Memory({
       user_ids: [state.agentId, userRecord.id],
@@ -100,9 +91,8 @@ const handler = async (message: any, state: any, runtime: any) => {
       content: description,
       room_id: relationshipRecord.room_id,
     })
-    console.log('descriptionMemory', descriptionMemory.toJSON())
+
     await runtime.descriptionManager.upsertRawMemory(descriptionMemory);
-    console.log('stored descriptionMemory', descriptionMemory)
   } else if (runtime.debugMode) {
     console.log(chalk.red('Could not parse response'))
   }

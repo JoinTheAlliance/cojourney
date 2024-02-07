@@ -110,15 +110,10 @@ export const onMessage = async (message: any, runtime: any) => {
     }
     // if the last two messages had the WAIT action from current agent, then we should skip
     const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2)
-    console.log('lastTwoMessagesFromAgent', lastTwoMessagesFromAgent)
     const lastTwoMessagesFromAgentWithWaitAction =
       lastTwoMessagesFromAgent.filter(
         (message: any) => message.content.action === 'WAIT'
       )
-    console.log(
-      'lastTwoMessagesFromAgentWithWaitAction',
-      lastTwoMessagesFromAgentWithWaitAction
-    )
     if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
       return console.log(
         'Skipping because last two messages from agent had WAIT action'
@@ -240,7 +235,7 @@ export const onMessage = async (message: any, runtime: any) => {
       .find((a: {name: any}) => a.name === data.action)
 
     if (!action) {
-      return console.warn('No action found for', data.action)
+      return // console.warn('No action found for', data.action)
     }
 
     if (!action.handler) {

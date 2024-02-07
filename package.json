@@ -21,7 +21,7 @@
   },
   "scripts": {
     "dev": "workspaces-run --parallel -- npm run dev",
-    "dev:terminal": "cd packages/terminal && yarn run dev",
+    "cj": "cd packages/terminal && yarn run dev:terminal",
     "build": "npm run build --workspaces --if-present",
     "test": "npm test --workspaces --if-present",
     "coverage": "npm run coverage --workspaces --if-present",
