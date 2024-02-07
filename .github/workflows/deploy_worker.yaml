@@ -9,9 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'yarn'  # This tells the setup-node action to cache Yarn dependencies
+
+      - name: Install dependencies
+        run: yarn install
+        working-directory: packages/worker  # Specifies the directory where the yarn command should be run
+
       - uses: actions/checkout@v3
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
