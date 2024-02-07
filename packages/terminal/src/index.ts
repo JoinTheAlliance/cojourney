@@ -1,15 +1,13 @@
-#!/usr/bin/env node
-
 /* eslint-disable import/first */
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 
-dotenv.config({ path: ".env" });
+dotenv.config();
 
 import readline from "readline";
 import chalk from "chalk";
 
-import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions, constants } from "./dist/index.esm.js";
+import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions, constants } from "@cojourney/agent";
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -96,7 +94,7 @@ async function start() {
     });
   }
 
-  runtime.registerMessageHandler(async ({ agentName, content, action }) => {
+  runtime.registerMessageHandler(async ({ agentName, content, action }: any) => {
     console.log(chalk.green(`${agentName}: ${content}${action ? ` (${action})` : ""}`));
     resetLoop();
   });
@@ -120,7 +118,7 @@ async function start() {
   const { start: startLoop, reset: resetLoop, registerHandler } = initialize();
 
   // Function to simulate agent's response
-  const respond = async (content) => {
+  const respond = async (content: any) => {
     resetLoop(); // reset the update interval early to prevent async update race
     await onMessage({
       name: userName,
