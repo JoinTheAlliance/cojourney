@@ -12,7 +12,11 @@ import {
 } from '../lib'
 import {defaultActions} from '../lib/actions'
 import {formatGoalsAsString, getGoals} from '../lib/goals'
-import introduce from './actions/introduce'
+// import introduce from './actions/introduce'
+import profile from './actions/profile'
+// import objective from './actions/objective'
+// import goal
+//  from './actions/goal'
 import {
   reflection_template,
   response_generation_template,
@@ -20,7 +24,12 @@ import {
 } from './templates'
 import {parseJSONObjectFromText, parseJsonArrayFromText} from './utils'
 
-const customActions = [introduce]
+const customActions = [
+  // introduce,
+  profile,
+  // goal,
+  // objective
+]
 
 export const constants = {
   avatarPlaceholder: (seed: string | number) => {
@@ -395,7 +404,7 @@ export const onMessage = async (message: any, runtime: any) => {
       await runtime.messageManager.upsertRawMemory(senderMemory.toJSON())
     }
 
-    responseData.content = responseData.content.trim()
+    responseData.content = responseData.content?.trim()
     if (responseData.content) {
       const responseMemory = new Memory({
         user_ids: userIds,

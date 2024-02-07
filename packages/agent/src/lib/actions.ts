@@ -9,27 +9,27 @@ export const defaultActions = [
       JSON.stringify({ user: "CJ", content: "I know right lol", action: "NONE" }),
     ],
   },
-  {
-    name: "CONTINUE",
-    description: "Continue the conversation with the user",
-    examples: [
-      JSON.stringify({ user: "CJ", content: "The comet passing over tonight is going to be a sight to behold. Are you excited about it?", action: "CONTINUE" }),
-    ],
-  },
-  {
-    name: "WAIT",
-    description: "Do nothing and wait for another person to reply, or continue their message",
-    examples: [
-      JSON.stringify({ user: "CJ", content: "", action: "WAIT" }),
-    ],
-  },
-  {
-    name: "IGNORE",
-    description: "Ignore the user and do not respond, use this if your role involves being sassy, or mad at user",
-    examples: [
-      JSON.stringify({ user: "CJ", content: "", action: "IGNORE" }),
-    ],
-  },
+  // {
+  //   name: "CONTINUE",
+  //   description: "Continue the conversation with the user",
+  //   examples: [
+  //     JSON.stringify({ user: "CJ", content: "The comet passing over tonight is going to be a sight to behold. Are you excited about it?", action: "CONTINUE" }),
+  //   ],
+  // },
+  // {
+  //   name: "WAIT",
+  //   description: "Do nothing and wait for another person to reply, or continue their message",
+  //   examples: [
+  //     JSON.stringify({ user: "CJ", content: "", action: "WAIT" }),
+  //   ],
+  // },
+  // {
+  //   name: "IGNORE",
+  //   description: "Ignore the user and do not respond, use this if your role involves being sassy, or mad at user",
+  //   examples: [
+  //     JSON.stringify({ user: "CJ", content: "", action: "IGNORE" }),
+  //   ],
+  // },
   // {
   //   name: 'UPDATE_GOAL',
   //   description: 'Update a the current state of a goal - set goal status to CANCELED, FAILED or COMPLETED',

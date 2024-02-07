@@ -33,7 +33,7 @@ export async function getMessageActors({ supabase, userIds }: any) {
 export function formatMessageActors({ actors }: any) {
   // format actors as a string
   const actorStrings = actors.map((actor: { name: any; description: any; }) => {
-    const header = `${actor.name}: ${actor.description}`;
+    const header = `${actor.name}: ${actor.description ?? "No description"}`;
     return header;
   });
   const finalActorStrings = actorStrings.join("\n");

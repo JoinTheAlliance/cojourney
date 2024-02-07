@@ -21,8 +21,7 @@ export async function createRelationship({ supabase, userA, userB}: { supabase: 
 
 export async function getRelationship({ supabase, userA, userB }: { supabase: any, userA: string, userB: string }) {
   const { data, error } = await supabase.from("relationships").select("*")
-    .or(`user_a.eq.${userA},user_b.eq.${userB}`)
-    .or(`user_a.eq.${userB},user_b.eq.${userA}`);
+  .or(`user_a.eq.${userA},user_b.eq.${userB},user_a.eq.${userB},user_b.eq.${userA}`);
 
   if (error) {
     throw new Error(error.message);
