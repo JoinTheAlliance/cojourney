@@ -82,12 +82,14 @@ class Server {
               }
             });
 
-            const token = request.headers.get('Authorization') &&
-              request.headers.get('Authorization').replace('Bearer ', '');
+            const token = req.headers.get('Authorization') &&
+            req.headers.get('Authorization').replace('Bearer ', '');
             
             const out = await jwt.decode(token)
 
-            userId = out?.payload?.sub || out?.payload?.id || out?.id;
+            console.log('out', out)
+
+            const userId = out?.payload?.sub || out?.payload?.id || out?.id;
 
             if(!userId) {
               return new Response('Unauthorized', { status: 401 });
@@ -97,7 +99,8 @@ class Server {
 
             return await fn({ req, env, match: matchUrl, host: matchHost, userId, supabase });
           } catch (err) {
-            return new Response(err.stack, { status: 500 });
+            console.log('erro', err)
+            return new Response(err, { status: 500 });
           }
         }
       }

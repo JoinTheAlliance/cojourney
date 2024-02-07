@@ -1,18 +1,15 @@
-/* eslint-disable import/first */
+// Import necessary modules
 import dotenv from "dotenv";
+import path from 'path';
+import { homedir } from 'os';
+import * as fs from 'fs';
+import { fileURLToPath } from 'url';
 import { createClient } from "@supabase/supabase-js";
-
-dotenv.config();
-
-import readline from "readline";
+import inquirer from 'inquirer';
 import chalk from "chalk";
-
-import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions, constants } from "@cojourney/agent";
-
-const supabase = createClient(
-  constants.supabaseUrl || "",
-  constants.supabaseAnonKey || "",
-);
+import readline from "readline";
+import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions } from "@cojourney/agent";
+import { defaultGoal } from "./defaultGoal";
 
 // check for --debug flag in 'node example/terminal --debug'
 const DEBUG = process.argv.includes("--debug");
@@ -25,186 +22,293 @@ const agentUUID = "00000000-0000-0000-0000-000000000000";
 const agentName = "CJ";
 const updateInterval = 10000;
 
-const defaultGoal = {
-  name: "First Time User Experience",
-  description: "CJ wants to get to know the user.",
-  status: "IN_PROGRESS", // other types are "DONE" and "FAILED"
-  objectives: [
-    {
-      description: "Determine if it is the user's first time",
-      condition: "User indicates that it is their first time or that they are new",
-      completed: false,
-    },
-    {
-      description: "Get the user to enable their microphone by pressing the microphone button",
-      condition: "User calls microphone_enabled action",
-      completed: false,
-    },
-    {
-      description: "Learn details about the user's interests and personality",
-      condition: "User tells CJ a few key facts about about their interests and personality",
-      completed: false,
-    },
-    {
-      description: "CJ updates the user's profile with the information she has learned",
-      condition: "CJ calls update_profile action",
-      completed: false,
-    },
-    {
-      description: "Connect the user to someone from the rolodex who they might like to chat with",
-      condition: "CJ calls INTRODUCE action",
-      completed: false,
-    },
-  ],
-};
+// Setup environment variables
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
-// runtime
-async function start() {
-  const runtime = new AgentRuntime({
-    debugMode: DEBUG,
-    userId: userUUID,
-    agentId: agentUUID,
-    serverUrl: SERVER_URL,
-    supabase,
-  });
+// Define user home directory and config file path
+const userHomeDir = homedir();
+const configFile = path.join(userHomeDir, '.cjrc');
 
-  // get the room_id where user_id is user_a and agent_id is user_b OR vice versa
-  const { data, error } = await supabase.from("relationships").select("*")
-    .or(`user_a.eq.${userUUID},user_b.eq.${agentUUID},user_a.eq.${agentUUID},user_b.eq.${userUUID}`)
-    .single();
-
-  if (error) {
-    return console.error(new Error(JSON.stringify(error)));
+const getSupabase = (access_token?: string) => {
+    const supabaseUrl = process.env.SUPABASE_URL as string
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
+    let options = {}
+  
+    if (access_token) {
+      (options as any).global = {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    }
+  
+    const supabase = createClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      options
+    )
+    return supabase
   }
 
-  const room_id = data?.room_id;
-
-  const goals = await getGoals({
-    supabase: runtime.supabase,
-    userIds: [userUUID, agentUUID],
-  });
-
-  if (goals.length === 0) {
-    console.log("creating goal");
-    await createGoal({
-      supabase: runtime.supabase,
-      userIds: [userUUID, agentUUID],
-      userId: agentUUID,
-      goal: defaultGoal,
-    });
+export const getMe = async (session: { access_token: string | undefined }) => {
+    console.log(session)
+    const { data: { user }, error} = await getSupabase(session.access_token).auth.getUser()
+    if (error) {
+      console.log(error)
+      return null;
+    } else {
+      return user;
+    }
   }
 
-  runtime.registerMessageHandler(async ({ agentName, content, action }: any) => {
-    console.log(chalk.green(`${agentName}: ${content}${action ? ` (${action})` : ""}`));
-    resetLoop();
-  });
+// Main application logic
+// Main application logic
+async function startApplication(_supabase?: any) {
+    console.log(chalk.green('Starting application...'));
 
-  agentActions.forEach((action) => {
-    // console.log('action', action)
-    runtime.registerActionHandler(action);
-  });
+    // Assuming session information is stored in the .cjrc file
+    const userData = JSON.parse(fs.readFileSync(configFile).toString());
+    const session = userData?.session;
+    console.log('session.access_token', session.access_token)
+    const supabase = _supabase ?? getSupabase(session.access_token);
+    let user = null as any;
+    if (session) {
+        // Get user information or perform any other session-related initialization here
+        console.log(chalk.blue('Fetching user information...'));
+        // Placeholder for actual function to fetch user details
+        user = await getMe(session);
+    }
 
-  if (runtime.debugMode) {
-    console.log(chalk.yellow(`Actions registered: ${runtime.getActions().map((a) => a.name).join(", ")}`));
-  }
-
-  // Create readline interface
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    prompt: "",
-  });
-
-  const { start: startLoop, reset: resetLoop, registerHandler } = initialize();
-
-  // Function to simulate agent's response
-  const respond = async (content: any) => {
-    resetLoop(); // reset the update interval early to prevent async update race
-    await onMessage({
-      name: userName,
-      content,
-      senderId: userUUID,
-      agentId: agentUUID,
-      eventType: "message",
-      userIds: [userUUID, agentUUID],
-      agentName,
-      data,
-      room_id,
-    }, runtime);
-    resetLoop(); // reset again
-
-    rl.prompt(true);
-  };
-
-  // check for keypresses
-  // Ensure the stdin is in the correct mode to capture keypresses
-  // process.stdin.setRawMode(true);
-  process.stdin.resume();
-
-  // Emit keypress events for the stdin stream
-  readline.emitKeypressEvents(process.stdin);
-
-  process.stdin.on("keypress", () => {
-    resetLoop();
-  });
-
-  rl.on("line", (input) => {
-    respond(input);
-    resetLoop();
-    rl.prompt(true);
-  }).on("SIGINT", () => {
-    rl.close();
-  });
-
-  // Initial prompt
-  rl.prompt(true);
-
-  registerHandler(async () => {
-    resetLoop();
-    await onMessage(
-      {
-        name: userName,
-        senderId: userUUID,
+    const runtime = new AgentRuntime({
+        debugMode: DEBUG,
+        userId: userUUID,
         agentId: agentUUID,
-        eventType: "update",
-        userIds: [userUUID, agentUUID],
-        agentName,
-        data,
-        room_id,
-      },
-      runtime,
-    );
-    // Save the current line and cursor position
-    const currentLine = rl.line;
-    const cursorPosition = rl.cursor;
+        serverUrl: SERVER_URL,
+        supabase,
+        token: user?.access_token,
+    });
 
-    // Clear the entire line
-    readline.clearLine(process.stdout, 0);
-    readline.cursorTo(process.stdout, 0);
+    const agentInitObject = initialize();
+    const { reset: resetLoop } = agentInitObject;
 
-    // Restore the user's input
-    process.stdout.write(currentLine);
-    readline.cursorTo(process.stdout, cursorPosition);
-    resetLoop();
-  });
+    // Fetch room_id and initial goals setup
+    const room_id = await setupRoomAndGoals(supabase, runtime);
 
-  startLoop(updateInterval);
+    // Register message handler
+    runtime.registerMessageHandler(async ({ agentName, content, action }: any) => {
+        console.log(chalk.green(`${agentName}: ${content}${action ? ` (${action})` : ""}`));
+        resetLoop();
+    });
 
-  // send initial message
-  await onMessage(
-    {
-      name: userName,
-      senderId: userUUID,
-      agentId: agentUUID,
-      eventType: "start",
-      userIds: [userUUID, agentUUID],
-      agentName,
-      data,
-      room_id,
-    },
-    runtime,
-  );
-  resetLoop();
+    // Register action handlers
+    agentActions.forEach((action) => {
+        runtime.registerActionHandler(action);
+    });
+
+    if (runtime.debugMode) {
+        console.log(chalk.yellow(`Actions registered: ${runtime.getActions().map((a) => a.name).join(", ")}`));
+    }
+
+    // Create readline interface and message loop
+    setupReadlineAndMessageLoop(runtime, room_id, agentInitObject);
 }
 
-start();
+// Function to fetch room_id and initial goals
+async function setupRoomAndGoals(supabase: any, runtime: AgentRuntime) {
+    
+    const { data, error } = await supabase.from("relationships").select("*")
+        .or(`user_a.eq.${userUUID},user_b.eq.${agentUUID},user_a.eq.${agentUUID},user_b.eq.${userUUID}`)
+        .single();
+
+    if (error) {
+        console.error(chalk.red(`Error fetching room_id: ${JSON.stringify(error)}`));
+        throw error; // or handle this error appropriately
+    }
+
+    const room_id = data?.room_id;
+
+    const goals = await getGoals({
+        supabase: runtime.supabase,
+        userIds: [userUUID, agentUUID],
+    });
+
+    if (goals.length === 0) {
+        console.log(chalk.blue("Creating initial goal..."));
+        await createGoal({
+            supabase: runtime.supabase,
+            userIds: [userUUID, agentUUID],
+            userId: agentUUID,
+            goal: defaultGoal,
+        });
+    }
+
+    return room_id;
+}
+
+// Function to setup readline interface and message loop
+function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any, agentInitObject: { start: any; reset: any; registerHandler: any; }) {
+    const { start: startLoop, reset: resetLoop, registerHandler } = agentInitObject;
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        prompt: "",
+    });
+
+    // Function to simulate agent's response
+    const respond = async (content: string) => {
+        resetLoop(); // reset the update interval early to prevent async update race
+        await onMessage({
+            name: userName,
+            content,
+            senderId: userUUID,
+            agentId: agentUUID,
+            eventType: "message",
+            userIds: [userUUID, agentUUID],
+            agentName,
+            data: {}, // Placeholder, replace with actual data if needed
+            room_id,
+        }, runtime);
+        resetLoop(); // reset again
+
+        rl.prompt(true);
+    };
+
+    process.stdin.resume();
+    readline.emitKeypressEvents(process.stdin);
+
+    process.stdin.on("keypress", () => {
+        resetLoop();
+    });
+
+    rl.on("line", (input) => {
+        respond(input);
+        resetLoop();
+        rl.prompt(true);
+    }).on("SIGINT", () => {
+        rl.close();
+    });
+
+    // Initial prompt
+    rl.prompt(true);
+
+    registerHandler(async () => {
+        resetLoop();
+        await onMessage(
+            {
+                name: userName,
+                senderId: userUUID,
+                agentId: agentUUID,
+                eventType: "update",
+                userIds: [userUUID, agentUUID],
+                agentName,
+                data: {}, // Placeholder, replace with actual data if needed
+                room_id,
+            },
+            runtime,
+        );
+        // Clear and restore the current line if needed
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
+        resetLoop();
+    });
+
+    startLoop(updateInterval);
+}
+
+// Function to handle user login or signup
+async function handleUserInteraction() {
+    if (!fs.existsSync(configFile)) {
+        console.log(chalk.yellow('No configuration file found. Please log in or sign up.'));
+        const { action } = await inquirer.prompt([{
+            type: 'list',
+            name: 'action',
+            message: 'Do you want to login or signup?',
+            choices: ['Login', 'Signup']
+        }]);
+
+        if (action === 'Login') {
+            await loginUser();
+        } else if (action === 'Signup') {
+            await signupUser();
+        }
+    } else {
+        console.log(chalk.green('Configuration file found. You are already logged in.'));
+        await startApplication(); // Start the application if already logged in
+    }
+}
+
+// Function to log in the user
+async function loginUser() {
+    const credentials = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'email',
+            message: 'Enter your email:',
+            validate: (input: string | string[]) => input.includes('@') ? true : 'Please enter a valid email address.'
+        },
+        {
+            type: 'password',
+            name: 'password',
+            message: 'Enter your password:',
+            mask: '*'
+        }
+    ]);
+
+    const supabase = getSupabase();
+
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: credentials.email,
+            password: credentials.password,
+        });
+
+        console.log('data', data)
+
+        if (error) throw error;
+
+        fs.writeFileSync(configFile, JSON.stringify({ session: data.session }));
+        console.log(chalk.green('Login successful! Configuration saved.'));
+        await startApplication(supabase); // Start the application after login
+    } catch (error: any) {
+        console.error(chalk.red(`Login failed: ${error.message}`));
+    }
+}
+
+// Function to sign up the user
+async function signupUser() {
+    const credentials = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'email',
+            message: 'Enter your email:',
+            validate: (input: string | string[]) => input.includes('@') ? true : 'Please enter a valid email address.'
+        },
+        {
+            type: 'password',
+            name: 'password',
+            message: 'Enter your password:',
+            mask: '*'
+        }
+    ]);
+
+    const supabase = getSupabase();
+
+    try {
+        const { data, error } = await supabase.auth.signUp({
+            email: credentials.email,
+            password: credentials.password,
+        });
+
+        if (error) throw error;
+
+        fs.writeFileSync(configFile, JSON.stringify({ session: data.session }));
+        console.log(chalk.green('Signup successful! Configuration saved.'));
+        await startApplication(); // Start the application after signup
+    } catch (error: any) {
+        console.error(chalk.red(`Signup failed: ${error.message}`));
+    }
+}
+
+handleUserInteraction();
