@@ -16,7 +16,6 @@
     "wrangler": "^3.0.0"
   },
   "dependencies": {
-    "@cloudflare/ai": "1.0.36",
     "@supabase/supabase-js": "^2.39.3",
     "@tsndr/cloudflare-worker-jwt": "^2.2.1"
   }
