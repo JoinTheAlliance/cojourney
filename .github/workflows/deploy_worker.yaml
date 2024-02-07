@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - uses: actions/checkout@v3
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
