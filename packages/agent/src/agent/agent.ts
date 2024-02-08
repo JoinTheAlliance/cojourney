@@ -40,43 +40,6 @@ export const constants = {
 
 export const agentActions = [...defaultActions, ...customActions]
 
-export const initialize = () => {
-  let timeout: NodeJS.Timeout | null = null
-  let updateInterval = 10000
-  const updateHandlers: any[] = []
-
-  function callTimeout() {
-    clearTimeout(timeout as NodeJS.Timeout)
-    timeout = setTimeout(async () => {
-      clearTimeout(timeout as NodeJS.Timeout)
-      await updateHandlers.forEach((handler) => handler())
-      callTimeout()
-    }, updateInterval)
-  }
-
-  const start = (interval: number) => {
-    updateInterval = interval
-    callTimeout()
-  }
-
-  const reset = () => {
-    if (timeout) {
-      // clear timeout
-      callTimeout()
-    }
-  }
-
-  const registerHandler = (handler: any) => {
-    updateHandlers.push(handler)
-  }
-
-  return {
-    start,
-    reset,
-    registerHandler,
-  }
-}
-
 // handle all messages - main entry point for the agent
 export const onMessage = async (message: any, runtime: any) => {
   const { content: senderContent } = message
@@ -142,8 +105,8 @@ export const onMessage = async (message: any, runtime: any) => {
 
     const recentMessages = formatMessages({
       actors: actorsData,
-      messages: recentMessagesData.map((memory: { toJSON: () => any }) => {
-        const newMemory = memory.toJSON()
+      messages: recentMessagesData.map((memory: Memory) => {
+        const newMemory = {...memory}
         delete newMemory.embedding
         return newMemory
       }),
@@ -320,9 +283,7 @@ export const onMessage = async (message: any, runtime: any) => {
    * @TODO - Rework moon's factual json reflection system (rolodex)
    */
   async function _reflect(responseData: { content: any; action: any }) {
-    const totalMessages = await runtime.messageManager.countMemoriesByUserIds({
-      userIds,
-    })
+    const totalMessages = await runtime.messageManager.countMemoriesByUserIds(userIds)
 
     const modulo = Math.round(runtime.getRecentMessageCount() - 2)
 
@@ -417,17 +378,17 @@ export const onMessage = async (message: any, runtime: any) => {
       }
       claim.claim = claim.claim.trim()
       if (claim.claim.length > 0) {
-        const reflectionMemory = await runtime.reflectionManager.bakeMemory(
-          new Memory({
+        const reflectionMemory = await runtime.reflectionManager.addEmbeddingToMemory(
+          {
             user_ids: userIds,
             user_id: agentId,
             content: claim.claim,
             room_id,
-          })
+          }
         )
 
-        await runtime.reflectionManager.upsertRawMemory(
-          reflectionMemory.toJSON()
+        await runtime.reflectionManager.createMemory(
+          reflectionMemory
         )
       } else {
         console.warn('Empty reflection, skipping')
@@ -444,30 +405,25 @@ export const onMessage = async (message: any, runtime: any) => {
     let _senderContent = senderContent?.trim()
     // first, store the sender memory if it exists
     if (eventType === 'message' && _senderContent) {
-      const senderMemory = new Memory({
+      await runtime.messageManager.createMemory({
         user_ids: userIds,
         user_id: senderId,
-        // TODO: handle messages on actions, for example in the user interface
         content: { content: _senderContent, action: senderAction },
         room_id,
+        embedding: embeddingZeroVector
       })
-      senderMemory.embedding = embeddingZeroVector
-
-      await runtime.messageManager.upsertRawMemory(senderMemory.toJSON())
     }
 
     responseData.content = responseData.content?.trim()
     if (responseData.content) {
-      const responseMemory = new Memory({
+
+      await runtime.messageManager.createMemory({
         user_ids: userIds,
         user_id: agentId,
         content: responseData,
         room_id,
+        embedding: embeddingZeroVector
       })
-
-      responseMemory.embedding = embeddingZeroVector
-
-      await runtime.messageManager.upsertRawMemory(responseMemory.toJSON())
     } else {
       console.warn('Empty response, skipping')
     }

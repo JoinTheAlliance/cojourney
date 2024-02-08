@@ -1,6 +1,6 @@
 import {parseJSONObjectFromText} from '../utils'
 import {composeContext} from '../../lib/context'
-import { Memory, getRelationship } from '../../lib'
+import { getRelationship } from '../../lib'
 
 const template = `You are writing a profile for {{senderName}} based on their existing profile and ongoing conversations.
 
@@ -78,14 +78,14 @@ const handler = async (_message: any, state: any, runtime: any) => {
     // find the room_id in 'relationships' where user_a is the agent and user_b is the user, OR vice versa
     const relationshipRecord = await getRelationship({ supabase: runtime.supabase, userA, userB });
 
-    const descriptionMemory = new Memory({
+    const descriptionMemory = await runtime.descriptionManager.addEmbeddingToMemory({
       user_ids: [state.agentId, userRecord.id],
       user_id: state.agentId,
       content: description,
       room_id: relationshipRecord.room_id,
     })
 
-    await runtime.descriptionManager.upsertRawMemory(descriptionMemory);
+    await runtime.descriptionManager.createMemory(descriptionMemory);
   } else if (runtime.debugMode) {
     console.log('Could not parse response')
   }

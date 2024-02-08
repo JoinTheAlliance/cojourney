@@ -2,6 +2,9 @@ export default {
   transform: {},
   testEnvironment: 'node',
   rootDir: '__tests__',
+  testMatch: [
+    "**/*.test.js"
+  ],
   globals: {
     __DEV__: true,
     __TEST__: true,

@@ -1,11 +1,11 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { MemoryManager } from "./memory";
-
+import axios from "axios";
 // create a typescrip tinterface for opts
-export interface AgentRuntimeOpts {
+export type AgentRuntimeOpts = {
   recentMessageCount?: number;
-  token?: string;
-  supabase?: any;
+  token: string;
+  supabase: SupabaseClient;
   debugMode?: boolean;
   serverUrl?: string;
 }
@@ -30,7 +30,7 @@ export class AgentRuntime {
   messageHandlers: any[];
   actionHandlers: any[];
   
-  constructor(opts: AgentRuntimeOpts = {}) {
+  constructor(opts: AgentRuntimeOpts) {
     this.#recentMessageCount = opts.recentMessageCount || this.#recentMessageCount;
     this.debugMode = opts.debugMode || false;
     this.supabase = opts.supabase;
@@ -39,7 +39,7 @@ export class AgentRuntime {
       console.warn('No serverUrl provided, defaulting to localhost');
     }
 
-    this.token = opts.token ?? this.supabase.auth['headers']?.['Authorization']?.replace(/^Bearer\s+/i, '');
+    this.token = opts.token;
     
     this.messageManager = new MemoryManager({
       runtime: this,
@@ -88,13 +88,16 @@ export class AgentRuntime {
   }
 
   async completion({ context = "", stop = [], model = "gpt-3.5-turbo-0125", frequency_penalty = 0.0, presence_penalty = 0.0 }) {
+    console.log('this.token', this.token)
     const requestOptions = {
-      method: "POST",
+      method: "post",
+      url: `${this.serverUrl}/api/ai/chat/completions`,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.token}`,
       },
-      body: JSON.stringify({
+      credentials: true,
+      data: {
         stop,
         model,
         frequency_penalty,
@@ -105,36 +108,22 @@ export class AgentRuntime {
             content: context,
           },
         ],
-      }),
+      },
     };
 
-    const response = await fetch(
-      `${this.serverUrl}/api/ai/chat/completions`,
-      requestOptions,
-    );
-
     try {
-      // check if error
-
-      if (response.status !== 200) {
-        // console.log(response.statusText);
-        // console.log(response.status);
-        console.log(await response.text());
-        throw new Error(
-          'OpenAI API Error: ' + response.status + ' ' + response.statusText
-        );
-      }
+      const response = await axios(requestOptions);
 
       // if response has an error
-      if (!response.ok) {
-        throw new Error("Error in response: " + response.statusText);
+      if (response.status !== 200) {
+        throw new Error("OpenAI API Error: " + response.status + ' ' + response.statusText);
       }
 
-      const body = await response.json();
+      const body = response.data;
 
       const content = body.choices?.[0]?.message?.content;
       if (!content) {
-        throw new Error("No content in response", body);
+        throw new Error("No content in response");
       }
       return content;
     } catch (error) {
@@ -144,39 +133,29 @@ export class AgentRuntime {
   
   async embed(input: string) {
     const embeddingModel = `text-embedding-3-small`;
-    // console.log('embed ai', {input});
     const requestOptions = {
-      method: 'POST',
+      method: 'post',
+      url: `${this.serverUrl}/api/ai/embeddings`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.token}`,
-        // Authorization: "Bearer " + String(OPENAI_API_KEY),
       },
-      body: JSON.stringify({
+      credentials: true,
+      data: {
         input,
         model: embeddingModel,
         dimensions: 768,
-      }),
+      },
     };
     try {
-      const response = await fetch(
-        `${this.serverUrl}/api/ai/embeddings`,
-        requestOptions
-      );
+      const response = await axios(requestOptions);
       if (response.status !== 200) {
-        // console.log(response.statusText);
-        // console.log(response.status);
-        console.log(await response.text());
-        throw new Error(
-          'OpenAI API Error: ' + response.status + ' ' + response.statusText
-        );
+        throw new Error('OpenAI API Error: ' + response.status + ' ' + response.statusText);
       }
 
-      const data = await response.json();
+      const data = response.data;
       return data?.data?.[0].embedding;
     } catch (e) {
-      console.warn('OpenAI API Error', e);
-      // return "returning from error";
       throw e;
     }
   }

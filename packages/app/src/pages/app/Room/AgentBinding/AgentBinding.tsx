@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   AgentRuntime,
-  initialize,
   onMessage,
   agentActions,
   getGoals,
@@ -15,7 +14,6 @@ const agentId = "00000000-0000-0000-0000-000000000000";
 const userName = "User"; // TODO: get from user profile
 const agentName = "CJ";
 const debugMode = false;
-const updateInterval = 10000;
 
 const defaultGoal = {
   name: "First Time User Experience",
@@ -87,11 +85,11 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
     
     async function startAgent(): Promise<void> {
       if(agentRuntime) return;
-      const { data: { user } } = await supabase.auth.getUser() as any;
+      const { data: { session } } = await supabase.auth.getSession() as any;
       const runtime = new AgentRuntime({
         debugMode,
         supabase,
-        token: user.access_token,
+        token: session.access_token,
         serverUrl: import.meta.env.VITE_SERVER_URL,
       });
       setAgentRuntime(runtime);
@@ -119,18 +117,12 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
           goal: defaultGoal,
         });
       }
-      const {
-        start: startLoop,
-        reset: resetLoop,
-        registerHandler,
-      } = initialize();
 
       runtime.registerMessageHandler(
         async ({ agentName: _agentName, content, action }: any) => {
           console.log(
               `${_agentName}: ${content}${action ? ` (${action})` : ""}`,
           );
-          resetLoop();
         },
       );
 
@@ -149,8 +141,9 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
       }
 
       // Function to simulate agent's response
-      setInputHandler(async (content: any) => {
-        resetLoop(); // reset the update interval early to prevent async update race
+      setInputHandler({
+        send: async (content: any) => {
+          console.log('onMessage handling')
         await onMessage(
           {
             name: userName,
@@ -165,26 +158,8 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
           },
           runtime,
         );
-        // resetLoop(); // reset again
-      });
-
-      registerHandler(async () => {
-        await onMessage(
-          {
-            name: userName,
-            senderId: userId,
-            agentId,
-            eventType: "update",
-            userIds: [userId, agentId],
-            agentName,
-            data,
-            room_id,
-          },
-          runtime,
-        );
-      });
-
-      startLoop(updateInterval);
+      }
+    });
       return undefined;
     }
     startAgent();

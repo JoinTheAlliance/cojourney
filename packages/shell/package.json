@@ -28,7 +28,7 @@
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
-    "dev": "node --no-warnings shell.mjs",
+    "dev": "npm run build && node --no-warnings shell.mjs",
     "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "lint": "eslint --ext .ts --ext .js .",

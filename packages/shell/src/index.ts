@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import inquirer from 'inquirer';
 import chalk from "chalk";
 import readline from "readline";
-import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions, getRelationship } from "@cojourney/agent";
+import { AgentRuntime, onMessage, getGoals, createGoal, agentActions, getRelationship } from "@cojourney/agent";
 import { defaultGoal } from "./defaultGoal";
 
 dotenv.config();
@@ -23,7 +23,6 @@ const userName = "User";
 const userUUID = "3e71c83f-4252-42dc-8983-61d58095e821";
 const agentUUID = "00000000-0000-0000-0000-000000000000";
 const agentName = "CJ";
-const updateInterval = 10000;
 
 // Setup environment variables
 const __filename = fileURLToPath(import.meta.url);
@@ -75,23 +74,20 @@ async function startApplication() {
     const userData = JSON.parse(fs.readFileSync(configFile).toString());
     const session = userData?.session;
     const supabase = getSupabase(session?.access_token);
-    let user = null as any;
-    if (session) {
-        // Get user information or perform any other session-related initialization here
-        console.log(chalk.blue('Fetching user information...'));
-        // Placeholder for actual function to fetch user details
-        user = await getMe(session);
-    }
+    // let user = null as any;
+    // if (session) {
+    //     // Get user information or perform any other session-related initialization here
+    //     console.log(chalk.blue('Fetching user information...'));
+    //     // Placeholder for actual function to fetch user details
+    //     user = await getMe(session);
+    // }
 
     const runtime = new AgentRuntime({
         debugMode: DEBUG,
         serverUrl: SERVER_URL,
         supabase,
-        token: user?.access_token,
+        token: session?.access_token,
     });
-
-    const agentInitObject = initialize();
-    const { reset: resetLoop } = agentInitObject;
 
     // Fetch room_id and initial goals setup
     const room_id = await setupRoomAndGoals(supabase, runtime);
@@ -99,7 +95,7 @@ async function startApplication() {
     // Register message handler
     runtime.registerMessageHandler(async ({ agentName, content, action }: any) => {
         console.log(chalk.green(`${agentName}: ${content}${action ? ` (${action})` : ""}`));
-        resetLoop();
+
     });
 
     // Register action handlers
@@ -112,7 +108,7 @@ async function startApplication() {
     }
 
     // Create readline interface and message loop
-    setupReadlineAndMessageLoop(runtime, room_id, agentInitObject);
+    setupReadlineAndMessageLoop(runtime, room_id);
 }
 
 // Function to fetch room_id and initial goals
@@ -141,8 +137,7 @@ async function setupRoomAndGoals(supabase: any, runtime: AgentRuntime) {
 }
 
 // Function to setup readline interface and message loop
-function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any, agentInitObject: { start: any; reset: any; registerHandler: any; }) {
-    const { start: startLoop, reset: resetLoop, registerHandler } = agentInitObject;
+function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any) {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -151,7 +146,6 @@ function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any, agentI
 
     // Function to simulate agent's response
     const respond = async (content: string) => {
-        resetLoop(); // reset the update interval early to prevent async update race
         await onMessage({
             name: userName,
             content,
@@ -163,7 +157,6 @@ function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any, agentI
             data: {}, // Placeholder, replace with actual data if needed
             room_id,
         }, runtime);
-        resetLoop(); // reset again
 
         rl.prompt(true);
     };
@@ -171,13 +164,8 @@ function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any, agentI
     process.stdin.resume();
     readline.emitKeypressEvents(process.stdin);
 
-    process.stdin.on("keypress", () => {
-        resetLoop();
-    });
-
     rl.on("line", (input) => {
         respond(input);
-        resetLoop();
         rl.prompt(true);
     }).on("SIGINT", () => {
         rl.close();
@@ -185,29 +173,6 @@ function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any, agentI
 
     // Initial prompt
     rl.prompt(true);
-
-    registerHandler(async () => {
-        resetLoop();
-        await onMessage(
-            {
-                name: userName,
-                senderId: userUUID,
-                agentId: agentUUID,
-                eventType: "update",
-                userIds: [userUUID, agentUUID],
-                agentName,
-                data: {}, // Placeholder, replace with actual data if needed
-                room_id,
-            },
-            runtime,
-        );
-        // Clear and restore the current line if needed
-        readline.clearLine(process.stdout, 0);
-        readline.cursorTo(process.stdout, 0);
-        resetLoop();
-    });
-
-    startLoop(updateInterval);
 }
 
 // Function to handle user login or signup
