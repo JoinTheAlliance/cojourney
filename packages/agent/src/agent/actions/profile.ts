@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import {parseJSONObjectFromText} from '../utils'
 import {composeContext} from '../../lib/context'
-import { Memory } from '@/lib'
+import { Memory } from '../../lib'
 
 const template = `You are writing a profile for {{senderName}} based on their existing profile and ongoing conversations.
 

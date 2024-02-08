@@ -120,7 +120,7 @@ export class AgentRuntime {
         ],
       }),
     };
-    console.log('calling completion, the requestOptions is', requestOptions)
+
     const response = await fetch(
       `${this.serverUrl}/api/ai/chat/completions`,
       requestOptions,

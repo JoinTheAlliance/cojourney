@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import inquirer from 'inquirer';
 import chalk from "chalk";
 import readline from "readline";
-import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions } from "@cojourney/agent";
+import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions } from "@cojourney/agent/src/index";
 import { defaultGoal } from "./defaultGoal";
 
 // check for --debug flag in 'node example/terminal --debug'

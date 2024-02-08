@@ -76,33 +76,29 @@ class Server {
           try {
             req.pathname = pathname;
 
-            const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_API_KEY, {
-              auth: {
-                persistSession: false
-              }
-            });
+            // const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_API_KEY, {
+            //   auth: {
+            //     persistSession: false
+            //   }
+            // });
 
-            console.log('auth header: ', req.headers.get('Authorization'))
-
-            const token = req.headers.get('Authorization') &&
-            req.headers.get('Authorization').replace('Bearer ', '');
+            // const token = req.headers.get('Authorization') &&
+            // req.headers.get('Authorization').replace('Bearer ', '');
             
-            if(!token) {
-              return new Response('Unauthorized: No bearer token', { status: 401 });
-            }
+            // const out = await jwt.decode(token)
+            
 
-            const out = await jwt.decode(token)
+            // const userId = out?.payload?.sub || out?.payload?.id || out?.id;
 
-            console.log('out', out)
+            // if(!userId) {
+            //   return new Response('Unauthorized', { status: 401 });
+            // }
 
-            const userId = out?.payload?.sub || out?.payload?.id || out?.id;
+            // console.log('userId', userId)
 
-            if(!userId) {
-              return new Response('Unauthorized', { status: 401 });
-            }
-
-            return await fn({ req, env, match: matchUrl, host: matchHost, userId, supabase });
+            return await fn({ req, env, match: matchUrl, host: matchHost, userId: null, supabase: null });
           } catch (err) {
+            console.log('erro', err)
             return new Response(err, { status: 500 });
           }
         }
@@ -121,7 +117,38 @@ class Server {
 
 const server = new Server();
 
-const headers = [
+const headers = {
+  // 'Access-Control-Allow-Origin': '*',
+  // 'Access-Control-Allow-Methods': '*',
+  // 'Access-Control-Allow-Headers': '*',
+}
+
+server.registerHandler({
+  method: 'OPTIONS',
+  async fn({ req, env }) {
+    return new Response('', {
+      status: 200,
+      headers,
+    }
+    );
+  },
+});
+
+server.registerHandler({
+  regex: /^\/api\/ai\/((?:completions|chat|files|embeddings|images|audio|assistants|threads)(?:\/.*)?)/,
+  async fn({ req, env, match }) {
+    console.log('calling openai', env.OPENAI_API_KEY)
+    const headers = {
+      'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
+    };
+    console.log('headers', headers)
+    let url = 'https://api.openai.com/v1';
+    console.log('url', url)
+    return await proxyPipeApi({ req, match, env, headers, url })
+  },
+});
+
+const defaultHeaders = [
   {
     "key": "Access-Control-Allow-Origin",
     "value": "*"
@@ -132,39 +159,29 @@ const headers = [
   },
   {
     "key": "Access-Control-Allow-Headers",
-    "value": "Authorization, Content-Type"
+    "value": "*"
   },
   {
     "key": "Access-Control-Expose-Headers",
     "value": "*"
+  },
+  {
+    "key": "Access-Control-Allow-Private-Network",
+    "value": "true"
+  },
+  {
+    "key": "Cross-Origin-Opener-Policy",
+    "value": "same-origin"
+  },
+  {
+    "key": "Cross-Origin-Embedder-Policy",
+    "value": "require-corp"
+  },
+  {
+    "key": "Cross-Origin-Resource-Policy",
+    "value": "cross-origin"
   }
 ];
-
-server.registerHandler({
-  method: 'OPTIONS',
-  async fn({ req, env }) {
-    return new Response('', {
-      status: 200, // Ensure this is 200 OK
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      }
-    });
-  },
-});
-
-server.registerHandler({
-  regex: /^\/api\/ai\/((?:completions|chat|files|embeddings|images|audio|assistants|threads)(?:\/.*)?)/,
-  method: 'POST',
-  async fn({ req, env, match }) {
-    const headers = {
-      'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-    };
-    let url = 'https://api.openai.com/v1';
-    return await proxyPipeApi({ req, match, env, headers, url })
-  },
-});
 
 const proxyPipeApi = async ({ req, env, match, url, headers }) => {
   try {
@@ -224,7 +241,7 @@ export default {
 };
 
 function _setHeaders(res) {
-  for (const { key, value } of headers) {
+  for (const { key, value } of defaultHeaders) {
     res.headers.append(key, value);
   }
   return res;

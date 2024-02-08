@@ -13,12 +13,15 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "noUnusedLocals": false,
+    "allowUnusedLabels": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
+      "react": [ "./node_modules/@types/react" ],
       "@/*": ["./src/*"]
     }
   },

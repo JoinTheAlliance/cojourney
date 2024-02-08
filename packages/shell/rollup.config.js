@@ -1,10 +1,7 @@
-import commonjs from '@rollup/plugin-commonjs'
-import resolve from '@rollup/plugin-node-resolve'
 import replace from '@rollup/plugin-replace'
 import typescript from '@rollup/plugin-typescript'
 import {defineConfig} from 'rollup'
 import {terser} from 'rollup-plugin-terser'
-import pkg from './package.json'
 
 /**
  * Flag to indicate build of library
@@ -19,13 +16,13 @@ export default defineConfig([
     ],
     output: [
       {
-        file: pkg.main,
+        file: 'index',
         format: 'cjs',
         sourcemap: true,
         exports: 'auto',
       },
       {
-        file: pkg.module,
+        file: 'index',
         format: 'es',
         sourcemap: true,
       },

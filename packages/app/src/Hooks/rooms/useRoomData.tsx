@@ -26,6 +26,8 @@ const useRoomData = ({ roomId }: Props) => {
         usersTyping: [],
       });
 
+      console.log('getting rooms', roomId)
+
       const { error: roomDataError, data: roomDataReq } = await supabase
         .from("rooms")
         .select(
