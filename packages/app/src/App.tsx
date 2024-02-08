@@ -14,6 +14,7 @@ import Error404 from "./pages/404/Error404";
 import RoomLayout from "./pages/app/Room/index";
 import Root from "./pages/app/root";
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences";
+import TestPage from "./pages/app/TestPage";
 import useGlobalStore from "./store/useGlobalStore";
 
 const supabase = createClient(
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/account",
         element: <UserPreferences />,
+      },
+      {
+        path: "/test",
+        element: <TestPage />,
       },
     ],
   },

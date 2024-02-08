@@ -76,27 +76,31 @@ class Server {
           try {
             req.pathname = pathname;
 
-            // const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_API_KEY, {
-            //   auth: {
-            //     persistSession: false
-            //   }
-            // });
+            const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_API_KEY, {
+              auth: {
+                persistSession: false
+              }
+            });
 
-            // const token = req.headers.get('Authorization') &&
-            // req.headers.get('Authorization').replace('Bearer ', '');
+            const token = req.headers.get('Authorization') &&
+              req.headers.get('Authorization').replace('Bearer ', '');
             
-            // const out = await jwt.decode(token)
+            const out = token && await jwt.decode(token)
             
 
-            // const userId = out?.payload?.sub || out?.payload?.id || out?.id;
+            const userId = out?.payload?.sub || out?.payload?.id || out?.id;
 
             // if(!userId) {
             //   return new Response('Unauthorized', { status: 401 });
             // }
 
-            // console.log('userId', userId)
+            console.log('userId', userId)
 
-            return await fn({ req, env, match: matchUrl, host: matchHost, userId: null, supabase: null });
+            if(!userId) {
+              console.warn("Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.")
+            }
+
+            return await fn({ req, env, match: matchUrl, host: matchHost, userId, supabase });
           } catch (err) {
             console.log('erro', err)
             return new Response(err, { status: 500 });
@@ -118,9 +122,9 @@ class Server {
 const server = new Server();
 
 const headers = {
-  // 'Access-Control-Allow-Origin': '*',
-  // 'Access-Control-Allow-Methods': '*',
-  // 'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': '*',
+  'Access-Control-Allow-Headers': '*',
 }
 
 server.registerHandler({
@@ -137,7 +141,6 @@ server.registerHandler({
 server.registerHandler({
   regex: /^\/api\/ai\/((?:completions|chat|files|embeddings|images|audio|assistants|threads)(?:\/.*)?)/,
   async fn({ req, env, match }) {
-    console.log('calling openai', env.OPENAI_API_KEY)
     const headers = {
       'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
     };
@@ -242,7 +245,9 @@ export default {
 
 function _setHeaders(res) {
   for (const { key, value } of defaultHeaders) {
-    res.headers.append(key, value);
+    // if res.headers doesnt contain, add
+    if (!res.headers.has(key))
+      res.headers.append(key, value);
   }
   return res;
 }
