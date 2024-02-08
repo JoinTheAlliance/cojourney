@@ -25,7 +25,6 @@ export interface AgentRuntimeOpts {
 export class AgentRuntime {
   #recentMessageCount = 8;
   serverUrl = "http://localhost:7998";
-  #state = {};
   token: string | null;
   debugMode: boolean;
   supabase: SupabaseClient;
@@ -74,14 +73,6 @@ export class AgentRuntime {
 
   getRecentMessageCount() {
     return this.#recentMessageCount;
-  }
-
-  writeState(newState: {}) {
-    this.#state = newState;
-  }
-
-  getState() {
-    return this.#state;
   }
 
   async sendMessage(message: any) {

@@ -2,7 +2,6 @@ import chalk from 'chalk'
 import {
   Memory,
   composeContext,
-  createInitialState,
   embeddingZeroVector,
   formatMessageActors,
   formatMessages,
@@ -10,8 +9,8 @@ import {
   getMessageActors,
   getRandomMessageExamples,
 } from '../lib'
-import {defaultActions} from '../lib/actions'
-import {formatGoalsAsString, getGoals} from '../lib/goals'
+import { defaultActions } from '../lib/actions'
+import { formatGoalsAsString, getGoals } from '../lib/goals'
 // import introduce from './actions/introduce'
 import profile from './actions/profile'
 // import objective from './actions/objective'
@@ -22,7 +21,7 @@ import {
   response_generation_template,
   update_generation_template,
 } from './templates'
-import {parseJSONObjectFromText, parseJsonArrayFromText} from './utils'
+import { parseJSONObjectFromText, parseJsonArrayFromText } from './utils'
 
 const customActions = [
   // introduce,
@@ -80,27 +79,123 @@ export const initialize = () => {
 }
 
 // handle all messages - main entry point for the agent
-// eventType is response or update
-// userIds are UUIDs of users, stored in DB
-// content is the user's message
-// supabase is the supabase client
-// messageManager and reflectionManager are all MemoryManagers which handle the database interactions
 export const onMessage = async (message: any, runtime: any) => {
-  const {content: senderContent} = message
-  const {senderId, agentId, eventType, userIds, room_id} = message
+  const { content: senderContent } = message
+  const { senderId, agentId, eventType, userIds, room_id } = message
 
   if (eventType === 'message' && !senderContent) {
     console.warn('Sender content null, skipping')
     return
   }
 
+
+  // if eventType is 'start' then we can skip all this and just update the state and return
+  const { supabase } = runtime
+  const recentMessageCount = runtime.getRecentMessageCount()
+  const recentReflectionsCount = runtime.getRecentMessageCount() / 2
+  const relevantReflectionsCount = runtime.getRecentMessageCount() / 2
+
+  /**
+* The last step of post-event handling, i.e, preparation of context for the next event
+*/
+  async function _composeNextContext() {
+    // Initiate all asynchronous operations in parallel
+    const [actorsData, recentMessagesData, recentReflectionsData, goalsData] =
+      await Promise.all([
+        getMessageActors({ supabase, userIds }),
+        runtime.messageManager.getMemoriesByIds({
+          userIds,
+          count: recentMessageCount,
+        }),
+        runtime.reflectionManager.getMemoriesByIds({
+          userIds,
+          count: recentReflectionsCount,
+        }),
+        getGoals({ supabase, count: 10, onlyInProgress: true, userIds }),
+      ])
+
+    const goals = await formatGoalsAsString({ goals: goalsData })
+
+    let relevantReflectionsData = []
+
+    if (recentReflectionsData.length > recentReflectionsCount - 1) {
+      relevantReflectionsData =
+        await runtime.reflectionManager.searchMemoriesByEmbedding(
+          recentReflectionsData[0].embedding,
+          {
+            userIds,
+            count: relevantReflectionsCount,
+          }
+        )
+      // filter out any entries in relevantReflectionsData that are also in recentReflectionsData
+      relevantReflectionsData = relevantReflectionsData.filter(
+        (reflection: { id: any }) => {
+          return !recentReflectionsData.find(
+            (recentReflection: { id: any }) =>
+              recentReflection.id === reflection.id
+          )
+        }
+      )
+    }
+
+    // Process fetched data
+    const actors = formatMessageActors({ actors: actorsData })
+
+    const recentMessages = formatMessages({
+      actors: actorsData,
+      messages: recentMessagesData.map((memory: { toJSON: () => any }) => {
+        const newMemory = memory.toJSON()
+        delete newMemory.embedding
+        return newMemory
+      }),
+    })
+
+    const recentReflections = formatReflections(recentReflectionsData)
+    const relevantReflections = formatReflections(relevantReflectionsData)
+
+    const senderName = actorsData.find(
+      (actor: { id: any }) => actor.id === senderId
+    ).name
+    const agentName = actorsData.find(
+      (actor: { id: any }) => actor.id === agentId
+    ).name
+
+    return {
+      userIds,
+      agentId,
+      agentName,
+      senderName,
+      actors,
+      goals,
+      recentMessages,
+      recentMessagesData,
+      recentReflections,
+      recentReflectionsData,
+      relevantReflections,
+      actionNames: runtime
+        .getActions()
+        .map((a: { name: any }) => a.name)
+        .join(', '),
+      actions: runtime
+        .getActions()
+        .map(
+          (a: { name: any; description: any; examples: any }) =>
+            `${a.name}: ${a.description}\nExamples:\n ${a.examples}`
+        )
+        .join('\n'),
+      messageExamples: getRandomMessageExamples({ count: 5 }),
+    }
+  }
+
+  const state = await _composeNextContext();
+
   if (
     eventType === 'update' &&
-    runtime.getState().recentMessagesData?.length > 2
+    state.recentMessagesData?.length > 2
   ) {
     // read the last messages
     // if the last 3 messages are from the agent, or the last message from the agent has the WAIT action, then we should skip
-    const currentMessages = runtime.getState().recentMessagesData ?? []
+    const currentMessages = state.recentMessagesData ?? []
     const lastThreeMessages = currentMessages.slice(-3)
     const lastThreeMessagesFromAgent = lastThreeMessages.filter(
       (message: any) => message.user_id === agentId
@@ -123,34 +218,11 @@ export const onMessage = async (message: any, runtime: any) => {
 
   const senderAction = message.action || 'null'
 
-  // if eventType is 'start' then we can skip all this and just update the state and return
-  const {supabase} = runtime
-  const recentMessageCount = runtime.getRecentMessageCount()
-  const recentReflectionsCount = runtime.getRecentMessageCount() / 2
-  const relevantReflectionsCount = runtime.getRecentMessageCount() / 2
-
-  const initialStateOpts = {
-    agentId,
-    supabase,
-    eventType,
-    senderId,
-    senderContent,
-    senderAction,
-    userIds,
-    count: 1,
-  }
-
-  const hasState = Object.keys(runtime.getState()).length > 0
-
   // switch between connect, message update templates
   const template = {
     update: update_generation_template,
     message: response_generation_template,
   }[eventType as string]
-
-  const state = hasState
-    ? {...runtime.getState(), ...initialStateOpts}
-    : await createInitialState(initialStateOpts)
 
   async function _main() {
     // compose the text context for message generation
@@ -225,14 +297,14 @@ export const onMessage = async (message: any, runtime: any) => {
    * Handles the subsequent action execution if the main prompt outputs an action other than WAIT/CONTINUE
    * @TODO - implement process actions
    */
-  async function _processActions(data: {action: any}) {
+  async function _processActions(data: { action: any }) {
     if (!data.action) {
       return
     }
 
     const action = runtime
       .getActions()
-      .find((a: {name: any}) => a.name === data.action)
+      .find((a: { name: any }) => a.name === data.action)
 
     if (!action) {
       return // console.warn('No action found for', data.action)
@@ -254,7 +326,7 @@ export const onMessage = async (message: any, runtime: any) => {
    * Summarizes the last event into a list of JSON entries, utility for the Rolodex feature
    * @TODO - Rework moon's factual json reflection system (rolodex)
    */
-  async function _reflect(responseData: {content: any; action: any}) {
+  async function _reflect(responseData: { content: any; action: any }) {
     const totalMessages = await runtime.messageManager.countMemoriesByUserIds({
       userIds,
     })
@@ -267,13 +339,13 @@ export const onMessage = async (message: any, runtime: any) => {
       return
     }
 
-    const actors = await getMessageActors({supabase, userIds})
+    const actors = await getMessageActors({ supabase, userIds })
 
     const senderName = actors.find(
-      (actor: {id: any}) => actor.id === senderId
+      (actor: { id: any }) => actor.id === senderId
     ).name
     const agentName = actors.find(
-      (actor: {id: any}) => actor.id === agentId
+      (actor: { id: any }) => actor.id === agentId
     ).name
 
     const context = await composeContext({
@@ -285,15 +357,15 @@ export const onMessage = async (message: any, runtime: any) => {
         agentName,
         responderContent: responseData.content,
         responderAction: responseData.action,
-        actors: formatMessageActors({actors}),
+        actors: formatMessageActors({ actors }),
         actionNames: runtime
           .getActions()
-          .map((a: {name: any}) => a.name)
+          .map((a: { name: any }) => a.name)
           .join(', '),
         actions: runtime
           .getActions()
           .map(
-            (a: {name: any; description: any}) => `${a.name}: ${a.description}`
+            (a: { name: any; description: any }) => `${a.name}: ${a.description}`
           )
           .join('\n'),
       },
@@ -318,7 +390,7 @@ export const onMessage = async (message: any, runtime: any) => {
 
     // loop 3 times, call runtime.completion, and parse the result, if result is null try again, if result is valid continue
     for (let i = 0; i < 3; i++) {
-      const reflectionText = await runtime.completion({context, stop: []})
+      const reflectionText = await runtime.completion({ context, stop: [] })
       const parsedReflections = parseJsonArrayFromText(reflectionText)
       if (parsedReflections) {
         reflections = parsedReflections
@@ -391,7 +463,7 @@ export const onMessage = async (message: any, runtime: any) => {
         user_ids: userIds,
         user_id: senderId,
         // TODO: handle messages on actions, for example in the user interface
-        content: {content: _senderContent, action: senderAction},
+        content: { content: _senderContent, action: senderAction },
         room_id,
       })
       senderMemory.embedding = embeddingZeroVector
@@ -416,105 +488,10 @@ export const onMessage = async (message: any, runtime: any) => {
     }
   }
 
-  /**
-   * The last step of post-event handling, i.e, preparation of context for the next event
-   */
-  async function _composeNextContext() {
-    // Initiate all asynchronous operations in parallel
-    const [actorsData, recentMessagesData, recentReflectionsData, goalsData] =
-      await Promise.all([
-        getMessageActors({supabase, userIds}),
-        runtime.messageManager.getMemoriesByIds({
-          userIds,
-          count: recentMessageCount,
-        }),
-        runtime.reflectionManager.getMemoriesByIds({
-          userIds,
-          count: recentReflectionsCount,
-        }),
-        getGoals({supabase, count: 10, onlyInProgress: true, userIds}),
-      ])
-
-    const goals = await formatGoalsAsString({goals: goalsData})
-
-    let relevantReflectionsData = []
-
-    if (recentReflectionsData.length > recentReflectionsCount - 1) {
-      relevantReflectionsData =
-        await runtime.reflectionManager.searchMemoriesByEmbedding(
-          recentReflectionsData[0].embedding,
-          {
-            userIds,
-            count: relevantReflectionsCount,
-          }
-        )
-      // filter out any entries in relevantReflectionsData that are also in recentReflectionsData
-      relevantReflectionsData = relevantReflectionsData.filter(
-        (reflection: {id: any}) => {
-          return !recentReflectionsData.find(
-            (recentReflection: {id: any}) =>
-              recentReflection.id === reflection.id
-          )
-        }
-      )
-    }
-
-    // Process fetched data
-    const actors = formatMessageActors({actors: actorsData})
-
-    const recentMessages = formatMessages({
-      actors: actorsData,
-      messages: recentMessagesData.map((memory: {toJSON: () => any}) => {
-        const newMemory = memory.toJSON()
-        delete newMemory.embedding
-        return newMemory
-      }),
-    })
-
-    const recentReflections = formatReflections(recentReflectionsData)
-    const relevantReflections = formatReflections(relevantReflectionsData)
-
-    const senderName = actorsData.find(
-      (actor: {id: any}) => actor.id === senderId
-    ).name
-    const agentName = actorsData.find(
-      (actor: {id: any}) => actor.id === agentId
-    ).name
-
-    return {
-      userIds,
-      agentId,
-      agentName,
-      senderName,
-      actors,
-      goals,
-      recentMessages,
-      recentMessagesData,
-      recentReflections,
-      recentReflectionsData,
-      relevantReflections,
-      actionNames: runtime
-        .getActions()
-        .map((a: {name: any}) => a.name)
-        .join(', '),
-      actions: runtime
-        .getActions()
-        .map(
-          (a: {name: any; description: any; examples: any}) =>
-            `${a.name}: ${a.description}\nExamples:\n ${a.examples}`
-        )
-        .join('\n'),
-      messageExamples: getRandomMessageExamples({count: 5}),
-    }
-  }
-
   if (eventType !== 'start') {
     const data = await _main()
     await _processActions(data)
     await _reflect(data)
     await _storeMemories(data)
   }
-
-  // write out the state for the next call
-  runtime.writeState(await _composeNextContext())
 }

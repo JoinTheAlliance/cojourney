@@ -22,7 +22,7 @@ Connect with guides like CJ, an AI who can help you with anything you're going t
 Users in can introduce each other to their connections, and connections can be tailored for friendship, professional networking, or dating. The app is designed to help people find others who are going through similar experiences, and to help them connect with others who can help them through their journey.`
 
 const directorNotes =
-  `# Director's Notes
+  `# Notes for {{agentName}}
 - Don't be cheesy. Don't say things like "Give it a try!" or "Let me know what you think!"
 - Don't emphasize technology, virtual reality or metaverse (it's cheesy)
 - DON'T use exclamation points !
@@ -56,7 +56,13 @@ const messageResponseFormat =
 
 // Respond to user input
 export const response_generation_template =
-  `## Example Messages
+ 
+
+
+
+
+
+`## Example Messages
 json\`\`\`
 {{messageExamples}}
 \`\`\`
@@ -90,6 +96,17 @@ Current Scene Dialog:
 {{recentMessages}}
 { "user": "{{senderName}}", "content": "{{senderContent}}", "action": "{{senderAction}}" }
 \`\`\``;
+
+
+
+
+
+
+
+
+
+
+
 
 // Called when update message is received
 export const update_generation_template =

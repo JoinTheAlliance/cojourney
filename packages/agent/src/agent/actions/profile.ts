@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import {parseJSONObjectFromText} from '../utils'
 import {composeContext} from '../../lib/context'
-import { Memory } from '../../lib'
+import { Memory, getRelationship } from '../../lib'
 
 const template = `You are writing a profile for {{senderName}} based on their existing profile and ongoing conversations.
 
@@ -77,13 +77,7 @@ const handler = async (_message: any, state: any, runtime: any) => {
     const userB = userRecord.id;
 
     // find the room_id in 'relationships' where user_a is the agent and user_b is the user, OR vice versa
-    const response2 = await runtime.supabase.from("relationships").select("*")
-      .or(`user_a.eq.${userA},user_b.eq.${userB},user_a.eq.${userB},user_b.eq.${userA}`)
-      .single();
-    const { data: relationshipRecord, error: error2 } = response2;
-    if(error2) {
-      return
-    }
+    const relationshipRecord = await getRelationship({ supabase: runtime.supabase, userA, userB });
 
     const descriptionMemory = new Memory({
       user_ids: [state.agentId, userRecord.id],

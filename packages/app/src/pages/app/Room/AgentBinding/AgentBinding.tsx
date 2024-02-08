@@ -6,6 +6,7 @@ import {
   agentActions,
   getGoals,
   createGoal,
+  getRelationship,
 } from "@cojourney/agent";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import useGlobalStore from "../../../../store/useGlobalStore";
@@ -98,17 +99,11 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
       setAgentRuntime(runtime);
 
       // get the room_id where user_id is user_a and agent_id is user_b OR vice versa
-      const { data, error } = await supabase
-        .from("relationships")
-        .select("*")
-        .or(
-          `user_a.eq.${userId},user_b.eq.${agentId},user_a.eq.${agentId},user_b.eq.${userId}`,
-        )
-        .single();
-
-      if (error) {
-        return console.error(new Error(JSON.stringify(error)));
-      }
+      const data = await getRelationship({
+        supabase,
+        userA: userId,
+        userB: agentId,
+      })
 
       // TODO, just get the room id from channel
       const room_id = data?.room_id;

@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import inquirer from 'inquirer';
 import chalk from "chalk";
 import readline from "readline";
-import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions } from "@cojourney/agent";
+import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions, getRelationship } from "@cojourney/agent";
 import { defaultGoal } from "./defaultGoal";
 
 dotenv.config();
@@ -120,16 +120,9 @@ async function startApplication() {
 // Function to fetch room_id and initial goals
 async function setupRoomAndGoals(supabase: any, runtime: AgentRuntime) {
     
-    const { data, error } = await supabase.from("relationships").select("*")
-        .or(`user_a.eq.${userUUID},user_b.eq.${agentUUID},user_a.eq.${agentUUID},user_b.eq.${userUUID}`)
-        .single();
+    const relationship = await getRelationship({ supabase, userA: userUUID, userB: agentUUID });
 
-    if (error) {
-        console.error(chalk.red(`Error fetching room_id: ${JSON.stringify(error)}`));
-        throw error; // or handle this error appropriately
-    }
-
-    const room_id = data?.room_id;
+    const room_id = relationship?.room_id;
 
     const goals = await getGoals({
         supabase: runtime.supabase,
