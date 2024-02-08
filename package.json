@@ -19,9 +19,9 @@
     "@types/react": "^18.2.0"
   },
   "scripts": {
-    "dev": "lerna run dev --ignore @cojourney/app-native --ignore @cojourney/docs --ignore @cojourney/site",
+    "dev": "lerna run dev --scope @cojourney/agent --scope @cojourney/app --scope @cojourney/worker",
     "dev:all": "lerna run dev",
-    "cj": "cd packages/terminal && npm run dev:terminal",
+    "cj": "lerna run build --scope @cojourney/agent --scope @cojourney/shell && cd packages/shell && npm run dev",
     "build": "lerna run build",
     "test": "lerna run test",
     "coverage": "lerna run coverage",

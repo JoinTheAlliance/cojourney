@@ -16,13 +16,13 @@ export default defineConfig([
     ],
     output: [
       {
-        file: 'index',
+        file: 'dist/index.cjs.js',
         format: 'cjs',
         sourcemap: true,
         exports: 'auto',
       },
       {
-        file: 'index',
+        file: 'dist/index.esm.js',
         format: 'es',
         sourcemap: true,
       },
@@ -34,8 +34,7 @@ export default defineConfig([
         __DEV__: `(process.env.NODE_ENV !== 'production')`,
         // see: https://github.com/rollup/plugins/tree/master/packages/replace#preventassignment
         preventAssignment: true,
-      }),
-      isProduction && terser(), // minify, but only in production
+      })
     ].filter(Boolean),
   },
 ])

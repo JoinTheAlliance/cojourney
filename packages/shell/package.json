@@ -15,7 +15,7 @@
     "dist"
   ],
   "bin": {
-    "cojourney": "./terminal.mjs"
+    "cojourney": "./shell.mjs"
   },
   "exports": {
     ".": {
@@ -28,9 +28,7 @@
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
-    "dev": "rollup -c",
-    "dev:watch": "rollup -c -w",
-    "dev:terminal": "npm run build && node --no-warnings terminal.mjs",
+    "dev": "node --no-warnings shell.mjs",
     "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "test": "jest",

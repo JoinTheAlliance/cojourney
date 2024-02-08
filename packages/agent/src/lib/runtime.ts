@@ -138,8 +138,12 @@ export class AgentRuntime {
         );
       }
 
-      const body = await response.json();
+      // if response has an error
+      if (!response.ok) {
+        throw new Error("Error in response: " + response.statusText);
+      }
 
+      const body = await response.json();
 
       const content = body.choices?.[0]?.message?.content;
       if (!content) {

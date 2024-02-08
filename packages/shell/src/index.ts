@@ -8,11 +8,14 @@ import { createClient } from "@supabase/supabase-js";
 import inquirer from 'inquirer';
 import chalk from "chalk";
 import readline from "readline";
-import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions } from "@cojourney/agent/src/index";
+import { AgentRuntime, initialize, onMessage, getGoals, createGoal, agentActions } from "@cojourney/agent";
 import { defaultGoal } from "./defaultGoal";
 
-// check for --debug flag in 'node example/terminal --debug'
+dotenv.config();
+
+// check for --debug flag in 'node example/shell --debug'
 const DEBUG = process.argv.includes("--debug");
+console.log('process.env.SERVER_URL', process.env.SERVER_URL)
 const SERVER_URL = process.env.SERVER_URL || "http://localhost:7998";
 
 // YOU WILL NEED TO REPLACE THIS

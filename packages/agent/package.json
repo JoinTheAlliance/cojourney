@@ -26,7 +26,6 @@
   "sideEffects": false,
   "scripts": {
     "dev": "rollup -c",
-    "dev:watch": "rollup -c -w",
     "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "test": "jest",

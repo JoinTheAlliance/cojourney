@@ -22,7 +22,7 @@ npm run dev
 # API: http://localhost:7998
 ```
 
-Once you've started everything, you can talk to CJ, the default agent, by running the terminal: 
+Once you've started everything, you can talk to CJ, the default agent, by running the shell: 
 ```bash
 npm run cj
 ```
