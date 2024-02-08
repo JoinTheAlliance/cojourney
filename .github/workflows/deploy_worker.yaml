@@ -18,10 +18,10 @@ jobs:
           cache: 'npm'  # This tells the setup-node action to cache npm dependencies
 
       - name: Install dependencies
-        run: npm ci --include=optional
+        run: npm install @nx/nx-linux-x64-gnu && npm ci --include=optional
 
       - uses: actions/checkout@v3
       - name: Deploy
         working-directory: packages/worker  # Specifies the directory where the npm command should be run
         # run npx wrangler publish
-        run: npm install @nx/nx-linux-x64-gnu && CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }} CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} npx wrangler deploy
+        run: CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }} CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} npx wrangler deploy
