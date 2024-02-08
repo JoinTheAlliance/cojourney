@@ -59,5 +59,3 @@ describe('Agent Runtime', () => {
     await _clearMemories();
   });
 });
-
-// test agent start, update, message
