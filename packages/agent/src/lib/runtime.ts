@@ -7,8 +7,6 @@ export interface AgentRuntimeOpts {
   token?: string;
   supabase?: any;
   debugMode?: boolean;
-  userId?: string;
-  agentId?: string;
   serverUrl?: string;
 }
 
@@ -19,8 +17,6 @@ export interface AgentRuntimeOpts {
   * @param {string} opts.token - JWT token
   * @param {object} opts.supabase - Supabase client
   * @param {boolean} opts.debugMode - If true, will log debug messages
-  * @param {string} opts.userId - User ID
-  * @param {string} opts.agentId - Agent ID
  */
 export class AgentRuntime {
   #recentMessageCount = 8;

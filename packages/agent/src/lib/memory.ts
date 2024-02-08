@@ -6,7 +6,7 @@ export const embeddingZeroVector = Array(embeddingDimension).fill(0)
 const defaultMatchThreshold = 75
 const defaultMatchCount = 10
 
-export class Memory extends EventTarget {
+export class Memory {
   embedding?: any[]
   user_ids?: any
   content?: any
@@ -24,8 +24,6 @@ export class Memory extends EventTarget {
     user_ids: any
     room_id: any
   }) {
-    super()
-
     this.embedding = embeddingZeroVector
     this.user_ids = opts?.user_ids ?? []
     this.content = opts?.content ?? ''

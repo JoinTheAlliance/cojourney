@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import {
   parseJSONObjectFromText,
 } from "../utils";
@@ -91,7 +90,7 @@ const handler = async (message: any, state: any, runtime: any) => {
     }
 
   if (runtime.debugMode) {
-    console.log(chalk.yellow(`introduceHandler response: ${response}`));
+    console.log(`introduceHandler response: ${response}`);
   }
 }
 
@@ -103,7 +102,7 @@ const handler = async (message: any, state: any, runtime: any) => {
     });
 
   } else if (runtime.debugMode) {
-      console.log(chalk.red("No connection made, could not parse response"));
+      console.log("No connection made, could not parse response");
     }
 };
 

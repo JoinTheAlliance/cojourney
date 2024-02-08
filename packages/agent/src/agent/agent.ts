@@ -1,4 +1,3 @@
-import chalk from 'chalk'
 import {
   Memory,
   composeContext,
@@ -233,15 +232,11 @@ export const onMessage = async (message: any, runtime: any) => {
 
     if (runtime.debugMode) {
       console.log(
-        chalk.cyan(
           '******************** response context ********************\n'
-        )
       )
-      console.log(chalk.cyan(context))
+      console.log(context)
       console.log(
-        chalk.cyan(
           '\n**********************************************************'
-        )
       )
     }
 
@@ -261,10 +256,8 @@ export const onMessage = async (message: any, runtime: any) => {
       if (!parsedResponse?.user?.includes(state.agentName)) {
         if (runtime.debugMode) {
           console.log(
-            chalk.red(
               'parsed response was the wrong user:',
               parsedResponse.user
-            )
           )
         }
         continue
@@ -281,7 +274,7 @@ export const onMessage = async (message: any, runtime: any) => {
 
     //
     if (runtime.debugMode) {
-      console.log(chalk.yellow(`responseData: ${JSON.stringify(responseData)}`))
+      console.log(`responseData: ${JSON.stringify(responseData)}`)
     }
 
     runtime.sendMessage({
@@ -313,7 +306,7 @@ export const onMessage = async (message: any, runtime: any) => {
     if (!action.handler) {
       if (runtime.debugMode) {
         console.log(
-          chalk.yellow(`No handler found for action ${action.name}, skipping`)
+          `No handler found for action ${action.name}, skipping`
         )
       }
       return
@@ -374,15 +367,11 @@ export const onMessage = async (message: any, runtime: any) => {
 
     if (runtime.debugMode) {
       console.log(
-        chalk.blue(
           '******************** reflection context ********************\n'
-        )
       )
-      console.log(chalk.blue(context))
+      console.log(context)
       console.log(
-        chalk.blue(
           '\n************************************************************'
-        )
       )
     }
 
@@ -400,18 +389,16 @@ export const onMessage = async (message: any, runtime: any) => {
 
     if (!reflections) {
       if (runtime.debugMode) {
-        console.log(chalk.red('No reflection generated'))
+        console.log('No reflection generated')
       }
       return
     }
 
     if (runtime.debugMode) {
       console.log(
-        chalk.blueBright(
           '******************** reflection output ********************\n'
-        )
       )
-      console.log(chalk.blueBright(JSON.stringify(reflections)))
+      console.log(JSON.stringify(reflections))
     }
 
     // break up the reflection into multiple memories
@@ -426,7 +413,7 @@ export const onMessage = async (message: any, runtime: any) => {
         continue
       }
       if (runtime.debugMode) {
-        console.log(chalk.magenta(claim.claim))
+        console.log(claim.claim)
       }
       claim.claim = claim.claim.trim()
       if (claim.claim.length > 0) {
@@ -448,9 +435,7 @@ export const onMessage = async (message: any, runtime: any) => {
     }
     if (runtime.debugMode) {
       console.log(
-        chalk.blueBright(
           '\n***********************************************************'
-        )
       )
     }
   }

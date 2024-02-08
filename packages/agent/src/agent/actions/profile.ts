@@ -1,4 +1,3 @@
-import chalk from 'chalk'
 import {parseJSONObjectFromText} from '../utils'
 import {composeContext} from '../../lib/context'
 import { Memory, getRelationship } from '../../lib'
@@ -58,7 +57,7 @@ const handler = async (_message: any, state: any, runtime: any) => {
     }
 
     if (runtime.debugMode) {
-      console.log(chalk.yellow(`UPDATE_PROFILE response: ${response}`))
+      console.log(`UPDATE_PROFILE response: ${response}`)
     }
   }
 
@@ -88,7 +87,7 @@ const handler = async (_message: any, state: any, runtime: any) => {
 
     await runtime.descriptionManager.upsertRawMemory(descriptionMemory);
   } else if (runtime.debugMode) {
-    console.log(chalk.red('Could not parse response'))
+    console.log('Could not parse response')
   }
 }
 

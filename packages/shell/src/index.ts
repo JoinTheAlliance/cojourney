@@ -85,8 +85,6 @@ async function startApplication() {
 
     const runtime = new AgentRuntime({
         debugMode: DEBUG,
-        userId: userUUID,
-        agentId: agentUUID,
         serverUrl: SERVER_URL,
         supabase,
         token: user?.access_token,

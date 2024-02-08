@@ -90,8 +90,6 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
       const { data: { user } } = await supabase.auth.getUser() as any;
       const runtime = new AgentRuntime({
         debugMode,
-        userId,
-        agentId,
         supabase,
         token: user.access_token,
         serverUrl: import.meta.env.VITE_SERVER_URL,

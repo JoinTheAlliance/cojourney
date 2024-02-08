@@ -15,7 +15,6 @@ export default defineConfig([
     external: [
       ...Object.keys({
         "@supabase/supabase-js": "^2.39.3",
-        "chalk": "^5.3.0",
         "dotenv": "^16.4.1",
         "ms": "^2.1.3",
         "ts-node": "^10.9.2"
