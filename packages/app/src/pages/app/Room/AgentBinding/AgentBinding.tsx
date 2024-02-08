@@ -64,7 +64,6 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
   const supabase = useSupabaseClient();
   const [lastMessageCount, setLastMessageCount] = useState(0);
   const [lastRoomId, setLastRoomId] = useState("");
-  const [initialized, setInitialized] = useState(false);
   const {
     currentRoom: { messages, roomParticipants },
     user: { uid },
@@ -74,8 +73,6 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
 
   useEffect(() => {
     if (!supabase || !userId) return;
-    if(initialized) return;
-    setInitialized(true);
         // if roomData ID same as lastRoomId
     // and messages length is same as lastMessageCount, return
     if (
@@ -86,16 +83,16 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
     }
     setLastRoomId(roomData?.id);
     setLastMessageCount(messages?.length || 0);
+    
     async function startAgent(): Promise<void> {
       if(agentRuntime) return;
-      console.log("messages", messages);
-      console.log("roomParticipants", roomParticipants);
-
+      const { data: { user } } = await supabase.auth.getUser() as any;
       const runtime = new AgentRuntime({
         debugMode,
         userId,
         agentId,
         supabase,
+        token: user.access_token,
         serverUrl: import.meta.env.VITE_SERVER_URL,
       });
       setAgentRuntime(runtime);

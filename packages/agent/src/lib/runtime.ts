@@ -44,7 +44,7 @@ export class AgentRuntime {
       console.warn('No serverUrl provided, defaulting to localhost');
     }
 
-    this.token = this.supabase.auth['headers']?.['Authorization']?.replace(/^Bearer\s+/i, '');
+    this.token = opts.token ?? this.supabase.auth['headers']?.['Authorization']?.replace(/^Bearer\s+/i, '');
     
     this.messageManager = new MemoryManager({
       runtime: this,
@@ -101,32 +101,46 @@ export class AgentRuntime {
   }
 
   async completion({ context = "", stop = [], model = "gpt-3.5-turbo-0125", frequency_penalty = 0.0, presence_penalty = 0.0 }) {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.token}`,
+      },
+      body: JSON.stringify({
+        stop,
+        model,
+        frequency_penalty,
+        presence_penalty,
+        messages: [
+          {
+            role: "user",
+            content: context,
+          },
+        ],
+      }),
+    };
+    console.log('calling completion, the requestOptions is', requestOptions)
     const response = await fetch(
       `${this.serverUrl}/api/ai/chat/completions`,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
-        body: JSON.stringify({
-          stop,
-          model,
-          frequency_penalty,
-          presence_penalty,
-          messages: [
-            {
-              role: "user",
-              content: context,
-            },
-          ],
-        }),
-      },
+      requestOptions,
     );
 
     try {
+      // check if error
+
+      if (response.status !== 200) {
+        // console.log(response.statusText);
+        // console.log(response.status);
+        console.log(await response.text());
+        throw new Error(
+          'OpenAI API Error: ' + response.status + ' ' + response.statusText
+        );
+      }
+
       const body = await response.json();
+
+
       const content = body.choices?.[0]?.message?.content;
       if (!content) {
         throw new Error("No content in response", body);
