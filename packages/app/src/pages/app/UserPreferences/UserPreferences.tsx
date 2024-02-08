@@ -85,7 +85,6 @@ const UserPreferences = (): JSX.Element => {
       .from("accounts")
       .update({
         name: data.name,
-        id: session?.user.id,
         avatar_url: IMAGE_URL,
       })
       .eq("id", session.user.id);
