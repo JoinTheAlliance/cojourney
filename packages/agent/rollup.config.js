@@ -41,7 +41,7 @@ export default defineConfig([
         // see: https://github.com/rollup/plugins/tree/master/packages/replace#preventassignment
         preventAssignment: true,
       }),
-      isProduction && terser(), // minify, but only in production
+      // isProduction && terser(), // minify, but only in production
     ].filter(Boolean),
   },
 ])

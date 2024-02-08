@@ -41,8 +41,7 @@ const HowItWorks: React.FC = ({}) => {
 			</div>
 
 			<div className="flex items-center justify-center gap-4">
-				<span>Get a Free Demo</span>
-				<span>See Pricing</span>
+				<span>Try It Now</span>
 			</div>
 		</div>
 	);

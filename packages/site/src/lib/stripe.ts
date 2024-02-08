@@ -5,7 +5,7 @@ export const stripe = new Stripe(
     {
         apiVersion: "2023-08-16",
         appInfo: {
-            name: 'ai2saas',
+            name: 'cojourney',
             version: '0.1.0'
         }
     }

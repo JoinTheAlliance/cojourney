@@ -8,8 +8,8 @@ import UserProvider from "@/providers/UserProvider";
 const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "AI2SaaS",
-	description: "Create your own AI SaaS",
+	title: "Cojourney",
+	description: "Real human connection. Powered by AI.",
 };
 
 export default async function RootLayout({

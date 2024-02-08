@@ -6,14 +6,6 @@ import { useState } from "react";
 
 const links = [
 	{
-		label: "Products",
-		href: "/",
-	},
-	{
-		label: "Benefit",
-		href: "/",
-	},
-	{
 		label: "How it Works",
 		href: "/",
 	},
@@ -22,7 +14,7 @@ const links = [
 		href: "/#pricing",
 	},
 	{
-		label: "Company",
+		label: "Developers",
 		href: "/",
 	},
 ];
@@ -50,7 +42,7 @@ const Navbar = () => {
 					title="Company"
 					className="inline-flex items-center">
 					<span className="text-xl font-bold tracking-wide uppercase">
-						LOGO.
+						Cojourney
 					</span>
 				</Link>
 				<ul className="hidden items-center gap-12 lg:flex">
@@ -70,7 +62,7 @@ const Navbar = () => {
 					{!user ? (
 						<>
 							<Link href="/sign-in">Login</Link>
-							<Link href="/">Get Demo</Link>
+							<Link href="/">Sign Up Now</Link>
 						</>
 					) : (
 						<>

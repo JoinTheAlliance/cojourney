@@ -4,18 +4,15 @@ const Header = () => {
 	return (
 		<div className="w-full h-[93vh] flex items-center justify-center flex-col text-center relative overflow-hidden gap-6 pt-[500px]">
 			<h1 className="text-7xl font-bold leading-snug">
-				All your business <br />
-				expenses in one place.
+				Real human connection. <br />
+				Powered by AI.
 			</h1>
 			<p className="text-[#90A3BF] text-xl leading-normal">
-				Your one-stop finance empower platform. <br /> Manage all your business
-				expenses with our supafast app.
+				Cojourney is a new kind of social networking app. <br />
+				Find your people and grow together.
 			</p>
 			<div className="flex items-center justify-center gap-6 mb-[50px]">
-				Get a Free Demo
-				<Link href="/#pricing">
-					See Pricing
-				</Link>
+				Try It Now
 			</div>
 
 			<div className="min-h-[852px] w-[1200px] bg-slate-800 rounded-lg" />
