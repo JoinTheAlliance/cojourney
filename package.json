@@ -26,7 +26,7 @@
     "test": "lerna run test",
     "coverage": "lerna run coverage",
     "types": "lerna run types",
-    "lint": "lerna run lintt",
+    "lint": "lerna run lint",
     "format": "lerna run format"
   },
   "devDependencies": {
