@@ -52,7 +52,10 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 
   return (
     <div>
-      <AgentBinding roomData={roomData} setInputHandler={setInputHandler} />
+      <AgentBinding
+        roomData={roomData}
+        setInputHandler={setInputHandler}
+      />
       <div className={classes.headerContainer}>
         <RoomHeader />
       </div>
@@ -61,7 +64,10 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
       </div>
       {isRoomMember && (
         <div className={classes.textInputContainer}>
-          <MessagesTextInput roomChannel={roomChannel} inputHandler={inputHandler} />
+          <MessagesTextInput
+            roomChannel={roomChannel}
+            inputHandler={inputHandler}
+          />
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { createStyles } from "@mantine/core";
+import { m } from "framer-motion";
 
 const useSideMenuStyles = createStyles((theme) => ({
   wrapper: {
@@ -28,6 +29,9 @@ const useSideMenuStyles = createStyles((theme) => ({
       theme.colorScheme === "dark"
         ? theme.colors.dark[8]
         : theme.colors.gray[0],
+    "@media (max-width: 900px)": {
+      marginTop: "4rem",
+    },
   },
   linkContainer: {
     maxHeight: "calc(100vh - 100px)",

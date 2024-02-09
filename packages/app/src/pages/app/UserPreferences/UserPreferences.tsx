@@ -156,60 +156,60 @@ const UserPreferences = (): JSX.Element => {
         </div>
       </Flex>
       <form onSubmit={onSubmit}>
-      <Divider mb={20} />
-      <Grid>
-        <Grid.Col span={COL_SPAN}>
-          <UploadProfileImage
-            image={image}
-            imageUrl={imageUrl}
-            setImage={setImage}
-            setImageUrl={setImageUrl}
-          />
-        </Grid.Col>
-        <Grid.Col span={COL_SPAN}>
-          <TextInput
-            {...register("name", {
-              required: "Your name is required",
-              minLength: {
-                value: 5,
-                message: "At least 5 letters",
-              },
-            })}
-            description="This is your publicly shown name"
-            error={errors.name?.message}
-            label="Your Name"
-            placeholder="Stephen Smith"
-            withAsterisk
-          />
-        </Grid.Col>
-      </Grid>
-      <Divider
-        mb={10}
-        mt={20}
-      />
-      <Flex justify="flex-end">
-      <Button
-        mr={'auto'}
-        leftIcon={<User />}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          // log out with supabase
-          supabase.auth.signOut();
-        }}
-        variant="white"
-      >
-        Logout
-      </Button>
-        <Button
-          leftIcon={<Save size={16} />}
-          loading={isSavingChanges}
-          type="submit"
-        >
-          Save Changes
-        </Button>
-      </Flex>
-    </form>
+        <Divider mb={20} />
+        <Grid>
+          <Grid.Col span={COL_SPAN}>
+            <UploadProfileImage
+              image={image}
+              imageUrl={imageUrl}
+              setImage={setImage}
+              setImageUrl={setImageUrl}
+            />
+          </Grid.Col>
+          <Grid.Col span={COL_SPAN}>
+            <TextInput
+              {...register("name", {
+                required: "Your name is required",
+                minLength: {
+                  value: 5,
+                  message: "At least 5 letters",
+                },
+              })}
+              description="This is your publicly shown name"
+              error={errors.name?.message}
+              label="Your Name"
+              placeholder="Stephen Smith"
+              withAsterisk
+            />
+          </Grid.Col>
+        </Grid>
+        <Divider
+          mb={10}
+          mt={20}
+        />
+        <Flex justify="flex-end">
+          <Button
+            mr={"auto"}
+            leftIcon={<User />}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // log out with supabase
+              supabase.auth.signOut();
+            }}
+            variant="white"
+          >
+            Logout
+          </Button>
+          <Button
+            leftIcon={<Save size={16} />}
+            loading={isSavingChanges}
+            type="submit"
+          >
+            Save Changes
+          </Button>
+        </Flex>
+      </form>
     </div>
   );
 };

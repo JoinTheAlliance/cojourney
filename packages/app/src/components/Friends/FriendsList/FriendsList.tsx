@@ -5,13 +5,17 @@ import getFriend from "../../../utils/getFriend";
 import UserPopup from "../../UserPopup/UserPopup";
 
 // @ts-ignore
-const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element => {
+const FriendsList = ({
+  friends,
+  user,
+}: {
+  friends: any;
+  user: any;
+}): JSX.Element => {
   const theme = useMantineTheme();
 
   if (friends.length === 0) {
-    return (
-      <p>No friends yet!</p>
-    );
+    return <p>No friends yet!</p>;
   }
 
   return (

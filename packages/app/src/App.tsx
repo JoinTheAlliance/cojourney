@@ -14,7 +14,9 @@ import Error404 from "./pages/404/Error404";
 import RoomLayout from "./pages/app/Room/index";
 import Root from "./pages/app/root";
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences";
+import UserProfile from "./pages/app/UserProfile";
 import useGlobalStore from "./store/useGlobalStore";
+import CJProfile from "./pages/app/CJProfile";
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -38,6 +40,14 @@ const router = createBrowserRouter([
       {
         path: "/account",
         element: <UserPreferences />,
+      },
+      {
+        path: "profile",
+        element: <UserProfile />,
+      },
+      {
+        path: "cjprofile",
+        element: <CJProfile />,
       },
     ],
   },
