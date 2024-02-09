@@ -1,2 +1,2 @@
-export * from './agent/agent'
+export * from './agent'
 export * from './lib'

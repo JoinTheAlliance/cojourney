@@ -1,5 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import jwt from '@tsndr/cloudflare-worker-jwt';
+import { AgentRuntime, onMessage, onUpdate } from "@cojourney/agent/src";
+
+const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
 class Handler {
   method;
@@ -39,7 +42,7 @@ class Server {
     const { pathname, host } = new URL(req.url);
     let handlerFound = false;
 
-    if(req.method === "OPTIONS") {
+    if (req.method === "OPTIONS") {
       return new Response('', {
         status: 204,
         statusText: 'OK',
@@ -71,7 +74,7 @@ class Server {
 
             const userId = out?.payload?.sub || out?.payload?.id || out?.id;
 
-            if(!userId) {
+            if (!userId) {
               return new Response('Unauthorized', { status: 401 });
             }
 
@@ -106,7 +109,7 @@ const headers = {
 }
 
 server.registerHandler({
-  regex: /^\/api\/ai\/((?:completions|chat|files|embeddings|images|audio|assistants|threads)(?:\/.*)?)/,
+  regex: /^\/api\/((?:completions|chat|files|embeddings|images|audio|assistants|threads)(?:\/.*)?)/,
   async fn({ req, env, match }) {
     if (req.method === 'OPTIONS') {
       return
@@ -119,6 +122,128 @@ server.registerHandler({
 
     return await proxyPipeApi({ req, match, env, headers, url })
   },
+});
+
+// register a handler for /agent/message
+server.registerHandler({
+  regex: /^\/api\/agents\/message/,
+  async fn({ req, env, match, userId, supabase }) {
+    if (req.method === 'OPTIONS') {
+      return
+    }
+    console.log('responding')
+    console.log('userId', userId)
+
+    // parse the body from the request
+    const body = await req.json();
+
+    const runtime = new AgentRuntime({
+      debugMode: false,
+      serverUrl: 'https://api.openai.com/v1',
+      supabase,
+      token: env.OPENAI_API_KEY,
+    });
+
+    if(!body.agentId){
+      body.agentId = zeroUuid;
+    }
+
+    if(!body.senderId) {
+      body.senderId = userId;
+    }
+
+    if(!body.userIds) {
+      body.userIds = [body.senderId, body.agentId];
+    }
+    console.log('calling onMessage')
+    try {
+      await onMessage(body, runtime);
+    } catch (error ){
+      console.error('error', error)
+      return new Response(error, { status: 500 });
+    }
+    console.log('done')
+    return new Response('ok', { status: 200 });
+  }
+});
+
+// register a handler for /agents/update
+server.registerHandler({
+  regex: /^\/api\/agents\/update/,
+  async fn({ req, env, match, userId, supabase }) {
+    if (req.method === 'OPTIONS') {
+      return
+    }
+
+    // parse the body from the request
+    const body = await req.json();
+
+    const runtime = new AgentRuntime({
+      debugMode: false,
+      serverUrl: 'https://api.openai.com/v1',
+      supabase,
+      token: env.OPENAI_API_KEY,
+    });
+
+    await onUpdate({...body, senderId: userId}, runtime);
+  }
+});
+
+// register a handler for /agents/update
+server.registerHandler({
+  regex: /^\/api\/agents\/start/,
+  async fn({ req, env, match, userId, supabase }) {
+    if (req.method === 'OPTIONS') {
+      return
+    }
+
+    // parse the body from the request
+    const body = await req.json();
+
+    const runtime = new AgentRuntime({
+      debugMode: false,
+      serverUrl: 'https://api.openai.com/v1',
+      supabase,
+      token: env.OPENAI_API_KEY,
+    });
+
+    // get the room_id where user_id is user_a and agent_id is user_b OR vice versa
+    const data = await getRelationship({
+      supabase,
+      userA: userId,
+      userB: agentId,
+    })
+
+    // TODO, just get the room id from channel
+    const room_id = data?.room_id;
+
+    const goals = await getGoals({
+      supabase: runtime.supabase,
+      userIds: [userId, agentId],
+    });
+
+    if (goals.length === 0) {
+      await createGoal({
+        supabase: runtime.supabase,
+        userIds: [userId, agentId],
+        userId: agentId,
+        goal: defaultGoal,
+      });
+    }
+
+    runtime.registerMessageHandler(
+      async ({ agentName: _agentName, content, action }) => {
+        console.log(
+            `${_agentName}: ${content}${action ? ` (${action})` : ""}`,
+        );
+      },
+    );
+
+    agentActions.forEach((action) => {
+      // console.log('action', action)
+      runtime.registerActionHandler(action);
+    });
+  }
 });
 
 const defaultHeaders = [

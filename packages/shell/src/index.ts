@@ -1,282 +1,294 @@
 // Import necessary modules
-import dotenv from "dotenv";
-import path from 'path';
-import { homedir } from 'os';
-import * as fs from 'fs';
-import { fileURLToPath } from 'url';
-import { createClient } from "@supabase/supabase-js";
-import inquirer from 'inquirer';
-import chalk from "chalk";
-import readline from "readline";
-import { AgentRuntime, onMessage, getGoals, createGoal, agentActions, getRelationship } from "@cojourney/agent";
-import { defaultGoal } from "./defaultGoal";
-
-dotenv.config();
+import dotenv from 'dotenv'
+import path from 'path'
+import {homedir} from 'os'
+import * as fs from 'fs'
+import {fileURLToPath} from 'url'
+import {createClient} from '@supabase/supabase-js'
+import inquirer from 'inquirer'
+import chalk from 'chalk'
+import readline from 'readline'
+dotenv.config()
 
 // check for --debug flag in 'node example/shell --debug'
-const DEBUG = process.argv.includes("--debug");
 console.log('process.env.SERVER_URL', process.env.SERVER_URL)
-const SERVER_URL = process.env.SERVER_URL || "http://localhost:7998";
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost:7998'
 
 // YOU WILL NEED TO REPLACE THIS
-const userName = "User";
-const userUUID = "3e71c83f-4252-42dc-8983-61d58095e821";
-const agentUUID = "00000000-0000-0000-0000-000000000000";
-const agentName = "CJ";
+const agentUUID = '00000000-0000-0000-0000-000000000000'
 
 // Setup environment variables
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '../.env') });
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+dotenv.config({path: path.join(__dirname, '../.env')})
 
 // Define user home directory and config file path
-const userHomeDir = homedir();
-const configFile = path.join(userHomeDir, '.cjrc');
+const userHomeDir = homedir()
+const configFile = path.join(userHomeDir, '.cjrc')
 
 const getSupabase = (access_token?: string) => {
-    const supabaseUrl = process.env.SUPABASE_URL as string
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
-    let options = {}
-  
-    if (access_token) {
-      (options as any).global = {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
+  const supabaseUrl = process.env.SUPABASE_URL as string
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY as string
+  let options = {}
+
+  if (access_token) {
+    ;(options as any).global = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
     }
-  
-    const supabase = createClient(
-      supabaseUrl,
-      supabaseAnonKey,
-      options
-    )
-    return supabase
   }
 
-export const getMe = async (session: { access_token: string | undefined }) => {
-    const { data: { user }, error} = await getSupabase(session?.access_token).auth.getUser()
-    if (error) {
-        await getSupabase(session?.access_token).auth.signOut();
-        console.log('*** error', error)
-      return null;
-    } else {
-      return user;
-    }
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, options)
+  return supabase
+}
+
+export const getMe = async (session: {access_token: string | undefined}) => {
+  const {
+    data: {user},
+    error,
+  } = await getSupabase(session?.access_token).auth.getUser()
+  if (error) {
+    await getSupabase(session?.access_token).auth.signOut()
+    console.log('*** error', error)
+    return null
+  } else {
+    return user
   }
+}
 
 // Main application logic
 // Main application logic
 async function startApplication() {
-    console.log(chalk.green('Starting application...'));
+  console.log(chalk.green('Starting application...'))
 
-    // Assuming session information is stored in the .cjrc file
-    const userData = JSON.parse(fs.readFileSync(configFile).toString());
-    const session = userData?.session;
-    const supabase = getSupabase(session?.access_token);
-    // let user = null as any;
-    // if (session) {
-    //     // Get user information or perform any other session-related initialization here
-    //     console.log(chalk.blue('Fetching user information...'));
-    //     // Placeholder for actual function to fetch user details
-    //     user = await getMe(session);
-    // }
+  // Assuming session information is stored in the .cjrc file
+  const userData = JSON.parse(fs.readFileSync(configFile).toString())
+  const session = userData?.session
+  const supabase = getSupabase(session?.access_token)
 
-    const runtime = new AgentRuntime({
-        debugMode: DEBUG,
-        serverUrl: SERVER_URL,
-        supabase,
-        token: session?.access_token,
-    });
+  const userId = session.user?.id
 
-    // Fetch room_id and initial goals setup
-    const room_id = await setupRoomAndGoals(supabase, runtime);
+  // get all entries from 'rooms' where there are two particants (entries in the partipants table) where the user and agent ids match the participant user_id field
+  // this will require a join between the rooms and participants table
+  const {data, error} = await supabase
+    .from('rooms')
+    .select(
+      `*,
+    relationships(
+      *,
+      userData1:accounts!relationships_user_a_fkey(
+        *
+      ),
+      userData2:accounts!relationships_user_b_fkey(
+        *
+      ),
+      actionUserData:accounts!relationships_user_id_fkey(
+        *
+      )
+    ),
+    participants!inner(
+      *,
+      userData:accounts(
+        *
+      )
+    )
+    `
+    )
+    .filter('participants.user_id', 'eq', userId)
 
-    // Register message handler
-    runtime.registerMessageHandler(async ({ agentName, content, action }: any) => {
-        console.log(chalk.green(`${agentName}: ${content}${action ? ` (${action})` : ""}`));
+  if (error) {
+    console.error('Error fetching room data', error)
+    return
+  }
 
-    });
+  // get the room_id from the data
+  const room_id = data[0].id
 
-    // Register action handlers
-    agentActions.forEach((action) => {
-        runtime.registerActionHandler(action);
-    });
+  // Listen to the 'messages' table for new messages in the specific room
+  const channel = supabase
+    .channel('table-db-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+      },
+      (payload) => {
+        // TODO: should filter by room_id at some point
+        if (!payload.new.room_id || payload.new.room_id !== room_id) return
 
-    if (runtime.debugMode) {
-        console.log(chalk.yellow(`Actions registered: ${runtime.getActions().map((a) => a.name).join(", ")}`));
-    }
+        const {new: newMessage} = payload
+        const {user_id, content} = newMessage
 
-    // Create readline interface and message loop
-    setupReadlineAndMessageLoop(runtime, room_id);
-}
+        // Determine the message sender
+        const color = user_id === userId ? 'blue' : 'green'
+        console.log(
+          chalk[color](
+            `${user_id === userId ? 'You' : 'Agent'}: ${content.content}`
+          )
+        )
+      }
+    )
+    .subscribe()
 
-// Function to fetch room_id and initial goals
-async function setupRoomAndGoals(supabase: any, runtime: AgentRuntime) {
-    
-    const relationship = await getRelationship({ supabase, userA: userUUID, userB: agentUUID });
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: '',
+  })
 
-    const room_id = relationship?.room_id;
+  // Send the user's message
+  const message = async (content: string) => {
+    await fetch(SERVER_URL + '/api/agents/message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + session.access_token,
+      },
+      body: JSON.stringify({
+        content,
+        agentId: agentUUID,
+        room_id,
+      }),
+    })
 
-    const goals = await getGoals({
-        supabase: runtime.supabase,
-        userIds: [userUUID, agentUUID],
-    });
+    rl.prompt(true)
+  }
 
-    if (goals.length === 0) {
-        console.log(chalk.blue("Creating initial goal..."));
-        await createGoal({
-            supabase: runtime.supabase,
-            userIds: [userUUID, agentUUID],
-            userId: agentUUID,
-            goal: defaultGoal,
-        });
-    }
+  console.log(chalk.green('Application started. You can now start chatting.'))
 
-    return room_id;
-}
+  process.stdin.resume()
+  readline.emitKeypressEvents(process.stdin)
 
-// Function to setup readline interface and message loop
-function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any) {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: "",
-    });
+  rl.on('line', (input) => {
+    message(input)
+    rl.prompt(true)
+  }).on('SIGINT', () => {
+    rl.close()
+  })
 
-    // Function to simulate agent's response
-    const respond = async (content: string) => {
-        await onMessage({
-            name: userName,
-            content,
-            senderId: userUUID,
-            agentId: agentUUID,
-            eventType: "message",
-            userIds: [userUUID, agentUUID],
-            agentName,
-            data: {}, // Placeholder, replace with actual data if needed
-            room_id,
-        }, runtime);
+  // Initial prompt
+  rl.prompt(true)
 
-        rl.prompt(true);
-    };
+  // Cleanup on exit
+  const cleanup = () => {
+    channel.unsubscribe()
+    rl.close()
+    process.exit() // Forcefully exits the process
+  }
 
-    process.stdin.resume();
-    readline.emitKeypressEvents(process.stdin);
+  console.log(chalk.yellow('Press Ctrl+C to exit.'))
 
-    rl.on("line", (input) => {
-        respond(input);
-        rl.prompt(true);
-    }).on("SIGINT", () => {
-        rl.close();
-    });
-
-    // Initial prompt
-    rl.prompt(true);
+  process.on('SIGINT', cleanup) // Modified to use the cleanup function
 }
 
 // Function to handle user login or signup
 async function handleUserInteraction() {
-    let user;
+  let user
 
-    if(fs.existsSync(configFile)){
-        // try to read the file as json
-        const userData = JSON.parse(fs.readFileSync(configFile).toString());
-        const session = userData?.session;
-        user = await getMe(session);
+  if (fs.existsSync(configFile)) {
+    // try to read the file as json
+    const userData = JSON.parse(fs.readFileSync(configFile).toString())
+    const session = userData?.session
+    user = await getMe(session)
+  }
+
+  if (!user) {
+    console.log(chalk.yellow('Please log in or sign up.'))
+    const {action} = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'action',
+        message: 'Do you want to login or signup?',
+        choices: ['Login', 'Signup'],
+      },
+    ])
+
+    if (action === 'Login') {
+      await loginUser()
+    } else if (action === 'Signup') {
+      await signupUser()
     }
-    
-    if (!user) {
-        console.log(chalk.yellow('Please log in or sign up.'));
-        const { action } = await inquirer.prompt([{
-            type: 'list',
-            name: 'action',
-            message: 'Do you want to login or signup?',
-            choices: ['Login', 'Signup']
-        }]);
-
-        if (action === 'Login') {
-            await loginUser();
-        } else if (action === 'Signup') {
-            await signupUser();
-        }
-    } else {
-        console.log(chalk.green('Configuration file found. You are already logged in.'));
-        await startApplication(); // Start the application if already logged in
-
-        
-        
-    }
+  } else {
+    console.log(
+      chalk.green('Configuration file found. You are already logged in.')
+    )
+    await startApplication() // Start the application if already logged in
+  }
 }
 
 // Function to log in the user
 async function loginUser() {
-    const credentials = await inquirer.prompt([
-        {
-            type: 'input',
-            name: 'email',
-            message: 'Enter your email:',
-            validate: (input: string | string[]) => input.includes('@') ? true : 'Please enter a valid email address.'
-        },
-        {
-            type: 'password',
-            name: 'password',
-            message: 'Enter your password:',
-            mask: '*'
-        }
-    ]);
+  const credentials = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'email',
+      message: 'Enter your email:',
+      validate: (input: string | string[]) =>
+        input.includes('@') ? true : 'Please enter a valid email address.',
+    },
+    {
+      type: 'password',
+      name: 'password',
+      message: 'Enter your password:',
+      mask: '*',
+    },
+  ])
 
-    const supabase = getSupabase();
+  const supabase = getSupabase()
 
-    try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: credentials.email,
-            password: credentials.password,
-        });
+  try {
+    const {data, error} = await supabase.auth.signInWithPassword({
+      email: credentials.email,
+      password: credentials.password,
+    })
 
-        if (error) throw error;
+    if (error) throw error
 
-        fs.writeFileSync(configFile, JSON.stringify({ session: data.session }));
-        console.log(chalk.green('Login successful! Configuration saved.'));
-        await startApplication(); // Start the application after login
-    } catch (error: any) {
-        console.error(chalk.red(`Login failed: ${error.message}`));
-    }
+    fs.writeFileSync(configFile, JSON.stringify({session: data.session}))
+    console.log(chalk.green('Login successful! Configuration saved.'))
+    await startApplication() // Start the application after login
+  } catch (error: any) {
+    console.error(chalk.red(`Login failed: ${error.message}`))
+  }
 }
 
 // Function to sign up the user
 async function signupUser() {
-    const credentials = await inquirer.prompt([
-        {
-            type: 'input',
-            name: 'email',
-            message: 'Enter your email:',
-            validate: (input: string | string[]) => input.includes('@') ? true : 'Please enter a valid email address.'
-        },
-        {
-            type: 'password',
-            name: 'password',
-            message: 'Enter your password:',
-            mask: '*'
-        }
-    ]);
+  const credentials = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'email',
+      message: 'Enter your email:',
+      validate: (input: string | string[]) =>
+        input.includes('@') ? true : 'Please enter a valid email address.',
+    },
+    {
+      type: 'password',
+      name: 'password',
+      message: 'Enter your password:',
+      mask: '*',
+    },
+  ])
 
-    const supabase = getSupabase();
+  const supabase = getSupabase()
 
-    try {
-        const { data, error } = await supabase.auth.signUp({
-            email: credentials.email,
-            password: credentials.password,
-        });
+  try {
+    const {data, error} = await supabase.auth.signUp({
+      email: credentials.email,
+      password: credentials.password,
+    })
 
-        if (error) throw error;
+    if (error) throw error
 
-        fs.writeFileSync(configFile, JSON.stringify({ session: data.session }));
-        console.log(chalk.green('Signup successful! Configuration saved.'));
-        await startApplication(); // Start the application after signup
-    } catch (error: any) {
-        console.error(chalk.red(`Signup failed: ${error.message}`));
-    }
+    fs.writeFileSync(configFile, JSON.stringify({session: data.session}))
+    console.log(chalk.green('Signup successful! Configuration saved.'))
+    await startApplication() // Start the application after signup
+  } catch (error: any) {
+    console.error(chalk.red(`Signup failed: ${error.message}`))
+  }
 }
 
-handleUserInteraction();
+handleUserInteraction()

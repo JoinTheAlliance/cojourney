@@ -1,21 +1,9 @@
-// # 1. Description generation - test the prompt
-
-// 1. Generate conversation with some specific key details, for example the user has blue eyes.
-// 2. Create a description based on the conversation
-// 3. Check if the description includes key details
-// 4. Check that the descriptoin does NOT include details about other agents
-
-// # 2. Description volition (*when* to create the description)
-
-// 1. Generate several conversations and sections of conversation
-// 2. Evaluate each section and whether agent did or didn't create a description
-// 3. What are the 
-
 // test creating an agent runtime
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { createRuntime } from './createRuntime.js';
+import { createRuntime } from './createRuntime';
+import { UUID } from 'crypto';
 
 // create a UUID of 0s
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
@@ -37,26 +25,32 @@ describe('Agent Runtime', () => {
     const { user, runtime } = await createRuntime();
 
     async function _clearMemories() {
-      await runtime.messageManager.removeAllMemoriesByUserIds([user.id, zeroUuid])
+      await runtime.messageManager.removeAllMemoriesByUserIds([user?.id as UUID, zeroUuid])
+    }
+
+    async function _getRoomId() {
+      // TODO: get the room ID
     }
 
     async function _createMemories() {
-      const bakedMemory = runtime.messageManager.addEmbeddingToMemory({
-        user_id: user.id,
-        user_ids: [user.id, zeroUuid],
+      const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
+        user_id: user?.id as UUID,
+        user_ids: [user?.id as UUID, zeroUuid],
         content: {
           content: 'test memory from user'
-        }
+        },
+        room_id: _getRoomId()
       })
       // create a memory
       await runtime.messageManager.createMemory(bakedMemory);
 
-      const bakedMemory2 = runtime.messageManager.addEmbeddingToMemory({
+      const bakedMemory2 = await runtime.messageManager.addEmbeddingToMemory({
         user_id: zeroUuid,
-        user_ids: [user.id, zeroUuid],
+        user_ids: [user?.id as UUID, zeroUuid],
         content: {
           content: 'test memory from agent'
-        }
+        },
+        room_id: undefined
       })
       // create a memory
       await runtime.messageManager.createMemory(bakedMemory2);

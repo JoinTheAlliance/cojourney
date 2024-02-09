@@ -1,7 +1,8 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { MemoryManager } from "./memory";
-import axios from "axios";
-// create a typescrip tinterface for opts
+import { defaultActions } from "./actions";
+import { defaultEvaluators } from "./evaluators";
+
 export type AgentRuntimeOpts = {
   recentMessageCount?: number;
   token: string;
@@ -24,11 +25,27 @@ export class AgentRuntime {
   token: string | null;
   debugMode: boolean;
   supabase: SupabaseClient;
-  messageManager: MemoryManager;
-  descriptionManager: MemoryManager;
-  reflectionManager: MemoryManager;
-  messageHandlers: any[];
-  actionHandlers: any[];
+  messageManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "messages",
+    },
+  });;
+  descriptionManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "descriptions",
+    },
+  });
+  reflectionManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "reflections",
+    },
+  });
+  messageHandlers: any[] = [];
+  actionHandlers: any[] = []
+  evaluationHandlers: any[] = []
   
   constructor(opts: AgentRuntimeOpts) {
     this.#recentMessageCount = opts.recentMessageCount || this.#recentMessageCount;
@@ -40,31 +57,9 @@ export class AgentRuntime {
     }
 
     this.token = opts.token;
-    
-    this.messageManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "messages",
-      },
-    });
 
-    this.descriptionManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "descriptions",
-      },
-    });
-
-    this.reflectionManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "reflections",
-      },
-    });
-
-    this.messageHandlers = [];
-
-    this.actionHandlers = [];
+    defaultActions.forEach((action) => this.registerActionHandler(action));
+    defaultEvaluators.forEach((evaluator) => this.registerEvaluationHandler(evaluator));
   }
 
   getRecentMessageCount() {
@@ -87,17 +82,22 @@ export class AgentRuntime {
     return [...new Set(this.actionHandlers)];
   }
 
+  registerEvaluationHandler(handler: any) {
+    this.evaluationHandlers.push(handler);
+  }
+
+  getEvaluationHandlers() {
+    return [...new Set(this.evaluationHandlers)];
+  }
+  
   async completion({ context = "", stop = [], model = "gpt-3.5-turbo-0125", frequency_penalty = 0.0, presence_penalty = 0.0 }) {
-    console.log('this.token', this.token)
     const requestOptions = {
-      method: "post",
-      url: `${this.serverUrl}/api/ai/chat/completions`,
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.token}`,
       },
-      credentials: true,
-      data: {
+      body: JSON.stringify({
         stop,
         model,
         frequency_penalty,
@@ -108,18 +108,18 @@ export class AgentRuntime {
             content: context,
           },
         ],
-      },
+      }),
     };
 
     try {
-      const response = await axios(requestOptions);
+      const response = await fetch(`${this.serverUrl}/chat/completions`, requestOptions);
 
       // if response has an error
-      if (response.status !== 200) {
+      if (!response.ok) {
         throw new Error("OpenAI API Error: " + response.status + ' ' + response.statusText);
       }
 
-      const body = response.data;
+      const body = await response.json();
 
       const content = body.choices?.[0]?.message?.content;
       if (!content) {
@@ -127,6 +127,7 @@ export class AgentRuntime {
       }
       return content;
     } catch (error) {
+      console.log('e', error)
       throw new Error(error as any);
     }
   }
@@ -134,28 +135,28 @@ export class AgentRuntime {
   async embed(input: string) {
     const embeddingModel = `text-embedding-3-small`;
     const requestOptions = {
-      method: 'post',
-      url: `${this.serverUrl}/api/ai/embeddings`,
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.token}`,
       },
-      credentials: true,
-      data: {
+      body: JSON.stringify({
         input,
         model: embeddingModel,
         dimensions: 768,
-      },
+      }),
     };
     try {
-      const response = await axios(requestOptions);
-      if (response.status !== 200) {
+      const response = await fetch(`${this.serverUrl}/embeddings`, requestOptions);
+      if (!response.ok) {
         throw new Error('OpenAI API Error: ' + response.status + ' ' + response.statusText);
       }
 
-      const data = response.data;
+      const data = await response.json();
+      console.log('embedding data', data);
       return data?.data?.[0].embedding;
     } catch (e) {
+      console.log('e', e)
       throw e;
     }
   }

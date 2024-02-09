@@ -21,7 +21,7 @@
   "scripts": {
     "dev": "lerna run dev --scope @cojourney/agent --scope @cojourney/app --scope @cojourney/worker",
     "dev:all": "lerna run dev",
-    "cj": "lerna run build --scope @cojourney/agent --scope @cojourney/shell && cd packages/shell && npm run dev",
+    "cj": "cd packages/shell && npm run dev",
     "build": "lerna run build",
     "test": "lerna run test",
     "coverage": "lerna run coverage",

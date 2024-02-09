@@ -26,7 +26,7 @@ const TestPage = (): JSX.Element => {
       <button onClick={async () => 
       {
             const response = await fetch(
-              `http://localhost:7998/api/ai/chat/completions`,
+              `http://localhost:7998/chat/completions`,
               {
                 method: "POST",
                 headers: {

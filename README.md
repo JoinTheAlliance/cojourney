@@ -1,8 +1,12 @@
 # Cojourney
 
-Cojourney is a new kind of social networking and personal connection app.
+<img src="packages/docs/static/img/banner.jpg" alt="Cojourney" width="100%">
 
-More to come, watch this space!
+Cojourney is about making high quality connections with other people. It's a social network that's designed to help you find people who share your interests, and to help you build the right context to enable meaningful relationships.
+
+Cojourney is free and open source. At the core is a simple agent framework, written in typescript and running in a Cloudflare worker. You can access the agent from the web, app or terminal. You can even run your own agents and connect them to the network!
+
+This project is developed in the open, and you can contribute to it. We're looking for people who are passionate about building a better social network, and who are interested in the intersection of technology and human relationships. We build on Discord, here: https://discord.gg/N3XUfWSTTe
 
 ## Installation
 
