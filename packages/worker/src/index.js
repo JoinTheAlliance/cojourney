@@ -229,14 +229,6 @@ server.registerHandler({
       });
     }
 
-    runtime.registerMessageHandler(
-      async ({ agentName: _agentName, content, action }) => {
-        console.log(
-            `${_agentName}: ${content}${action ? ` (${action})` : ""}`,
-        );
-      },
-    );
-
     agentActions.forEach((action) => {
       // console.log('action', action)
       runtime.registerActionHandler(action);

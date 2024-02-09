@@ -3,6 +3,8 @@ import {formatMessageActors, getMessageActors} from '../messages'
 import {composeContext} from '../context'
 import {parseJsonArrayFromText} from '../utils'
 import logger from '../logger'
+import {Action, Actor, Message, State} from '../types'
+import {UUID} from 'crypto'
 
 // Used in the reflection step
 const template = `TASK: FACT SUMMARIZATION ("Reflection")
@@ -13,17 +15,17 @@ These are an examples of the expected output of this task:
 # START OF EXAMPLES
 """
 Example Scene Dialog:
-johan: Just found a rare artifact in the wilds!
-pigloo: Awesome! What does it do?
-johan: It's a rare sword that gives +10 to all stats!
-pigloo: whoah thats insane
-johan: I know right? I'm never going to sell it lol
+Eric: Just found a rare artifact in the wilds!
+Jim: Awesome! What does it do?
+Eric: It's a rare sword that gives +10 to all stats!
+Jim: whoah thats insane
+Eric: I know right? I'm never going to sell it lol
 
 Claims:
 \`\`\`json
 [
-  {claim: 'johan found a rare sword in the wilds that gives +10 to all stats.', type: 'fact', in_bio: false, already_known: false },
-  {claim: 'johan is never going to sell his new rare artifact sword', 'type': 'status', in_bio: false, already_known: false },
+  {claim: 'Eric found a rare sword in the wilds that gives +10 to all stats.', type: 'fact', in_bio: false, already_known: false },
+  {claim: 'Eric is never going to sell his new rare artifact sword', 'type': 'status', in_bio: false, already_known: false },
 ]
 \`\`\`
 """
@@ -118,25 +120,24 @@ INSTRUCTIONS: Extract any claims from the conversation in the scene that are not
  * Summarizes the last event into a list of JSON entries, utility for the Rolodex feature
  * @TODO - Rework moon's factual json reflection system (rolodex)
  */
-async function handler(runtime: AgentRuntime, _message: any, state: any) {
+async function handler(runtime: AgentRuntime, _message: Message, state: State) {
   const {userIds, senderId, agentId, room_id} = state
 
-  const actors = await getMessageActors({supabase: runtime.supabase, userIds})
+  const actors =
+    (await getMessageActors({supabase: runtime.supabase, userIds})) ?? []
 
-  const senderName = actors.find(
-    (actor: {id: any}) => actor.id === senderId
-  ).name
+  const senderName = actors?.find((actor: Actor) => actor.id === senderId)?.name
 
-  const agentName = actors.find((actor: {id: any}) => actor.id === agentId).name
+  const agentName = actors?.find((actor: Actor) => actor.id === agentId)?.name
 
   const actionNames = runtime
     .getActions()
-    .map((a: {name: any}) => a.name)
+    .map((a: Action) => a.name)
     .join(', ')
 
   const actions = runtime
     .getActions()
-    .map((a: {name: any; description: any}) => `${a.name}: ${a.description}`)
+    .map((a: Action) => `${a.name}: ${a.description}`)
     .join('\n')
 
   const context = await composeContext({
@@ -199,7 +200,7 @@ async function handler(runtime: AgentRuntime, _message: any, state: any) {
       const reflectionMemory =
         await runtime.reflectionManager.addEmbeddingToMemory({
           user_ids: userIds,
-          user_id: agentId,
+          user_id: agentId as UUID,
           content: claim.claim,
           room_id,
         })
@@ -213,9 +214,10 @@ async function handler(runtime: AgentRuntime, _message: any, state: any) {
 
 export default {
   name: 'REFLECT',
-  runEvery: 12,
   description:
     'Extract factual information about the people in the conversation, the current events in the world, and anything else that might be important to remember.',
+  condition:
+    'New factual information was revealed in the recent conversation which should be remembered.',
   handler,
   examples: [],
 }

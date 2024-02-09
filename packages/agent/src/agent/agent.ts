@@ -1,18 +1,20 @@
+import { UUID } from 'crypto'
 import { AgentRuntime, composeContext, embeddingZeroVector } from '../lib'
+import logger from '../lib/logger'
+import { composeState } from '../lib/state'
+import { Action, Content, Message, State } from '../lib/types'
+import {
+  parseJSONObjectFromText,
+  shouldSkipMessage,
+} from '../lib/utils'
+import { addCustomActions } from './actions'
 import { addCustomEvaluators, evaluate } from './evaluation'
 import {
   response_generation_template,
   update_generation_template,
 } from './templates'
-import {
-  parseJSONObjectFromText,
-  shouldSkipMessage,
-} from '../lib/utils'
-import { composeState } from '../lib/state'
-import logger from '../lib/logger'
-import { addCustomActions } from './actions'
 
-async function _main(runtime: AgentRuntime, message: any, state: any, template: any) {
+async function _main(runtime: AgentRuntime, message: Message, state: State, template: string) {
   // compose the text context for message generation
   const context = composeContext({
     state,
@@ -70,11 +72,6 @@ async function _main(runtime: AgentRuntime, message: any, state: any, template: 
   }
   if (!responseData) return
 
-  runtime.sendMessage({
-    ...message,
-    content: responseData.content,
-    action: responseData.action,
-  })
   return responseData
 }
 
@@ -83,9 +80,9 @@ async function _main(runtime: AgentRuntime, message: any, state: any, template: 
  */
 async function _processActions(
   runtime: AgentRuntime,
-  _message: any,
-  state: any,
-  data: { action: any }
+  message: Message,
+  state: State,
+  data: { action: string }
 ) {
   if (!data.action) {
     return
@@ -93,7 +90,7 @@ async function _processActions(
 
   const action = runtime
     .getActions()
-    .find((a: { name: any }) => a.name === data.action)
+    .find((a: { name: string }) => a.name === data.action) as Action
 
   if (!action) {
     return // console.warn('No action found for', data.action)
@@ -108,29 +105,29 @@ async function _processActions(
     return
   }
 
-  await action.handler(data, state, runtime)
+  await action.handler(runtime, message, state)
 }
 
 // stores either 1 or 2 memories, depending on whether the sender's content is empty or not
 async function _storeSenderMemory(
   runtime: AgentRuntime,
-  message: any
+  message: Message
 ) {
   const {
     content: senderContent,
     senderId,
-    eventType,
     userIds,
     room_id,
   } = message
 
-  let _senderContent = senderContent?.trim()
+  // TODO: The types here are ugly, log and very this
+  let _senderContent = (((senderContent as Content).content || senderContent) as string)?.trim()
   // first, store the sender memory if it exists
-  if (eventType === 'message' && _senderContent) {
+  if (_senderContent) {
     await runtime.messageManager.createMemory({
-      user_ids: userIds,
-      user_id: senderId,
-      content: { content: _senderContent, action: message.action || 'null' },
+      user_ids: userIds as UUID[],
+      user_id: senderId as UUID,
+      content: { content: _senderContent, action: (message.content as Content)?.action || 'null' },
       room_id,
       embedding: embeddingZeroVector,
     })
@@ -139,9 +136,9 @@ async function _storeSenderMemory(
 
 async function _storeAgentMemory(
   runtime: AgentRuntime,
-  message: any,
-  state: any,
-  responseData: any
+  message: Message,
+  state: State,
+  responseData: Content
 ) {
   const {
     agentId,
@@ -152,8 +149,8 @@ async function _storeAgentMemory(
   responseData.content = responseData.content?.trim()
   if (responseData.content) {
     await runtime.messageManager.createMemory({
-      user_ids: userIds,
-      user_id: agentId,
+      user_ids: userIds as UUID[],
+      user_id: agentId as UUID,
       content: responseData,
       room_id,
       embedding: embeddingZeroVector,
@@ -165,7 +162,7 @@ async function _storeAgentMemory(
 }
 
 // main entry point for the agent
-export const onMessage = async (message: any, runtime: AgentRuntime) => {
+export const onMessage = async (message: Message, runtime: AgentRuntime) => {
   // if runtime.getActions does not include any customActions, add them
   addCustomActions(runtime);
   addCustomEvaluators(runtime);
@@ -179,7 +176,7 @@ export const onMessage = async (message: any, runtime: AgentRuntime) => {
 
   // if userIds is not defined, set it to [senderId, agentId]
   if (!userIds) {
-    userIds = [senderId, agentId]
+    userIds = [senderId as UUID, agentId as UUID]
   }
 
   if (!senderContent) {
@@ -187,7 +184,7 @@ export const onMessage = async (message: any, runtime: AgentRuntime) => {
     return
   }
 
-  const state = await composeState(runtime, userIds, senderId, agentId)
+  const state = await composeState(runtime, message) as State
 
   const data = await _main(runtime, message, state, response_generation_template)
   await _processActions(runtime, message, state, data)
@@ -198,22 +195,20 @@ export const onMessage = async (message: any, runtime: AgentRuntime) => {
 }
 
 // main entry point for the agent
-export const onUpdate = async (message: any, runtime: AgentRuntime) => {
+export const onUpdate = async (message: Message, runtime: AgentRuntime) => {
   // if runtime.getActions does not include any customActions, add them
   addCustomActions(runtime)
 
   const {
-    senderId,
     agentId,
-    userIds,
   } = message
 
-  const state = await composeState(runtime, userIds, senderId, agentId)
+  const state = await composeState(runtime, message)
 
-  if (shouldSkipMessage(state, agentId)) return
+  if (shouldSkipMessage(state, agentId as UUID)) return
 
-  const data = await _main(runtime, message, state, update_generation_template)
-  await _processActions(runtime, message, state, data)
-  await _storeAgentMemory(runtime, message, state, data)
+  const data = await _main(runtime, message, state as State, update_generation_template)
+  await _processActions(runtime, message, state as State, data)
+  await _storeAgentMemory(runtime, message, state as State, data)
   await evaluate(runtime, message, { ...state, responseData: data })
 }

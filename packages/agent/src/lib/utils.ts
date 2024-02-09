@@ -1,4 +1,4 @@
-export function shouldSkipMessage(state: any, agentId: string): boolean {
+export function shouldSkipMessage(state: State, agentId: string): boolean {
   if (
     state.recentMessagesData?.length > 2
   ) {
@@ -7,7 +7,7 @@ export function shouldSkipMessage(state: any, agentId: string): boolean {
     const currentMessages = state.recentMessagesData ?? []
     const lastThreeMessages = currentMessages.slice(-3)
     const lastThreeMessagesFromAgent = lastThreeMessages.filter(
-      (message: any) => message.user_id === agentId
+      (message: Message) => message.user_id === agentId
     )
     if (lastThreeMessagesFromAgent.length === 3) {
       return true
@@ -16,7 +16,7 @@ export function shouldSkipMessage(state: any, agentId: string): boolean {
     const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2)
     const lastTwoMessagesFromAgentWithWaitAction =
       lastTwoMessagesFromAgent.filter(
-        (message: any) => message.content.action === 'WAIT'
+        (message: Message) => message.content.action === 'WAIT'
       )
     if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
       return true
@@ -25,7 +25,7 @@ export function shouldSkipMessage(state: any, agentId: string): boolean {
   return false
 }
 
-export function parseJsonArrayFromText(text: any) {
+export function parseJsonArrayFromText(text: string) {
   let jsonData = null;
 
   // Check for json block
@@ -65,7 +65,7 @@ export function parseJsonArrayFromText(text: any) {
   }
 }
 
-export function parseJSONObjectFromText(text: any) {
+export function parseJSONObjectFromText(text: string) {
   let jsonData = null;
 
   // Check for json block

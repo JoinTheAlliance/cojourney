@@ -1,5 +1,6 @@
 import { UUID } from 'crypto';
 import AgentRuntime from './runtime'
+import { Memory } from './types'
 
 export const embeddingDimension = 768;
 export const embeddingZeroVector = Array(embeddingDimension).fill(0)
@@ -13,33 +14,18 @@ type SearchOptions = {
   userIds: UUID[]
 }
 
-type MemoryContent = string | {
-  content?: string
-  action?: string
-}
-
-export type Memory = {
-  id?: UUID
-  user_id: UUID
-  created_at?: any
-  content: MemoryContent
-  embedding?: any
-  user_ids: UUID[]
-  room_id: any
-}
-
 export class MemoryManager {
   runtime: AgentRuntime
-  schema: any
+  tableName: string
   constructor({
-    schema, // Schema
-    runtime, // AgentRuntime
+    tableName,
+    runtime,
   }: {
-    schema: any
+    tableName: string
     runtime: AgentRuntime
   }) {
     this.runtime = runtime
-    this.schema = schema
+    this.tableName = tableName
   }
 
   async addEmbeddingToMemory(memory: Memory) {
@@ -69,7 +55,7 @@ export class MemoryManager {
     count: number
   }) {
     const result = await this.runtime.supabase.rpc('get_memories', {
-      query_table_name: this.schema.tableName,
+      query_table_name: this.tableName,
       query_user_ids: userIds,
       query_count: count,
     })
@@ -93,7 +79,7 @@ export class MemoryManager {
     } = opts
 
     const result = await this.runtime.supabase.rpc('search_memories', {
-      query_table_name: this.schema.tableName,
+      query_table_name: this.tableName,
       query_user_ids: userIds,
       query_embedding: embedding, // Pass the embedding you want to compare
       query_match_threshold: match_threshold, // Choose an appropriate threshold for your data
@@ -107,20 +93,17 @@ export class MemoryManager {
   }
 
   async createMemory(memory: Memory) {
-    const {tableName} = this.schema
-    const result = await this.runtime.supabase.from(tableName).upsert(memory)
+    const result = await this.runtime.supabase.from(this.tableName).upsert(memory)
     const {error} = result
     if (error) {
       throw new Error(JSON.stringify(error))
     }
   }
 
-  async removeMemory(memoryId: any) {
-    const {tableName} = this.schema
-
+  async removeMemory(memoryId: UUID) {
     // remove item
     const result = await this.runtime.supabase
-      .from(tableName)
+      .from(this.tableName)
       .delete()
       .eq('id', memoryId)
     const {error} = result
@@ -131,7 +114,7 @@ export class MemoryManager {
 
   async removeAllMemoriesByUserIds(userIds: UUID[]) {
     const result = await this.runtime.supabase.rpc('remove_memories', {
-      query_table_name: this.schema.tableName,
+      query_table_name: this.tableName,
       query_user_ids: userIds,
     })
 
@@ -149,7 +132,7 @@ export class MemoryManager {
 
   async countMemoriesByUserIds(userIds: UUID[]) {
     const result = await this.runtime.supabase.rpc('count_memories', {
-      query_table_name: this.schema.tableName,
+      query_table_name: this.tableName,
       query_user_ids: userIds,
     })
 

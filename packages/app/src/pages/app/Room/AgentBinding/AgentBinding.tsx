@@ -63,37 +63,36 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
 
   useEffect(() => {
     if (!supabase || !userId) return;
-        // if roomData ID same as lastRoomId
+    // if roomData ID same as lastRoomId
     // and messages length is same as lastMessageCount, return
-    if (
-      roomData?.id === lastRoomId &&
-      messages?.length === lastMessageCount
-    ) {
+    if (roomData?.id === lastRoomId && messages?.length === lastMessageCount) {
       return;
     }
     setLastRoomId(roomData?.id);
     setLastMessageCount(messages?.length || 0);
-    
+
     async function startAgent(): Promise<void> {
-      const { data: { session } } = await supabase.auth.getSession() as any;
+      const {
+        data: { session },
+      } = (await supabase.auth.getSession()) as any;
 
       // Function to simulate agent's response
       setInputHandler({
-        send: async (content: any) => {
-        await fetch(import.meta.env.VITE_SERVER_URL + "/api/agents/message", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + session.access_token,
-          },
-          body: JSON.stringify({
-            content,
-            agentId,
-            room_id: roomData?.id,
-          }),
-        });
-      }
-    });
+        send: async (content: string) => {
+          await fetch(import.meta.env.VITE_SERVER_URL + "/api/agents/message", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + session.access_token,
+            },
+            body: JSON.stringify({
+              content,
+              agentId,
+              room_id: roomData?.id,
+            }),
+          });
+        },
+      });
       return undefined;
     }
     startAgent();
@@ -103,7 +102,7 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
     console.log("roomData changed", roomData);
   }, [roomData]);
 
-  return <></>
+  return <></>;
 };
 
 export default AgentBinding;

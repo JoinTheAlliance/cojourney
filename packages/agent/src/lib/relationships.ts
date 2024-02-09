@@ -1,7 +1,11 @@
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Actor, Relationship } from "./types";
+import AgentRuntime from "./runtime";
+
 /** create a connection
  * @todo This should only be allowable by the current user if they are connected to both userA and userB
 */
-export async function createRelationship({ supabase, userA, userB}: { supabase: any, userA: string, userB: string }) {
+export async function createRelationship({ supabase, userA, userB}: { supabase: SupabaseClient, userA: string, userB: string }) {
   // create a connection
   // return the connection
   const response = supabase.from("relationships").upsert({
@@ -18,7 +22,7 @@ export async function createRelationship({ supabase, userA, userB}: { supabase: 
   return data;
 }
 
-export async function getRelationship({ supabase, userA, userB }: { supabase: any, userA: string, userB: string }) {
+export async function getRelationship({ supabase, userA, userB }: { supabase: SupabaseClient, userA: string, userB: string }) {
   const { data, error } = await supabase.rpc('get_relationship', { usera: userA, userb: userB });
 
   if (error) {
@@ -28,7 +32,7 @@ export async function getRelationship({ supabase, userA, userB }: { supabase: an
   return data[0];
 }
 
-export async function getRelationships({ supabase, userId }: { supabase: any, userId: string }) {
+export async function getRelationships({ supabase, userId }: { supabase: SupabaseClient, userId: string }) {
   // Await the query to complete and get the response directly
   const { data, error } = await supabase.from("relationships").select("*")
     // Check for userId in either user_a or user_b columns
@@ -39,7 +43,7 @@ export async function getRelationships({ supabase, userId }: { supabase: any, us
     throw new Error(error.message);
   }
 
-  return data;
+  return data as Relationship[];
 }
 
 /**
@@ -54,7 +58,7 @@ export async function getRelationships({ supabase, userId }: { supabase: any, us
 // export async function searchRelationships({ supabase, userId, embedding }) {
 // }
 
-export async function createProfileEmbedding({ supabase, agent, runtime }: { supabase: any, agent: any, runtime: any }) {
+export async function createProfileEmbedding({ supabase, agent, runtime }: { supabase: SupabaseClient, agent: Actor, runtime: AgentRuntime }) {
   if (runtime.debugMode) {
     console.log(`Creating profile embedding for ${agent.name}`);
   }
@@ -67,10 +71,10 @@ export async function createProfileEmbedding({ supabase, agent, runtime }: { sup
   return data;
 }
 
-export async function formatRelationships({ supabase, userId }: { supabase: any, userId: string }) {
+export async function formatRelationships({ supabase, userId }: { supabase: SupabaseClient, userId: string }) {
   const relationships = await getRelationships({ supabase, userId });
 
-  const formattedRelationships = relationships.map((relationship: any) => {
+  const formattedRelationships = relationships.map((relationship: Relationship) => {
     const { user_a, user_b } = relationship;
 
     if (user_a === userId) {

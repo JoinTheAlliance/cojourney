@@ -38,12 +38,12 @@ in a JSON block formatted for markdown with this structure
 Your response must include the explanation and JSON block. If you do not think that a connection should made, do not include a JSON block.
 
 ##Example input:
-[[agentName]] = Hyacinth
+[[agentName]] = CJ
 
 Recent conversation:
 '''
-Drake: Hey, Hyacinth, you know what's great? My reflection. It's almost as charming as me!
-Hyacinth: Haha, Drake, you do have quite the charisma. Speaking of charisma, Kyle, I heard you're a fan of heavy metal music.
+Tom: Hey, CJ, you know what's great? My reflection. It's almost as charming as me!
+CJ: Haha, you do have quite the charisma. Speaking of charisma, Kyle, I heard you're a fan of heavy metal music.
 Kyle: Absolutely! I can't get enough of it. I even play guitar hero sometimes.
 '''
 
@@ -53,18 +53,18 @@ Rolodex:
 - Gojo: Likes to say out-of-pocket stuff like "Nah I'd win", "With this treasure i summon"
 
 [[actors]]
-- Drake: Narcissistic guy who's obsessed with his looks
+- Tom: Narcissistic guy who's obsessed with his looks
 - Kyle: Like to listen to heavy metal music, and also plays Guitar Hero
 
 ##Example output:
 
-Based on the recent conversation and the information provided, it seems like there is a potential connection that could be made between Kyle from the current scene and Cynthia from Hyacinth's rolodex:
+Based on the recent conversation and the information provided, it seems like there is a potential connection that could be made between Kyle from the current scene and Cynthia from CJ's rolodex:
 
-Brief explanation: Kyle mentioned his interest in heavy metal music and playing Guitar Hero, and Cynthia from Hyacinth's rolodex loves music and especially enjoys playing Guitar Hero.
+Brief explanation: Kyle mentioned his interest in heavy metal music and playing Guitar Hero, and Cynthia from CJ's rolodex loves music and especially enjoys playing Guitar Hero.
 { "userA": "Kyle", "userB": "Cynthia" }
 `;
 
-const handler = async (message: any, state: any, runtime: any) => {
+const handler = async (message: Message, state: State, runtime: AgentRuntime) => {
   console.log('handle message', message)
   const context = composeContext({
     state,

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 class Logger {
   frameChar: string = '*';
 
-  log(message: any, { title = '', frame = false, color = 'white' } = {}): void {
+  log(message: string, { title = '', frame = false, color = 'white' } = {}): void {
     const coloredMessage = (chalk as any)[color](message);
     if (frame) {
       const framedMessage = this.frameMessage(coloredMessage, title);
@@ -13,11 +13,11 @@ class Logger {
     }
   }
 
-  warn(message: any, options = {}) {
+  warn(message: string, options = {}) {
     this.log(message, { ...options, color: 'yellow' });
   }
 
-  error(message: any, options = {}) {
+  error(message: string, options = {}) {
     this.log(message, { ...options, color: 'red' });
   }
 

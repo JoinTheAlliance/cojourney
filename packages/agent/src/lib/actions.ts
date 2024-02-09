@@ -1,3 +1,5 @@
+import AgentRuntime from "./runtime";
+
 /**
    * A list of tools/actions available to the agent
   */
@@ -35,7 +37,7 @@ export const defaultActions = [
 /**
  * @param {AgentRuntime} runtime
  */
-export function getFormattedActions({ runtime }: any) {
+export function getFormattedActions(runtime: AgentRuntime) {
   const actions = runtime.getActions() as any[];
   // format the actins into a string by type and description
   const formattedActions = actions.map((action) => {

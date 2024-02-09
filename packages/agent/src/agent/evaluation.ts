@@ -1,3 +1,4 @@
+import { Message, State } from '@/lib/types';
 import { AgentRuntime } from '../lib/runtime';
 import goal from './evaluators/goal';
 import introduce from './evaluators/introduce';
@@ -21,7 +22,7 @@ export function addCustomEvaluators(runtime: AgentRuntime) {
 }
 
 // evaluation
-export const evaluate = async (runtime: AgentRuntime, message: any, state: any) => {
+export const evaluate = async (runtime: AgentRuntime, message: Message, state: State) => {
   const {userIds} = state
   const totalMessages =
     await runtime.messageManager.countMemoriesByUserIds(userIds)
@@ -38,7 +39,7 @@ export const evaluate = async (runtime: AgentRuntime, message: any, state: any) 
   // if should_name returns true, then we will add to array
   // call all evaluation handlers who have the name in the array
   
-    runtime.evaluationHandlers.forEach(async (handler: any) => {
+    runtime.evaluationHandlers.forEach(async (handler: Handler) => {
       await handler(runtime, message, state);
     });
 }

@@ -17,7 +17,8 @@
 
 import {parseJSONObjectFromText} from '../../lib/utils'
 import {composeContext} from '../../lib/context'
-import { getRelationship } from '../../lib'
+import { AgentRuntime, getRelationship } from '../../lib'
+import { Message, State } from '@/lib/types'
 
 const template = `You are writing a profile for {{senderName}} based on their existing profile and ongoing conversations.
 
@@ -38,7 +39,7 @@ Then respond with a JSON object containing a field for description in a JSON blo
 
 Your response must include the JSON block.`
 
-const handler = async (_message: any, state: any, runtime: any) => {
+const handler = async (_message: Message, state: State, runtime: AgentRuntime) => {
   // 
 
   // TODO:
