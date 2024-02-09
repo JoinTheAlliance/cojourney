@@ -1,6 +1,6 @@
 import reflect from './evaluators/reflect'
 
-// evaluate runs the evaluations
+// evaluate runs the evaluators
 export const defaultEvaluators = [
   reflect
 ]

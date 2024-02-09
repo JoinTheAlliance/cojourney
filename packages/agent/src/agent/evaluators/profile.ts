@@ -1,4 +1,4 @@
-import {parseJSONObjectFromText} from '../utils'
+import {parseJSONObjectFromText} from '../../lib/utils'
 import {composeContext} from '../../lib/context'
 import { getRelationship } from '../../lib'
 

@@ -1,16 +1,16 @@
-import {AgentRuntime, composeContext, embeddingZeroVector} from '../lib'
-import {evaluate} from './evaluations'
+import { AgentRuntime, composeContext, embeddingZeroVector } from '../lib'
+import { addCustomEvaluators, evaluate } from './evaluation'
 import {
   response_generation_template,
   update_generation_template,
 } from './templates'
 import {
-  addCustomActions,
   parseJSONObjectFromText,
   shouldSkipMessage,
-} from './utils'
-import {composeState} from '../lib/state'
-import logger from '@/lib/logger'
+} from '../lib/utils'
+import { composeState } from '../lib/state'
+import logger from '../lib/logger'
+import { addCustomActions } from './actions'
 
 async function _main(runtime: AgentRuntime, message: any, state: any, template: any) {
   // compose the text context for message generation
@@ -30,7 +30,7 @@ async function _main(runtime: AgentRuntime, message: any, state: any, template: 
   let responseData
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-    const response = await runtime.completion({context, stop: []})
+    const response = await runtime.completion({ context, stop: [] })
     const parsedResponse = parseJSONObjectFromText(response)
     if (parsedResponse?.user?.includes(state.agentName)) {
       responseData = parsedResponse
@@ -59,7 +59,7 @@ async function _processActions(
   runtime: AgentRuntime,
   _message: any,
   state: any,
-  data: {action: any}
+  data: { action: any }
 ) {
   if (!data.action) {
     return
@@ -67,7 +67,7 @@ async function _processActions(
 
   const action = runtime
     .getActions()
-    .find((a: {name: any}) => a.name === data.action)
+    .find((a: { name: any }) => a.name === data.action)
 
   if (!action) {
     return // console.warn('No action found for', data.action)
@@ -88,9 +88,7 @@ async function _processActions(
 // stores either 1 or 2 memories, depending on whether the sender's content is empty or not
 async function _storeSenderMemory(
   runtime: AgentRuntime,
-  message: any,
-  state: any,
-  responseData: any
+  message: any
 ) {
   const {
     content: senderContent,
@@ -106,24 +104,24 @@ async function _storeSenderMemory(
     await runtime.messageManager.createMemory({
       user_ids: userIds,
       user_id: senderId,
-      content: {content: _senderContent, action: message.action || 'null'},
+      content: { content: _senderContent, action: message.action || 'null' },
       room_id,
       embedding: embeddingZeroVector,
     })
   }
 }
 
-  async function _storeAgentMemory(
-    runtime: AgentRuntime,
-    message: any,
-    state: any,
-    responseData: any
-  ) {
-    const {
-      agentId,
-      userIds,
-      room_id,
-    } = message
+async function _storeAgentMemory(
+  runtime: AgentRuntime,
+  message: any,
+  state: any,
+  responseData: any
+) {
+  const {
+    agentId,
+    userIds,
+    room_id,
+  } = message
 
   responseData.content = responseData.content?.trim()
   if (responseData.content) {
@@ -134,7 +132,7 @@ async function _storeSenderMemory(
       room_id,
       embedding: embeddingZeroVector,
     })
-    evaluate(runtime, message, {...state, responseData})
+    evaluate(runtime, message, { ...state, responseData })
   } else {
     console.warn('Empty response, skipping')
   }
@@ -143,14 +141,22 @@ async function _storeSenderMemory(
 // main entry point for the agent
 export const onMessage = async (message: any, runtime: AgentRuntime) => {
   // if runtime.getActions does not include any customActions, add them
-  addCustomActions(runtime)
+  addCustomActions(runtime);
+  addCustomEvaluators(runtime);
 
-  const {
+  console.log('message is', message)
+
+  let {
     content: senderContent,
     senderId,
     agentId,
     userIds,
   } = message
+
+  // if userIds is not defined, set it to [senderId, agentId]
+  if (!userIds) {
+    userIds = [senderId, agentId]
+  }
 
   if (!senderContent) {
     logger.warn('Sender content null, skipping')
@@ -161,10 +167,10 @@ export const onMessage = async (message: any, runtime: AgentRuntime) => {
 
   const data = await _main(runtime, message, state, response_generation_template)
   await _processActions(runtime, message, state, data)
-  await _storeSenderMemory(runtime, message, state, data)
-  await evaluate(runtime, message, {...state, responseData: data})
+  await _storeSenderMemory(runtime, message)
+  await evaluate(runtime, message, { ...state, responseData: data })
   await _storeAgentMemory(runtime, message, state, data)
-  await evaluate(runtime, message, {...state, responseData: data})
+  await evaluate(runtime, message, { ...state, responseData: data })
 }
 
 // main entry point for the agent
@@ -185,5 +191,5 @@ export const onUpdate = async (message: any, runtime: AgentRuntime) => {
   const data = await _main(runtime, message, state, update_generation_template)
   await _processActions(runtime, message, state, data)
   await _storeAgentMemory(runtime, message, state, data)
-  await evaluate(runtime, message, {...state, responseData: data})
+  await evaluate(runtime, message, { ...state, responseData: data })
 }

@@ -1,9 +1,3 @@
-import {
-  AgentRuntime
-} from '../lib'
-import { customActions } from './actions'
-import { customEvaluators } from './evaluations'
-
 export function shouldSkipMessage(state: any, agentId: string): boolean {
   if (
     state.recentMessagesData?.length > 2
@@ -29,21 +23,6 @@ export function shouldSkipMessage(state: any, agentId: string): boolean {
     }
   }
   return false
-}
-
-export function addCustomActions(runtime: AgentRuntime) {
-  customActions.forEach((action) => {
-    if (!runtime.getActions().includes(action)) {
-      runtime.registerActionHandler(action)
-    }
-  });
-
-    // if runtime.evaluationHandlers does not include any customEvaluators, add them
-  customEvaluators.forEach((evaluation) => {
-  if (!runtime.evaluationHandlers.includes(evaluation)) {
-    runtime.evaluationHandlers.push(evaluation)
-  }
-});
 }
 
 export function parseJsonArrayFromText(text: any) {

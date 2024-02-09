@@ -15,7 +15,8 @@ import {
   GetEyeColorConversationExample1,
   GetEyeColorConversationExample2,
   GetEyeColorConversationExample3,
-} from './conversationExamples.js';
+} from './data.js';
+import { UUID } from 'crypto';
 
 // create a UUID of 0s
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
@@ -43,18 +44,44 @@ describe('Agent Runtime', () => {
       await runtime.messageManager.removeAllMemoriesByUserIds([user.id, zeroUuid])
     }
 
-    // Based on the full conversation, generate a description that appropriately summarizes public and private details
-    async function _testDescriptionGeneration() {
-      // create memories for each message in conversation
-      const conversation = GetTellMeAboutYourselfConversation3(user.id);
+    async function _testBasicDetails() {
+      const conversation = GetTellMeAboutYourselfConversation1(user.id);
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i];
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id,
           user_ids: [user.id, zeroUuid],
           content: {
-            content: c.content  
+            content: c.content
           }
+        });
+        await runtime.messageManager.createMemory(bakedMemory);
+      }
+
+      // TODO: import description template
+
+      // TODO: prepare state
+
+      // TODO: generate description
+
+      // TODO: check that the description includes key details
+
+      // TODO: check that the description does NOT include details about other agents
+    }
+
+    // Based on the full conversation, generate a description that appropriately summarizes public and private details
+    async function _testDescriptionGeneration() {
+      // create memories for each message in conversation
+      const conversation = [...GetTellMeAboutYourselfConversation2(user?.id), ...GetTellMeAboutYourselfConversation3(user?.id)];
+      for (let i = 0; i < conversation.length; i++) {
+        const c = conversation[i];
+        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
+          user_id: c.user_id,
+          user_ids: [user?.id as UUID, zeroUuid],
+          content: {
+            content: c.content
+          },
+          room_id: undefined
         });
         await runtime.messageManager.createMemory(bakedMemory);
       }
@@ -74,20 +101,21 @@ describe('Agent Runtime', () => {
 
     async function _testDescriptionRemembered() {
       // create memories for each message in conversation
-      const conversation = [...GetEyeColorConversationExample3(user.id), ...TwoTruthsAndALieConversation3(user.id)];
+      const conversation = [...GetEyeColorConversationExample1(user?.id), ...GetEyeColorConversationExample2(user?.id), ...GetEyeColorConversationExample3(user?.id), ...TwoTruthsAndALieConversation1(user?.id), ...TwoTruthsAndALieConversation2(user?.id), ...TwoTruthsAndALieConversation3(user?.id)];
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i];
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id,
-          user_ids: [user.id, zeroUuid],
+          user_ids: [user?.id as UUID, zeroUuid],
           content: {
-            content: c.content  
-          }
+            content: c.content
+          },
+          room_id: undefined
         });
         await runtime.messageManager.createMemory(bakedMemory);
       }
 
-      // generate a description
+      // generate another description and check that the original details were remembered
 
       // TODO: import description template
 
@@ -110,8 +138,6 @@ describe('Agent Runtime', () => {
     // then, create new memories
     await _testDescriptionRemembered();
 
-
-
     // then destroy all memories again
     await _cleanup();
   });
@@ -119,12 +145,22 @@ describe('Agent Runtime', () => {
     const { user, runtime } = await createRuntime();
 
     async function _cleanup() {
-      await runtime.messageManager.removeAllMemoriesByUserIds([user.id, zeroUuid])
+      await runtime.messageManager.removeAllMemoriesByUserIds([user?.id as UUID, zeroUuid])
+      await runtime.descriptionManager.removeAllMemoriesByUserIds([user?.id as UUID, zeroUuid])
     }
 
     _cleanup();
 
-    // TODO: Add personas to description, then search for them
-    // Make sure that the expected personas are returned in order, i.e. Jim and Alice, not Jim and Gloria
+    async function _testSearchUsers() {
+      // TODO: Add test users for Gloria and Alice to environment
+
+      // TODO: Add personas to description, then search for them
+      // Make sure that the expected personas are returned in order, i.e. Jim and Alice, not Jim and Gloria
+
+    }
+
+
+    _cleanup();
+
   });
 });

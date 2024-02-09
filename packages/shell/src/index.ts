@@ -8,21 +8,14 @@ import { createClient } from "@supabase/supabase-js";
 import inquirer from 'inquirer';
 import chalk from "chalk";
 import readline from "readline";
-import { AgentRuntime, onMessage, getGoals, createGoal, agentActions, getRelationship } from "@cojourney/agent";
-import { defaultGoal } from "./defaultGoal";
-
 dotenv.config();
 
 // check for --debug flag in 'node example/shell --debug'
-const DEBUG = process.argv.includes("--debug");
 console.log('process.env.SERVER_URL', process.env.SERVER_URL)
 const SERVER_URL = process.env.SERVER_URL || "http://localhost:7998";
 
 // YOU WILL NEED TO REPLACE THIS
-const userName = "User";
-const userUUID = "3e71c83f-4252-42dc-8983-61d58095e821";
 const agentUUID = "00000000-0000-0000-0000-000000000000";
-const agentName = "CJ";
 
 // Setup environment variables
 const __filename = fileURLToPath(import.meta.url);
@@ -74,98 +67,101 @@ async function startApplication() {
     const userData = JSON.parse(fs.readFileSync(configFile).toString());
     const session = userData?.session;
     const supabase = getSupabase(session?.access_token);
-    // let user = null as any;
-    // if (session) {
-    //     // Get user information or perform any other session-related initialization here
-    //     console.log(chalk.blue('Fetching user information...'));
-    //     // Placeholder for actual function to fetch user details
-    //     user = await getMe(session);
-    // }
 
-    const runtime = new AgentRuntime({
-        debugMode: DEBUG,
-        serverUrl: SERVER_URL,
-        supabase,
-        token: session?.access_token,
-    });
+    const userId = session.user?.id;
 
-    // Fetch room_id and initial goals setup
-    const room_id = await setupRoomAndGoals(supabase, runtime);
-
-    // Register message handler
-    runtime.registerMessageHandler(async ({ agentName, content, action }: any) => {
-        console.log(chalk.green(`${agentName}: ${content}${action ? ` (${action})` : ""}`));
-
-    });
-
-    // Register action handlers
-    agentActions.forEach((action) => {
-        runtime.registerActionHandler(action);
-    });
-
-    if (runtime.debugMode) {
-        console.log(chalk.yellow(`Actions registered: ${runtime.getActions().map((a) => a.name).join(", ")}`));
-    }
-
-    // Create readline interface and message loop
-    setupReadlineAndMessageLoop(runtime, room_id);
-}
-
-// Function to fetch room_id and initial goals
-async function setupRoomAndGoals(supabase: any, runtime: AgentRuntime) {
+    // get all entries from 'rooms' where there are two particants (entries in the partipants table) where the user and agent ids match the participant user_id field
+    // this will require a join between the rooms and participants table
+    const { data, error } = await supabase
+    .from("rooms")
+    .select(
+      `*,
+    relationships(
+      *,
+      userData1:accounts!relationships_user_a_fkey(
+        *
+      ),
+      userData2:accounts!relationships_user_b_fkey(
+        *
+      ),
+      actionUserData:accounts!relationships_user_id_fkey(
+        *
+      )
+    ),
+    participants!inner(
+      *,
+      userData:accounts(
+        *
+      )
+    )
+    `,
+    )
+    .filter("participants.user_id", "eq", userId);
     
-    const relationship = await getRelationship({ supabase, userA: userUUID, userB: agentUUID });
-
-    const room_id = relationship?.room_id;
-
-    const goals = await getGoals({
-        supabase: runtime.supabase,
-        userIds: [userUUID, agentUUID],
-    });
-
-    if (goals.length === 0) {
-        console.log(chalk.blue("Creating initial goal..."));
-        await createGoal({
-            supabase: runtime.supabase,
-            userIds: [userUUID, agentUUID],
-            userId: agentUUID,
-            goal: defaultGoal,
-        });
+    if (error) {
+        console.error('Error fetching room data', error);
+        return;
     }
 
-    return room_id;
-}
+    // get the room_id from the data
+    const room_id = data[0].id;
 
-// Function to setup readline interface and message loop
-function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any) {
+    // Listen to the 'messages' table for new messages in the specific room
+    const channel = supabase
+        .channel("table-db-changes")
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages'
+        }, payload => {
+            console.log('*** payload', payload)
+            // TODO: should filter by room_id at some point
+            if (!payload.new.room_id || payload.new.room_id !== room_id) return;
+
+            const { new: newMessage } = payload;
+            const { user_id, content } = newMessage;
+
+            console.log('*** message is', newMessage)
+
+            // Determine the message sender
+            const color = user_id === userId ? 'blue' : 'green';
+            console.log(chalk[color](`${user_id === userId ? 'You' : 'Agent'}: ${content}`));
+        })
+        .subscribe();
+
+        console.log('*** room_id', room_id)
+
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
         prompt: "",
     });
 
-    // Function to simulate agent's response
-    const respond = async (content: string) => {
-        await onMessage({
-            name: userName,
-            content,
-            senderId: userUUID,
-            agentId: agentUUID,
-            eventType: "message",
-            userIds: [userUUID, agentUUID],
-            agentName,
-            data: {}, // Placeholder, replace with actual data if needed
-            room_id,
-        }, runtime);
+    // Send the user's message
+    const message = async (content: string) => {
+        await fetch(SERVER_URL + "/api/agents/message", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + session.access_token,
+            },
+            body: JSON.stringify({
+              content,
+              agentId: agentUUID,
+              room_id,
+            }),
+          });
 
         rl.prompt(true);
     };
+
+    console.log(chalk.green('Application started. You can now start chatting.'));
 
     process.stdin.resume();
     readline.emitKeypressEvents(process.stdin);
 
     rl.on("line", (input) => {
-        respond(input);
+        message(input);
         rl.prompt(true);
     }).on("SIGINT", () => {
         rl.close();
@@ -173,6 +169,17 @@ function setupReadlineAndMessageLoop(runtime: AgentRuntime, room_id: any) {
 
     // Initial prompt
     rl.prompt(true);
+
+    // Cleanup on exit
+    const cleanup = () => {
+        channel.unsubscribe();
+        rl.close();
+    };
+
+    console.log(chalk.yellow('Press Ctrl+C to exit.'));
+
+    process.on('exit', cleanup);
+    process.on('SIGINT', cleanup);
 }
 
 // Function to handle user login or signup

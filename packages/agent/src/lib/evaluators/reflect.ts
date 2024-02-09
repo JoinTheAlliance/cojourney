@@ -1,7 +1,7 @@
 import AgentRuntime from '../runtime'
 import {formatMessageActors, getMessageActors} from '../messages'
 import {composeContext} from '../context'
-import {parseJsonArrayFromText} from '@/agent/utils'
+import {parseJsonArrayFromText} from '../utils'
 import logger from '../logger'
 
 // Used in the reflection step
@@ -118,7 +118,7 @@ INSTRUCTIONS: Extract any claims from the conversation in the scene that are not
  * Summarizes the last event into a list of JSON entries, utility for the Rolodex feature
  * @TODO - Rework moon's factual json reflection system (rolodex)
  */
-async function handler(runtime: AgentRuntime, message: any, state: any) {
+async function handler(runtime: AgentRuntime, _message: any, state: any) {
   const {userIds, senderId, agentId, room_id} = state
 
   const actors = await getMessageActors({supabase: runtime.supabase, userIds})

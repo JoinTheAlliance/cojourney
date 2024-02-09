@@ -43,7 +43,6 @@
     "clean": "rimraf types types temp dist coverage"
   },
   "dependencies": {
-    "@cojourney/agent": "^0.0.1",
     "@supabase/supabase-js": "^2.39.3",
     "@types/inquirer": "^9.0.7",
     "@types/node-notifier": "^8.0.5",
