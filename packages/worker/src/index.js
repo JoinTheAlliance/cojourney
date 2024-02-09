@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import jwt from '@tsndr/cloudflare-worker-jwt';
-import { AgentRuntime, onMessage, onUpdate } from "@cojourney/agent/src";
+import { AgentRuntime, onMessage, onUpdate } from "@cojourney/agent";
 
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
