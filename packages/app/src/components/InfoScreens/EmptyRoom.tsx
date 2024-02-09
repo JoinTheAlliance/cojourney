@@ -1,3 +1,4 @@
+import React from "react";
 import { Flex } from "@mantine/core";
 
 const EmptyRoom = (): JSX.Element => {

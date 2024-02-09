@@ -10,9 +10,13 @@ import useTypingBroadCast from "../../../../Hooks/rooms/useTypingBroadcast";
 
 interface Props {
   roomChannel: RealtimeChannel;
+  inputHandler: any;
 }
 
-const MessagesTextInput = ({ roomChannel }: Props): JSX.Element => {
+const MessagesTextInput = ({
+  roomChannel,
+  inputHandler,
+}: Props): JSX.Element => {
   const supabase = useSupabaseClient<Database>();
   const session = useSession();
 
@@ -105,7 +109,6 @@ const MessagesTextInput = ({ roomChannel }: Props): JSX.Element => {
         userIds.push(relationship.user_b);
       }
     });
-
     const { data, error } = await supabase
       .from("messages")
       .insert({
@@ -130,14 +133,19 @@ const MessagesTextInput = ({ roomChannel }: Props): JSX.Element => {
 
     setIsSendingMessage(false);
     setMessage("");
+
+    if(inputHandler && inputHandler.send) {
+      console.log('inputHandler', inputHandler)
+      await inputHandler.send(message);
+    }
   };
 
   const sendButton = (): JSX.Element | null => {
-    if (message.length <= 0) return null;
+    if (message.length <= 0) return <Send size={16} />;
 
     return (
       <ActionIcon type="submit">
-        {isSendingMessage ? <Loader size={16} /> : <Send size={16} />}
+        {isSendingMessage && <Loader size={16} />}
       </ActionIcon>
     );
   };

@@ -26,6 +26,8 @@ const useListenToUnreadMessagesChanges = () => {
       )
       .subscribe();
 
+    supabase.realtime.accessToken = session?.access_token; // THIS IS REQUIRED FOR RLS!!!
+
     // eslint-disable-next-line consistent-return
     return () => {
       channel.unsubscribe();

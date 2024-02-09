@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import React from "react";
 import useGlobalStore from "../../../store/useGlobalStore";
 import LoadingRoomData from "./LoadingRoomData/LoadingRoomData";

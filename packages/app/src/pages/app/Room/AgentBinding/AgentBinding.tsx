@@ -1,21 +1,11 @@
-import { useEffect, useState } from "react";
-import {
-  AgentRuntime,
-  initialize,
-  onMessage,
-  agentActions,
-  getGoals,
-  createGoal,
-} from "@cojourney/agent";
+import React, { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import chalk from "chalk";
 import useGlobalStore from "../../../../store/useGlobalStore";
 
 const agentId = "00000000-0000-0000-0000-000000000000";
 const userName = "User"; // TODO: get from user profile
 const agentName = "CJ";
 const debugMode = false;
-const updateInterval = 10000;
 
 const defaultGoal = {
   name: "First Time User Experience",
@@ -57,12 +47,13 @@ const defaultGoal = {
 
 interface Props {
   roomData: any;
+  setInputHandler: any;
 }
 
-const AgentBinding = ({ roomData }: Props) => {
-  const [agentRuntime, setAgentRuntime] = useState<AgentRuntime | null>(null);
+const AgentBinding = ({ roomData, setInputHandler }: Props) => {
   const supabase = useSupabaseClient();
-
+  const [lastMessageCount, setLastMessageCount] = useState(0);
+  const [lastRoomId, setLastRoomId] = useState("");
   const {
     currentRoom: { messages, roomParticipants },
     user: { uid },
@@ -72,122 +63,37 @@ const AgentBinding = ({ roomData }: Props) => {
 
   useEffect(() => {
     if (!supabase || !userId) return;
+        // if roomData ID same as lastRoomId
+    // and messages length is same as lastMessageCount, return
+    if (
+      roomData?.id === lastRoomId &&
+      messages?.length === lastMessageCount
+    ) {
+      return;
+    }
+    setLastRoomId(roomData?.id);
+    setLastMessageCount(messages?.length || 0);
+    
     async function startAgent(): Promise<void> {
-      console.log("messages", messages);
-      console.log("roomParticipants", roomParticipants);
-
-      const runtime = new AgentRuntime({
-        debugMode,
-        userId,
-        agentId,
-        supabase,
-        serverUrl: import.meta.env.VITE_SERVER_URL,
-      });
-      setAgentRuntime(runtime);
-
-      // get the room_id where user_id is user_a and agent_id is user_b OR vice versa
-      const { data, error } = await supabase
-        .from("relationships")
-        .select("*")
-        .or(
-          `user_a.eq.${userId},user_b.eq.${agentId},user_a.eq.${agentId},user_b.eq.${userId}`,
-        )
-        .single();
-
-      if (error) {
-        return console.error(new Error(JSON.stringify(error)));
-      }
-
-      // TODO, just get the room id from channel
-      const room_id = data?.room_id;
-
-      const goals = await getGoals({
-        supabase: runtime.supabase,
-        userIds: [userId, agentId],
-      });
-
-      if (goals.length === 0) {
-        console.log("creating goal");
-        await createGoal({
-          supabase: runtime.supabase,
-          userIds: [userId, agentId],
-          userId: agentId,
-          goal: defaultGoal,
-        });
-      }
-      const {
-        start: startLoop,
-        reset: resetLoop,
-        registerHandler,
-      } = initialize();
-
-      runtime.registerMessageHandler(
-        async ({ agentName: _agentName, content, action }: any) => {
-          console.log(
-            chalk.green(
-              `${_agentName}: ${content}${action ? ` (${action})` : ""}`,
-            ),
-          );
-          resetLoop();
-        },
-      );
-
-      agentActions.forEach((action) => {
-        // console.log('action', action)
-        runtime.registerActionHandler(action);
-      });
-
-      if (runtime.debugMode) {
-        console.log(
-          chalk.yellow(
-            `Actions registered: ${runtime
-              .getActions()
-              .map((a) => a.name)
-              .join(", ")}`,
-          ),
-        );
-      }
+      const { data: { session } } = await supabase.auth.getSession() as any;
 
       // Function to simulate agent's response
-      // TODO: bind to realtime channel
-      const respond = async (content) => {
-        resetLoop(); // reset the update interval early to prevent async update race
-        await onMessage(
-          {
-            name: userName,
+      setInputHandler({
+        send: async (content: any) => {
+        await fetch(import.meta.env.VITE_SERVER_URL + "/api/agents/message", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + session.access_token,
+          },
+          body: JSON.stringify({
             content,
-            senderId: userId,
             agentId,
-            eventType: "message",
-            userIds: [userId, agentId],
-            agentName,
-            data,
-            room_id,
-          },
-          runtime,
-        );
-        resetLoop(); // reset again
-      };
-
-      registerHandler(async () => {
-        resetLoop();
-        await onMessage(
-          {
-            name: userName,
-            senderId: userId,
-            agentId,
-            eventType: "update",
-            userIds: [userId, agentId],
-            agentName,
-            data,
-            room_id,
-          },
-          runtime,
-        );
-        resetLoop();
-      });
-
-      startLoop(updateInterval);
+            room_id: roomData?.id,
+          }),
+        });
+      }
+    });
       return undefined;
     }
     startAgent();
@@ -196,6 +102,8 @@ const AgentBinding = ({ roomData }: Props) => {
   useEffect(() => {
     console.log("roomData changed", roomData);
   }, [roomData]);
+
+  return <></>
 };
 
 export default AgentBinding;

@@ -2,7 +2,7 @@ import React from "react";
 import { Badge, Button, Flex, Loader, Menu, Text, Title } from "@mantine/core";
 import { MessageSquare, UserPlus, X } from "react-feather";
 import { openConfirmModal } from "@mantine/modals";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import FriendsConditionalRendering from "../Friends/FriendsConditionalRendering/FriendsConditionalrendering";
 import UserAvatarWithIndicator from "../UserAvatarWithIndicator/UserAvatarWithIndicator";
 import useHandleFriendsRequests from "../../Hooks/relationships/useHandleFriendRequests";
@@ -18,7 +18,7 @@ interface Props {
   };
 }
 
-const UserPopup = ({ user, children }: Props): JSX.Element => {
+const UserPopup = ({ children }: Props): JSX.Element => {
   const {
     relationships: { friends },
     setApp,

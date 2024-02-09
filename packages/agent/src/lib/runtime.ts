@@ -1,14 +1,13 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { MemoryManager } from "./memory";
+import { defaultActions } from "./actions";
+import { defaultEvaluators } from "./evaluators";
 
-// create a typescrip tinterface for opts
-export interface AgentRuntimeOpts {
+export type AgentRuntimeOpts = {
   recentMessageCount?: number;
-  token?: string;
-  supabase?: any;
+  token: string;
+  supabase: SupabaseClient;
   debugMode?: boolean;
-  userId?: string;
-  agentId?: string;
   serverUrl?: string;
 }
 
@@ -19,22 +18,36 @@ export interface AgentRuntimeOpts {
   * @param {string} opts.token - JWT token
   * @param {object} opts.supabase - Supabase client
   * @param {boolean} opts.debugMode - If true, will log debug messages
-  * @param {string} opts.userId - User ID
-  * @param {string} opts.agentId - Agent ID
  */
 export class AgentRuntime {
   #recentMessageCount = 8;
   serverUrl = "http://localhost:7998";
-  #state = {};
   token: string | null;
   debugMode: boolean;
   supabase: SupabaseClient;
-  messageManager: MemoryManager;
-  reflectionManager: MemoryManager;
-  messageHandlers: any[];
-  actionHandlers: any[];
+  messageManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "messages",
+    },
+  });;
+  descriptionManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "descriptions",
+    },
+  });
+  reflectionManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "reflections",
+    },
+  });
+  messageHandlers: any[] = [];
+  actionHandlers: any[] = []
+  evaluationHandlers: any[] = []
   
-  constructor(opts: AgentRuntimeOpts = {}) {
+  constructor(opts: AgentRuntimeOpts) {
     this.#recentMessageCount = opts.recentMessageCount || this.#recentMessageCount;
     this.debugMode = opts.debugMode || false;
     this.supabase = opts.supabase;
@@ -43,37 +56,14 @@ export class AgentRuntime {
       console.warn('No serverUrl provided, defaulting to localhost');
     }
 
-    this.token = this.supabase.auth['headers']?.['Authorization']?.replace(/^Bearer\s+/i, '');
-    
-    this.messageManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "messages",
-      },
-    });
+    this.token = opts.token;
 
-    this.reflectionManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "reflections",
-      },
-    });
-
-    this.messageHandlers = [];
-
-    this.actionHandlers = [];
+    defaultActions.forEach((action) => this.registerActionHandler(action));
+    defaultEvaluators.forEach((evaluator) => this.registerEvaluationHandler(evaluator));
   }
 
   getRecentMessageCount() {
     return this.#recentMessageCount;
-  }
-
-  writeState(newState: {}) {
-    this.#state = newState;
-  }
-
-  getState() {
-    return this.#state;
   }
 
   async sendMessage(message: any) {
@@ -92,52 +82,63 @@ export class AgentRuntime {
     return [...new Set(this.actionHandlers)];
   }
 
-  async completion({ context = "", stop = [], model = "gpt-3.5-turbo-0125", frequency_penalty = 0.0, presence_penalty = 0.0 }) {
-    const response = await fetch(
-      `${this.serverUrl}/api/ai/chat/completions`,
-      {
-        method: "POST",
+  registerEvaluationHandler(handler: any) {
+    this.evaluationHandlers.push(handler);
+  }
 
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.token}`,
-        },
-        body: JSON.stringify({
-          stop,
-          model,
-          frequency_penalty,
-          presence_penalty,
-          messages: [
-            {
-              role: "user",
-              content: context,
-            },
-          ],
-        }),
+  getEvaluationHandlers() {
+    return [...new Set(this.evaluationHandlers)];
+  }
+  
+  async completion({ context = "", stop = [], model = "gpt-3.5-turbo-0125", frequency_penalty = 0.0, presence_penalty = 0.0 }) {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.token}`,
       },
-    );
+      body: JSON.stringify({
+        stop,
+        model,
+        frequency_penalty,
+        presence_penalty,
+        messages: [
+          {
+            role: "user",
+            content: context,
+          },
+        ],
+      }),
+    };
 
     try {
+      const response = await fetch(`${this.serverUrl}/chat/completions`, requestOptions);
+
+      // if response has an error
+      if (!response.ok) {
+        throw new Error("OpenAI API Error: " + response.status + ' ' + response.statusText);
+      }
+
       const body = await response.json();
+
       const content = body.choices?.[0]?.message?.content;
       if (!content) {
-        throw new Error("No content in response", body);
+        throw new Error("No content in response");
       }
       return content;
     } catch (error) {
+      console.log('e', error)
       throw new Error(error as any);
     }
   }
   
   async embed(input: string) {
     const embeddingModel = `text-embedding-3-small`;
-    // console.log('embed ai', {input});
     const requestOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.token}`,
-        // Authorization: "Bearer " + String(OPENAI_API_KEY),
       },
       body: JSON.stringify({
         input,
@@ -146,24 +147,16 @@ export class AgentRuntime {
       }),
     };
     try {
-      const response = await fetch(
-        `${this.serverUrl}/api/ai/embeddings`,
-        requestOptions
-      );
-      if (response.status !== 200) {
-        // console.log(response.statusText);
-        // console.log(response.status);
-        console.log(await response.text());
-        throw new Error(
-          'OpenAI API Error: ' + response.status + ' ' + response.statusText
-        );
+      const response = await fetch(`${this.serverUrl}/embeddings`, requestOptions);
+      if (!response.ok) {
+        throw new Error('OpenAI API Error: ' + response.status + ' ' + response.statusText);
       }
 
       const data = await response.json();
+      console.log('embedding data', data);
       return data?.data?.[0].embedding;
     } catch (e) {
-      console.warn('OpenAI API Error', e);
-      // return "returning from error";
+      console.log('e', e)
       throw e;
     }
   }

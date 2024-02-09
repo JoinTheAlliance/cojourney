@@ -1,464 +1,219 @@
-import chalk from 'chalk'
+import { AgentRuntime, composeContext, embeddingZeroVector } from '../lib'
+import { addCustomEvaluators, evaluate } from './evaluation'
 import {
-  Memory,
-  composeContext,
-  createInitialState,
-  embeddingZeroVector,
-  formatMessageActors,
-  formatMessages,
-  formatReflections,
-  getMessageActors,
-  getRandomMessageExamples,
-} from '../lib'
-import {defaultActions} from '../lib/actions'
-import {formatGoalsAsString, getGoals} from '../lib/goals'
-import introduce from './actions/introduce'
-import {
-  reflection_template,
   response_generation_template,
   update_generation_template,
 } from './templates'
-import {parseJSONObjectFromText, parseJsonArrayFromText} from './utils'
+import {
+  parseJSONObjectFromText,
+  shouldSkipMessage,
+} from '../lib/utils'
+import { composeState } from '../lib/state'
+import logger from '../lib/logger'
+import { addCustomActions } from './actions'
 
-const customActions = [introduce]
+async function _main(runtime: AgentRuntime, message: any, state: any, template: any) {
+  // compose the text context for message generation
+  const context = composeContext({
+    state,
+    template,
+  })
 
-export const constants = {
-  avatarPlaceholder: (seed: string | number) => {
-    return `https://api.dicebear.com/6.x/micah/svg?seed=${seed}`
-  },
-  supabaseUrl: 'https://pronvzrzfwsptkojvudd.supabase.co',
-  supabaseAnonKey:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByb252enJ6ZndzcHRrb2p2dWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NTYwNDcsImV4cCI6MjAyMjQzMjA0N30.I6_-XrqssUb2SWYg5DjsUqSodNS3_RPoET3-aPdqywM',
-}
-
-export const agentActions = [...defaultActions, ...customActions]
-
-export const initialize = () => {
-  let timeout: NodeJS.Timeout | null = null
-  let updateInterval = 10000
-  const updateHandlers: any[] = []
-
-  function callTimeout() {
-    clearTimeout(timeout as NodeJS.Timeout)
-    timeout = setTimeout(() => {
-      updateHandlers.forEach((handler) => handler())
-      callTimeout()
-    }, updateInterval)
-  }
-
-  const start = (interval: number) => {
-    updateInterval = interval
-    callTimeout()
-  }
-
-  const reset = () => {
-    if (timeout) {
-      // clear timeout
-      callTimeout()
-    }
-  }
-
-  const registerHandler = (handler: any) => {
-    updateHandlers.push(handler)
-  }
-
-  return {
-    start,
-    reset,
-    registerHandler,
-  }
-}
-
-// handle all messages - main entry point for the agent
-// eventType is response or update
-// userIds are UUIDs of users, stored in DB
-// content is the user's message
-// supabase is the supabase client
-// messageManager and reflectionManager are all MemoryManagers which handle the database interactions
-export const onMessage = async (message: any, runtime: any) => {
-  const {content: senderContent} = message
-  const {senderId, agentId, eventType, userIds, room_id} = message
-
-  const senderAction = message.action || 'null'
-
-  // if eventType is 'start' then we can skip all this and just update the state and return
-  const {supabase} = runtime
-  const recentMessageCount = runtime.getRecentMessageCount()
-  const recentReflectionsCount = runtime.getRecentMessageCount() / 2
-  const relevantReflectionsCount = runtime.getRecentMessageCount() / 2
-
-  const initialStateOpts = {
-    agentId,
-    supabase,
-    eventType,
-    senderId,
-    senderContent,
-    senderAction,
-    userIds,
-    count: 1,
-  }
-
-  const hasState = Object.keys(runtime.getState()).length > 0
-
-  // switch between connect, message update templates
-  const template = {
-    update: update_generation_template,
-    message: response_generation_template,
-  }[eventType as string]
-
-  const state = hasState
-    ? {...runtime.getState(), ...initialStateOpts}
-    : await createInitialState(initialStateOpts)
-
-  async function _main() {
-    // compose the text context for message generation
-    const context = composeContext({
-      context: state,
-      template,
+  if (runtime.debugMode) {
+    logger.log(context, {
+      title: 'Response Context',
+      frame: true,
+      color: 'blue',
     })
+  }
 
-    if (runtime.debugMode) {
-      console.log(
-        chalk.cyan(
-          '******************** response context ********************\n'
-        )
-      )
-      console.log(chalk.cyan(context))
-      console.log(
-        chalk.cyan(
-          '\n**********************************************************'
-        )
-      )
-    }
+  let responseData
+  const {
+    senderId,
+    room_id,
+    userIds: user_ids,
+    agentId,
+  } = message
+  console.log('message', message)
 
-    let responseData
 
-    for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-      // generate the response
-      const response = await runtime.completion({
-        context,
-        stop: [],
-      })
+  for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+    console.log('message', message)
 
-      // parse the response, which is a json object block
-      const parsedResponse = parseJSONObjectFromText(response)
-
-      // if responder content doesnt' start with senderName: then we have a problem
-      if (!parsedResponse?.user?.includes(state.agentName)) {
-        if (runtime.debugMode) {
-          console.log(
-            chalk.red(
-              'parsed response was the wrong user:',
-              parsedResponse.user
-            )
-          )
-        }
-        continue
+    const response = await runtime.completion({ context, stop: [] })
+    
+    // log the response
+    runtime.supabase.from('logs').insert({
+      body: { message, context, response },
+      user_id: senderId,
+      room_id,
+      user_ids,
+      agent_id: agentId,
+      type: 'main_completion'
+    }).then(({error}) => {
+      if (error) {
+        console.error('error', error)
       }
+    }
+    )
 
+    const parsedResponse = parseJSONObjectFromText(response)
+    if (parsedResponse?.user?.includes(state.agentName)) {
       responseData = parsedResponse
       break
     }
-
-    // return response result to the user
-    if (!responseData) {
-      throw new Error('No response generated')
-    }
-
-    //
-    if (runtime.debugMode) {
-      console.log(chalk.yellow(`responseData: ${JSON.stringify(responseData)}`))
-    }
-
-    runtime.sendMessage({
-      ...message,
-      content: responseData.content,
-      action: responseData.action,
-    })
-
-    return responseData
   }
 
-  /**
-   * Handles the subsequent action execution if the main prompt outputs an action other than WAIT/CONTINUE
-   * @TODO - implement process actions
-   */
-  async function _processActions(data: {action: any}) {
-    if (!data.action) {
-      return
-    }
+  // return response result to the user
+  if (!responseData) {
+    throw new Error('No response generated')
+  }
+  if (!responseData) return
 
-    const action = runtime
-      .getActions()
-      .find((a: {name: any}) => a.name === data.action)
+  runtime.sendMessage({
+    ...message,
+    content: responseData.content,
+    action: responseData.action,
+  })
+  return responseData
+}
 
-    if (!action) {
-      return console.warn('No action found for', data.action)
-    }
-
-    if (!action.handler) {
-      if (runtime.debugMode) {
-        console.log(
-          chalk.yellow(`No handler found for action ${action.name}, skipping`)
-        )
-      }
-      return
-    }
-
-    await action.handler(data, state, runtime)
+/**
+ * Handles the subsequent action execution if the main prompt outputs an action other than WAIT/CONTINUE
+ */
+async function _processActions(
+  runtime: AgentRuntime,
+  _message: any,
+  state: any,
+  data: { action: any }
+) {
+  if (!data.action) {
+    return
   }
 
-  /**
-   * Summarizes the last event into a list of JSON entries, utility for the Rolodex feature
-   * @TODO - Rework moon's factual json reflection system (rolodex)
-   */
-  async function _reflect(responseData: {content: any; action: any}) {
-    const totalMessages = await runtime.messageManager.countMemoriesByUserIds({
-      userIds,
-    })
+  const action = runtime
+    .getActions()
+    .find((a: { name: any }) => a.name === data.action)
 
-    const modulo = Math.round(runtime.getRecentMessageCount() - 2)
-
-    // if the total number of messages is divisible by the modulo within epsilon, then we should reflect
-    // TODO: this is a pretty bad algorithm. we should probably store the count at the last reflection and compare or something
-    if (totalMessages % modulo !== 0) {
-      return
-    }
-
-    const actors = await getMessageActors({supabase, userIds})
-
-    const senderName = actors.find(
-      (actor: {id: any}) => actor.id === senderId
-    ).name
-    const agentName = actors.find(
-      (actor: {id: any}) => actor.id === agentId
-    ).name
-
-    const context = await composeContext({
-      context: {
-        ...state,
-        senderName,
-        senderContent,
-        senderAction,
-        agentName,
-        responderContent: responseData.content,
-        responderAction: responseData.action,
-        actors: formatMessageActors({actors}),
-        actionNames: runtime
-          .getActions()
-          .map((a: {name: any}) => a.name)
-          .join(', '),
-        actions: runtime
-          .getActions()
-          .map(
-            (a: {name: any; description: any}) => `${a.name}: ${a.description}`
-          )
-          .join('\n'),
-      },
-      template: reflection_template,
-    })
-
-    if (runtime.debugMode) {
-      console.log(
-        chalk.blue(
-          '******************** reflection context ********************\n'
-        )
-      )
-      console.log(chalk.blue(context))
-      console.log(
-        chalk.blue(
-          '\n************************************************************'
-        )
-      )
-    }
-
-    let reflections = null
-
-    // loop 3 times, call runtime.completion, and parse the result, if result is null try again, if result is valid continue
-    for (let i = 0; i < 3; i++) {
-      const reflectionText = await runtime.completion({context, stop: []})
-      const parsedReflections = parseJsonArrayFromText(reflectionText)
-      if (parsedReflections) {
-        reflections = parsedReflections
-        break
-      }
-    }
-
-    if (!reflections) {
-      if (runtime.debugMode) {
-        console.log(chalk.red('No reflection generated'))
-      }
-      return
-    }
-
-    if (runtime.debugMode) {
-      console.log(
-        chalk.blueBright(
-          '******************** reflection output ********************\n'
-        )
-      )
-      console.log(chalk.blueBright(JSON.stringify(reflections)))
-    }
-
-    // break up the reflection into multiple memories
-    for (const claim of reflections) {
-      if (
-        !claim.claim ||
-        claim.in_bio ||
-        claim.already_known ||
-        claim.type !== 'fact'
-      ) {
-        // skip invalid claims
-        continue
-      }
-      if (runtime.debugMode) {
-        console.log(chalk.magenta(claim.claim))
-      }
-      const reflectionMemory = await runtime.reflectionManager.bakeMemory(
-        new Memory({
-          user_ids: userIds,
-          user_id: agentId,
-          name: `${userIds.join(':')}:reflections`,
-          content: claim.claim,
-          room_id,
-        })
-      )
-
-      await runtime.reflectionManager.upsertRawMemory(reflectionMemory.toJSON())
-    }
-    if (runtime.debugMode) {
-      console.log(
-        chalk.blueBright(
-          '\n***********************************************************'
-        )
-      )
-    }
+  if (!action) {
+    return // console.warn('No action found for', data.action)
   }
 
-  async function _storeMemories(responseData: any) {
-    const responseMemory = new Memory({
+  if (!action.handler) {
+    if (runtime.debugMode) {
+      logger.log(`No handler found for action ${action.name}, skipping`, {
+        color: 'yellow',
+      })
+    }
+    return
+  }
+
+  await action.handler(data, state, runtime)
+}
+
+// stores either 1 or 2 memories, depending on whether the sender's content is empty or not
+async function _storeSenderMemory(
+  runtime: AgentRuntime,
+  message: any
+) {
+  const {
+    content: senderContent,
+    senderId,
+    eventType,
+    userIds,
+    room_id,
+  } = message
+
+  let _senderContent = senderContent?.trim()
+  // first, store the sender memory if it exists
+  if (eventType === 'message' && _senderContent) {
+    await runtime.messageManager.createMemory({
+      user_ids: userIds,
+      user_id: senderId,
+      content: { content: _senderContent, action: message.action || 'null' },
+      room_id,
+      embedding: embeddingZeroVector,
+    })
+  }
+}
+
+async function _storeAgentMemory(
+  runtime: AgentRuntime,
+  message: any,
+  state: any,
+  responseData: any
+) {
+  const {
+    agentId,
+    userIds,
+    room_id,
+  } = message
+
+  responseData.content = responseData.content?.trim()
+  if (responseData.content) {
+    await runtime.messageManager.createMemory({
       user_ids: userIds,
       user_id: agentId,
-      name: `${userIds.join(':')}:conversation`,
       content: responseData,
       room_id,
+      embedding: embeddingZeroVector,
     })
+    evaluate(runtime, message, { ...state, responseData })
+  } else {
+    console.warn('Empty response, skipping')
+  }
+}
 
-    responseMemory.embedding = embeddingZeroVector
+// main entry point for the agent
+export const onMessage = async (message: any, runtime: AgentRuntime) => {
+  // if runtime.getActions does not include any customActions, add them
+  addCustomActions(runtime);
+  addCustomEvaluators(runtime);
 
-    if (eventType === 'message' && senderContent) {
-      const senderMemory = new Memory({
-        user_ids: userIds,
-        user_id: senderId,
-        name: `${userIds.join(':')}:conversation`,
-        // TODO: handle messages on actions, for example in the user interface
-        content: {content: senderContent, action: senderAction},
-        room_id,
-      })
-      senderMemory.embedding = embeddingZeroVector
+  let {
+    content: senderContent,
+    senderId,
+    agentId,
+    userIds,
+  } = message
 
-      await runtime.messageManager.upsertRawMemory(senderMemory.toJSON())
-    }
-
-    await runtime.messageManager.upsertRawMemory(responseMemory.toJSON())
+  // if userIds is not defined, set it to [senderId, agentId]
+  if (!userIds) {
+    userIds = [senderId, agentId]
   }
 
-  /**
-   * The last step of post-event handling, i.e, preparation of context for the next event
-   */
-  async function _composeNextContext() {
-    // Initiate all asynchronous operations in parallel
-    const [actorsData, recentMessagesData, recentReflectionsData, goalsData] =
-      await Promise.all([
-        getMessageActors({supabase, userIds}),
-        runtime.messageManager.getMemoriesByIds({
-          userIds,
-          count: recentMessageCount,
-        }),
-        runtime.reflectionManager.getMemoriesByIds({
-          userIds,
-          count: recentReflectionsCount,
-        }),
-        getGoals({supabase, count: 10, onlyInProgress: true, userIds}),
-      ])
-
-    const goals = await formatGoalsAsString({goals: goalsData})
-
-    let relevantReflectionsData = []
-
-    if (recentReflectionsData.length > recentReflectionsCount - 1) {
-      relevantReflectionsData =
-        await runtime.reflectionManager.searchMemoriesByEmbedding(
-          recentReflectionsData[0].embedding,
-          {
-            userIds,
-            count: relevantReflectionsCount,
-          }
-        )
-      // filter out any entries in relevantReflectionsData that are also in recentReflectionsData
-      relevantReflectionsData = relevantReflectionsData.filter(
-        (reflection: {id: any}) => {
-          return !recentReflectionsData.find(
-            (recentReflection: {id: any}) =>
-              recentReflection.id === reflection.id
-          )
-        }
-      )
-    }
-
-    // Process fetched data
-    const actors = formatMessageActors({actors: actorsData})
-    const recentMessages = formatMessages({
-      actors: actorsData,
-      messages: recentMessagesData.map((memory: {toJSON: () => any}) => {
-        const newMemory = memory.toJSON()
-        delete newMemory.embedding
-        return newMemory
-      }),
-    })
-
-    const recentReflections = formatReflections(recentReflectionsData)
-    const relevantReflections = formatReflections(relevantReflectionsData)
-
-    const senderName = actorsData.find(
-      (actor: {id: any}) => actor.id === senderId
-    ).name
-    const agentName = actorsData.find(
-      (actor: {id: any}) => actor.id === agentId
-    ).name
-
-    return {
-      userIds,
-      agentId,
-      agentName,
-      senderName,
-      actors,
-      goals,
-      recentMessages,
-      recentReflections,
-      relevantReflections,
-      actionNames: runtime
-        .getActions()
-        .map((a: {name: any}) => a.name)
-        .join(', '),
-      actions: runtime
-        .getActions()
-        .map(
-          (a: {name: any; description: any; examples: any}) =>
-            `${a.name}: ${a.description}\nExamples:\n ${a.examples}`
-        )
-        .join('\n'),
-      messageExamples: getRandomMessageExamples({count: 5}),
-    }
+  if (!senderContent) {
+    logger.warn('Sender content null, skipping')
+    return
   }
 
-  if (eventType !== 'start') {
-    const data = await _main()
-    await _processActions(data)
-    await _reflect(data)
-    await _storeMemories(data)
-  }
+  const state = await composeState(runtime, userIds, senderId, agentId)
 
-  // write out the state for the next call
-  runtime.writeState(await _composeNextContext())
+  const data = await _main(runtime, message, state, response_generation_template)
+  await _processActions(runtime, message, state, data)
+  await _storeSenderMemory(runtime, message)
+  await evaluate(runtime, message, { ...state, responseData: data })
+  await _storeAgentMemory(runtime, message, state, data)
+  await evaluate(runtime, message, { ...state, responseData: data })
+}
+
+// main entry point for the agent
+export const onUpdate = async (message: any, runtime: AgentRuntime) => {
+  // if runtime.getActions does not include any customActions, add them
+  addCustomActions(runtime)
+
+  const {
+    senderId,
+    agentId,
+    userIds,
+  } = message
+
+  const state = await composeState(runtime, userIds, senderId, agentId)
+
+  if (shouldSkipMessage(state, agentId)) return
+
+  const data = await _main(runtime, message, state, update_generation_template)
+  await _processActions(runtime, message, state, data)
+  await _storeAgentMemory(runtime, message, state, data)
+  await evaluate(runtime, message, { ...state, responseData: data })
 }

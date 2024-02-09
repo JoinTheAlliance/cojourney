@@ -1,4 +1,4 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect } from "react";
 import { showNotification } from "@mantine/notifications";
 import { Database } from "../../../types/database.types";
@@ -19,6 +19,7 @@ const useListenToMessagesChanges = ({ getRoomData }: Props) => {
     user: { uid },
     currentRoom: { roomData },
   } = useGlobalStore();
+  const session = useSession();
 
   useEffect(() => {
     const channel = supabase
@@ -33,7 +34,6 @@ const useListenToMessagesChanges = ({ getRoomData }: Props) => {
         async (payload) => {
           // @ts-ignore
           addNewCurrentRoomMessage({ newMessage: payload.new, supabase });
-          console.warn('skipping last read update')
           // if (payload.new.room_id === currentRoom.roomData?.id) {
           //   const { error: lastReadError } = await supabase
           //     .from("participants")
@@ -108,6 +108,8 @@ const useListenToMessagesChanges = ({ getRoomData }: Props) => {
         },
       )
       .subscribe();
+
+      supabase.realtime.accessToken = session?.access_token as any; // THIS IS REQUIRED FOR RLS!!!
 
     return () => {
       channel.unsubscribe();

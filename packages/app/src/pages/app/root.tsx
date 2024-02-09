@@ -1,8 +1,8 @@
 import { ActionIcon, Burger, Drawer } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Outlet, useLocation } from "react-router-dom";
 import { Database } from "../../../types/database.types";
 import useListenToFriendshipChanges from "../../Hooks/relationships/useListenToFrienshipChanges";
@@ -16,6 +16,7 @@ import SideMenu from "../../components/SideMenu/SideMenu";
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers";
 import useGlobalStore, { initialState } from "../../store/useGlobalStore";
 import useRootStyles from "./useRootStyles";
+import OAuthUser from "../../components/OAuthUser";
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData();
@@ -42,7 +43,7 @@ const Root = (): JSX.Element => {
   } = useGlobalStore();
   const navigate = useNavigate();
 
-  if (location.pathname === "/" && dms.length > 0){
+  if (location.pathname === "/" && dms.length > 0) {
     navigate(`/chat/${dms[0].id}`);
   }
 
@@ -113,6 +114,7 @@ const Root = (): JSX.Element => {
 
   if (!session) {
     return <AuthUser />;
+    // return <OAuthUser />;
   }
 
   if (session && !user.registerComplete) {
@@ -125,11 +127,7 @@ const Root = (): JSX.Element => {
         <>
           <div className={classes.header}>
             <h3>Cojourney</h3>
-            <ActionIcon
-              onClick={(): void => setApp({ isMobileMenuOpen: true })}
-            >
-              <Burger opened={app.isMobileMenuOpen} />
-            </ActionIcon>
+            <Burger opened={app.isMobileMenuOpen} onClick={(): void => setApp({ isMobileMenuOpen: true })} />
           </div>
           <Drawer
             onClose={(): void => setApp({ isMobileMenuOpen: false })}

@@ -1,17 +1,12 @@
 import React from "react";
-import {
-  Avatar,
-  Navbar,
-  Title,
-} from "@mantine/core";
-import { useNavigate } from "react-router";
-import { useMediaQuery } from "@mantine/hooks";import useGlobalStore from "../../store/useGlobalStore";
+import { Avatar, Navbar, Title } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
+import useGlobalStore from "../../store/useGlobalStore";
 import useSideMenuStyles from "./SideMenu.styles";
 import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen";
+import constants from "../../constants/constants";
 
 const SideMenu = (): JSX.Element => {
-  const navigate = useNavigate();
-
   const {
     app,
     setApp,
@@ -19,7 +14,7 @@ const SideMenu = (): JSX.Element => {
   } = useGlobalStore();
 
   const { classes, cx } = useSideMenuStyles();
-
+  const navigate = useNavigate();
   const links = (): JSX.Element | JSX.Element[] => {
     return <FriendsSideMenuScreen />;
   };
@@ -39,19 +34,22 @@ const SideMenu = (): JSX.Element => {
             className={classes.title}
             order={4}
           >
-              Cojourney
-
-              <Avatar
-                onClick={(): void => {
-                  setApp({
+            Cojourney
+            <Avatar
+              onClick={(): void => {
+                setApp({
                   secondaryActiveSideMenu: "Settings/Account",
                   isMobileMenuOpen: false,
                 });
-                navigate("/account");
-              }
-            }
-            radius="xl"
-              />
+                navigate("/profile");
+              }}
+              radius="xl"
+              size={50}
+              style={{ cursor: "pointer" }}
+              src={constants.avatarPlaceholder(
+                "00000000-0000-0000-0000-000000000000",
+              )}
+            />
           </Title>
 
           <FriendsSideMenuScreen />

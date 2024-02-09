@@ -1,17 +1,14 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const pkg = require('./package.json')
-
-/** @type {import('@jest/types').Config.InitialOptions} */
-module.exports = {
+/** @type {import('ts-jest').JestConfigWithTsJest} */
+export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['/node_modules/', '/types/'],
+  rootDir: '__tests__',
+  testMatch: [
+    "**/*.test.ts"
+  ],
   globals: {
     __DEV__: true,
     __TEST__: true,
-    __VERSION__: pkg.version,
-  },
-  moduleNameMapper: {
-    '^@/(.*)': '<rootDir>/src/$1',
-  },
-}
+    __VERSION__: "0.0.1",
+  }
+};

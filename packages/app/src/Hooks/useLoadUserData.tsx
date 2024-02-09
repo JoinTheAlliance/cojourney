@@ -52,7 +52,7 @@ const useLoadUserData = () => {
     setUser({
       name: data?.name,
       email: data?.email,
-      imageUrl: data?.image_url,
+      imageUrl: data?.avatar_url,
       registerComplete: data?.register_complete,
       uid: data?.id,
     });

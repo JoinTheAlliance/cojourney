@@ -63,12 +63,12 @@ const FriendsPendingList = (): JSX.Element => {
                 user={{
                   email: friendData.email || "",
                   id: friendData.id || "",
-                  imageUrl: friendData.image_url || "",
+                  imageUrl: friendData.avatar_url || "",
                   name: friendData.name || "",
                 }}
               >
                 <UserAvatarWithIndicator
-                  image={friendData.image_url || ""}
+                  image={friendData.avatar_url || ""}
                   size={40}
                   user_email={friendData.email || ""}
                   checkOnline

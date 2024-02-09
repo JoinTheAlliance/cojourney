@@ -26,6 +26,8 @@ const useRoomData = ({ roomId }: Props) => {
         usersTyping: [],
       });
 
+      console.log('getting rooms', roomId)
+
       const { error: roomDataError, data: roomDataReq } = await supabase
         .from("rooms")
         .select(
@@ -40,14 +42,14 @@ const useRoomData = ({ roomId }: Props) => {
         ))`,
         )
         .eq("participants.user_id", session.user.id)
-        .eq("id", roomId)
+        .eq("id", roomId as string)
         .single();
 
       if (!roomDataReq || roomDataError) {
         setCurrentRoom({ roomNotFound: true, isLoading: false });
         return;
       }
-
+      console.log('roomDataReq', roomDataReq)
       setCurrentRoom({ roomData: roomDataReq });
 
       const { data: participantsData, error: participantsError } =

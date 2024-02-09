@@ -41,7 +41,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       });
     }
 
-    let IMAGE_URL = null;
+    let IMAGE_URL = "";
 
     if (profileImage) {
       const { data: imageUploadData, error } = await supabase.storage
@@ -84,7 +84,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       name: user.name,
       register_complete: true,
       email: session.user.email,
-      image_url: IMAGE_URL,
+      avatar_url: IMAGE_URL,
       id: session?.user.id,
     });
 

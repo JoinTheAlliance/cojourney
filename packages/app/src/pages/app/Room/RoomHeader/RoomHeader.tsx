@@ -1,10 +1,11 @@
-import { ActionIcon, Avatar, Flex, Tooltip } from "@mantine/core";
+import { ActionIcon, Avatar, Button, Flex, Tooltip } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import React, { useState } from "react";
-import { Settings } from "react-feather";
+import { Settings, MoreHorizontal } from "react-feather";
 import UserAvatarWithIndicator from "../../../../components/UserAvatarWithIndicator/UserAvatarWithIndicator";
 import useGlobalStore from "../../../../store/useGlobalStore";
 import useRoomHeaderStyles from "./useRoomHeaderStyles";
+import { useNavigate } from "react-router-dom";
 
 const RoomHeader = (): JSX.Element => {
   const { classes } = useRoomHeaderStyles();
@@ -12,6 +13,7 @@ const RoomHeader = (): JSX.Element => {
     currentRoom: { roomData, roomParticipants },
   } = useGlobalStore();
   const isMobile = useMediaQuery("(max-width: 1200px)");
+  const navigate = useNavigate();
 
   const [isRoomSettingsOpened, setIsRoomSettingsOpened] = useState(false);
 
@@ -38,7 +40,7 @@ const RoomHeader = (): JSX.Element => {
                     <div>
                       <UserAvatarWithIndicator
                         // @ts-ignore
-                        image={participant.userData.image_url}
+                        image={participant.userData.avatar_url}
                         size={40}
                         // @ts-ignore
                         user_email={participant.userData.email}
@@ -54,11 +56,22 @@ const RoomHeader = (): JSX.Element => {
           </div>
         </div>
         <Flex align="center">
-          {/* <Tooltip
+          <Tooltip
+            withArrow
+            label="CJ Profile"
+          >
+            <MoreHorizontal
+              style={{ cursor: "pointer", color: "#757474" }}
+              onClick={() => navigate("/cjprofile")}
+            />
+          </Tooltip>
+        </Flex>
+        {/* <Flex align="center">
+          <Tooltip
             withArrow
             label="Use AI tools to help you write your messages, or to be a menace to your friends."
-          > */}
-          {/* <Button
+          >
+            <Button
               onClick={() => {
                 setApp({
                   isTldrMenuOpen: true,
@@ -68,9 +81,9 @@ const RoomHeader = (): JSX.Element => {
               variant="light"
             >
               ChatGPT
-            </Button> */}
-          {/* </Tooltip> */}
-          {/* {isMobile && (
+            </Button>
+          </Tooltip>
+          {isMobile && (
             <Tooltip
               label="Room Settings"
               withArrow
@@ -83,8 +96,8 @@ const RoomHeader = (): JSX.Element => {
                 <Settings size={20} />
               </ActionIcon>
             </Tooltip>
-          )} */}
-        </Flex>
+          )}
+        </Flex> */}
       </div>
     </div>
   );

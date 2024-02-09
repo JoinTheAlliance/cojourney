@@ -30,43 +30,6 @@ export const defaultActions = [
       JSON.stringify({ user: "CJ", content: "", action: "IGNORE" }),
     ],
   },
-  // {
-  //   name: 'UPDATE_GOAL',
-  //   description: 'Update a the current state of a goal - set goal status to CANCELED, FAILED or COMPLETED',
-  //   args: {
-  //     goal: 'uuid',
-  //     status: 'string',
-  //   },
-  //   handler: updateGoalResponseHandler,
-  //   examples: [
-
-  //   ]
-  // },
-  // {
-  //   name: 'UPDATE_OBJECTIVE',
-  //   description: 'Update the objective in a goal',
-  //   args: {
-  //     goal: 'uuid',
-  //     objective_index: 'number',
-  //     completed: 'boolean',
-  //   },
-  //   handler: updateObjectiveResponseHandler,
-  // examples: [
-
-  // ]
-  // },
-  // {
-  //   name: 'UPDATE_USER_PROFILE',
-  //   description: 'Update the profile of a user in the scene',
-  //   args: {
-  //     userId: 'uuid',
-  //     profile: 'profile',
-  //   },
-  //   handler: updateProfileResponseHandler,
-  // examples: [
-
-  // ]
-  // }
 ];
 
 /**

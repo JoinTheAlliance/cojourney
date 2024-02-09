@@ -3,36 +3,12 @@
   "version": "0.0.1",
   "description": "An agent for every stage of your life",
   "type": "module",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
-  "browser": "dist/index.umd.js",
-  "umd:main": "dist/index.umd.js",
-  "unpkg": "dist/index.global.js",
-  "jsdelivr": "dist/index.global.js",
-  "jsnext:main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "bin": {
-    "cojourney": "./terminal.mjs"
-  },
-  "exports": {
-    ".": {
-      "import": "./dist/index.esm.js",
-      "default": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js",
-      "script": "./dist/index.umd.js"
-    }
-  },
   "license": "MIT",
-  "sideEffects": false,
   "scripts": {
-    "dev": "rollup -c -w",
-    "dev:terminal": "node terminal.mjs",
-    "build": "rollup -c",
+    "dev": "rollup -c",
+    "build": "rollup -c && tsc --declaration --emitDeclarationOnly --declarationDir dist",
     "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist",
-    "test": "jest",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "test:dev": "jest --watchAll",
     "test:coverage": "jest --coverage",
     "lint": "eslint --ext .ts --ext .js .",
@@ -48,7 +24,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
-    "chalk": "^5.3.0",
+    "axios": "^1.6.7",
     "dotenv": "^16.4.1",
     "ms": "^2.1.3",
     "ts-node": "^10.9.2"
@@ -73,7 +49,8 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "jest": "^26.6.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.2.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.4",
@@ -81,7 +58,7 @@
     "rollup": "^2.79.1",
     "rollup-plugin-terser": "^7.0.0",
     "semantic-release": "^23.0.0",
-    "ts-jest": "^26.5.6",
+    "ts-jest": "^29.1.2",
     "tslib": "^2.6.2",
     "typescript": "^4.9.5"
   },
@@ -100,10 +77,9 @@
   },
   "engines": {
     "node": ">= 18.0.0",
-    "npm": ">= 8.6.0",
-    "yarn": ">= 1.20.x"
+    "npm": ">= 8.6.0"
   },
   "buildOptions": {
-    "name": "TypeScriptStarterLibrary"
+    "name": "index"
   }
 }

@@ -22,7 +22,7 @@ Connect with guides like CJ, an AI who can help you with anything you're going t
 Users in can introduce each other to their connections, and connections can be tailored for friendship, professional networking, or dating. The app is designed to help people find others who are going through similar experiences, and to help them connect with others who can help them through their journey.`
 
 const directorNotes =
-  `# Director's Notes
+  `# Notes for {{agentName}}
 - Don't be cheesy. Don't say things like "Give it a try!" or "Let me know what you think!"
 - Don't emphasize technology, virtual reality or metaverse (it's cheesy)
 - DON'T use exclamation points !
@@ -56,7 +56,7 @@ const messageResponseFormat =
 
 // Respond to user input
 export const response_generation_template =
-  `## Example Messages
+`## Example Messages
 json\`\`\`
 {{messageExamples}}
 \`\`\`
@@ -128,107 +128,3 @@ ${messageResponseFormat}
 \`\`\`json
 {{recentMessages}}
 \`\`\``;
-
-
-// Used in the reflection step
-export const reflection_template =
-  `TASK: MESSAGE EVENT SUMMARIZATION ("Reflection")
-Extract what happened in the scene as an array of claims in JSON format.
-
-These are an examples of the expected output of this task:
-"""
-Example Scene Dialog:
-johan: Just found a rare artifact in the wilds!
-pigloo: Awesome! What does it do?
-johan: It's a rare sword that gives +10 to all stats!
-pigloo: whoah thats insane
-johan: I know right? I'm never going to sell it lol
-
-Claims:
-\`\`\`json
-[
-  {claim: 'johan found a rare sword in the wilds that gives +10 to all stats.', type: 'fact', in_bio: false, already_known: false },
-  {claim: 'johan is never going to sell his new rare artifact sword', 'type': 'status', in_bio: false, already_known: false },
-]
-\`\`\`
-"""
-Facts about the scene:
-Alex and Kim are meeting up for coffee
-Alex and Kim have been friends for a long time
-
-Actors in the scene:
-Alex - Marathon runner and gymnist. Worked out every day for a year to prepare for a marathon. Friends with Kim.
-Kim - Friends with Alex. Likes shopping and going to the beach. Has a dog named Spot.
-
-Scene Dialog:
-alex: I finally completed the marathon this year!
-kim: That's amazing! How long did it take you?
-alex: Just under 4 hours, which was my goal!
-kim: That's so impressive, I know you worked out all year for that
-alex: Yeah, I'm really proud of myself. 2 hours a day at the gym for a year!
-
-Claims:
-json\`\`\`
-[
-  { "claim": "Alex just completed a marathon in just under 4 hours.", "type": "fact", "in_bio": false, "already_known": false },
-  { "claim": "Alex worked out 2 hours a day at the gym for a year.", "type": "fact", "in_bio": true, "already_known": false },
-  { "claim": "Alex is really proud of himself.", "type": "status", "in_bio": false, "already_known": false }
-]
-\`\`\`
-"""
-Facts about the scene
-Mike and Eva won a regional chess tournament about six months ago
-Mike and Eva are friends
-
-Actors in the scene:
-mike - Chess club president. Likes to play chess and go to the park. Friends with Eva.
-eva - Friends with Mike. Likes to play chess and go to the park. Chess club member.
-
-Scene Dialog:
-mike: Remember when we won the regional chess tournament last spring?
-eva: Of course! That was an incredible day.
-mike: It really put our chess club on the map.
-
-Claims:
-json\`\`\`
-[
-  { "claim": "Mike and Eva won the regional chess tournament last spring", "type": "fact", "in_bio": false, "already_known": true },
-  { "claim": "Winning the regional chess tournament put the chess club on the map", "type": "status", "in_bio": false, "already_known": false }
-]
-\`\`\`
-
-Facts about the scene:
-{{recentReflections}}
-{{relevantReflections}}
-
-Goals for the current scene:
-{{goals}}
-
-Actors in the scene:
-{{actors}}
-
-INSTRUCTIONS: Extract any claims from the conversation that are not already present in the list of facts.
-- If the fact is already in the character's description, set in_bio to true
-- If the fact is already known to the character, set already_known to true
-- Set the type to fact or status
-  - Facts are always true, facts about the world or the character that do not change
-  - Status is pertinent to the current scene or character's immediate situation, also includes the character's thoughts, feelings, judgments or recommendations
-- Response should be a JSON object array inside a JSON markdown block
-
-Correct response format:
-\`\`\`json
-[
-  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
-  {claim: string, type: enum<fact|status>, in_bio: boolean, already_known: boolean },
-  ...
-]
-\`\`\`
-
-Scene Dialog:
-\`\`\`json
-{{recentMessages}}
-{ "user": "{{senderName}}", "content": "{{senderContent}}", "action": "{{senderAction}}" }
-{ "user": "{{agentName}}", "content": "{{responderContent}}", "action": "{{responderAction}}" }
-\`\`\`;
-
-Claims:`;

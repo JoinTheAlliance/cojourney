@@ -24,6 +24,8 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
     currentRoom: { roomData, isRoomMember },
   } = useGlobalStore();
 
+  const [inputHandler, setInputHandler] = React.useState<any>(null);
+
   // TODO:
   // if the room data participates include our default agent, we will render the AI room instead :)
 
@@ -50,18 +52,24 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 
   return (
     <div>
-      <AgentBinding roomData={roomData}/>
-        <div className={classes.headerContainer}>
-          <RoomHeader />
+      <AgentBinding
+        roomData={roomData}
+        setInputHandler={setInputHandler}
+      />
+      <div className={classes.headerContainer}>
+        <RoomHeader />
+      </div>
+      <div className={classes.messagesContainer}>
+        <Messages />
+      </div>
+      {isRoomMember && (
+        <div className={classes.textInputContainer}>
+          <MessagesTextInput
+            roomChannel={roomChannel}
+            inputHandler={inputHandler}
+          />
         </div>
-        <div className={classes.messagesContainer}>
-          <Messages />
-        </div>
-        {isRoomMember && (
-          <div className={classes.textInputContainer}>
-            <MessagesTextInput roomChannel={roomChannel} />
-          </div>
-        )}
+      )}
     </div>
   );
 };

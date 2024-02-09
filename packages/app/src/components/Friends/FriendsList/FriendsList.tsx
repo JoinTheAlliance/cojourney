@@ -5,13 +5,17 @@ import getFriend from "../../../utils/getFriend";
 import UserPopup from "../../UserPopup/UserPopup";
 
 // @ts-ignore
-const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element => {
+const FriendsList = ({
+  friends,
+  user,
+}: {
+  friends: any;
+  user: any;
+}): JSX.Element => {
   const theme = useMantineTheme();
 
   if (friends.length === 0) {
-    return (
-      <p>No friends yet!</p>
-    );
+    return <p>No friends yet!</p>;
   }
 
   return (
@@ -28,7 +32,7 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
           <UserPopup
             user={{
               email: friendData.email || "",
-              imageUrl: friendData.image_url || "",
+              imageUrl: friendData.avatar_url || "",
               name: friendData.name || "",
               id: friendData.id || "",
             }}
@@ -52,7 +56,7 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
             >
               <UserAvatarWithIndicator
                 // @ts-ignore
-                image={friendData.image_url}
+                image={friendData.avatar_url}
                 size={40}
                 // @ts-ignore
                 user_email={friendData.email}

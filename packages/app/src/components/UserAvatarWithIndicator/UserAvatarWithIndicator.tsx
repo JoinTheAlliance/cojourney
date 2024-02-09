@@ -7,6 +7,7 @@ interface Props {
   checkOnline?: boolean;
   image: string;
   size: number;
+  radius?: number;
   user_email: string;
 }
 
@@ -14,6 +15,7 @@ const UserAvatarWithIndicator = ({
   image,
   size,
   user_email,
+  radius,
   checkOnline = false,
 }: Props): JSX.Element => {
   const {
@@ -38,7 +40,7 @@ const UserAvatarWithIndicator = ({
 
   return (
     <Indicator
-      disabled={!isOnline}
+      color={isOnline ? "#0AB161" : "#8a8a8a"}
       offset={5}
       position="bottom-end"
       size={15}
@@ -50,7 +52,7 @@ const UserAvatarWithIndicator = ({
       }}
     >
       <Avatar
-        radius="xl"
+        radius={radius}
         size={size}
         src={image || constants.avatarPlaceholder(user_email)}
       />

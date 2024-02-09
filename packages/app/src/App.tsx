@@ -1,19 +1,23 @@
 import React from "react";
-import { createClient } from "@supabase/supabase-js";
 import { MantineProvider } from "@mantine/core";
-import { ModalsProvider } from "@mantine/modals";
-import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { useColorScheme } from "@mantine/hooks";
+import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-import Root from "./pages/app/root";
-import Error404 from "./pages/404/Error404";
-import RoomLayout from "./pages/app/Room/index";
-import useGlobalStore from "./store/useGlobalStore";
-import UserPreferences from "./pages/app/UserPreferences/UserPreferences";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { createClient } from "@supabase/supabase-js";
+import { PostHogProvider } from "posthog-js/react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./App.css";
 import LoadingOverlay from "./components/LoadingOverlay/LoadingOverlay";
 import constants from "./constants/constants";
+import Error404 from "./pages/404/Error404";
+import RoomLayout from "./pages/app/Room/index";
+import Root from "./pages/app/root";
+import UserPreferences from "./pages/app/UserPreferences/UserPreferences";
+import TestPage from "./pages/app/TestPage";
+import UserProfile from "./pages/app/UserProfile";
+import useGlobalStore from "./store/useGlobalStore";
+import CJProfile from "./pages/app/CJProfile";
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -38,13 +42,24 @@ const router = createBrowserRouter([
         path: "/account",
         element: <UserPreferences />,
       },
+      {
+        path: "/test",
+        element: <TestPage />,
+      },
+      {
+        path: "profile",
+        element: <UserProfile />,
+      },
+      {
+        path: "cjprofile",
+        element: <CJProfile />,
+      },
     ],
   },
 ]);
 
 const App = (): JSX.Element => {
   const colorScheme = useColorScheme();
-
   const { preferences } = useGlobalStore();
 
   return (
@@ -52,8 +67,7 @@ const App = (): JSX.Element => {
       <MantineProvider
         theme={{
           // @ts-ignore
-          colorScheme:
-            preferences.theme === "system" ? colorScheme : preferences.theme,
+          colorScheme,
           primaryColor: "blue",
           defaultRadius: "md",
           colors: {
@@ -82,11 +96,18 @@ const App = (): JSX.Element => {
         }}
         withGlobalStyles
       >
-        <Notifications />
-        <ModalsProvider>
-          <RouterProvider router={router} />
-          <LoadingOverlay />
-        </ModalsProvider>
+        <PostHogProvider
+          apiKey={constants.posthogApiKey}
+          options={{
+            api_host: "https://app.posthog.com",
+          }}
+        >
+          <Notifications />
+          <ModalsProvider>
+            <RouterProvider router={router} />
+            <LoadingOverlay />
+          </ModalsProvider>
+        </PostHogProvider>
       </MantineProvider>
     </SessionContextProvider>
   );

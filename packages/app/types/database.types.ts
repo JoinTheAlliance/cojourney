@@ -124,7 +124,7 @@ export interface Database {
           created_at: string | null
           email: string | null
           id: string
-          image_url: string | null
+          avatar_url: string | null
           name: string | null
           register_complete: boolean | null
         }
@@ -132,7 +132,7 @@ export interface Database {
           created_at?: string | null
           email?: string | null
           id: string
-          image_url?: string | null
+          avatar_url?: string | null
           name?: string | null
           register_complete?: boolean | null
         }
@@ -140,7 +140,7 @@ export interface Database {
           created_at?: string | null
           email?: string | null
           id?: string
-          image_url?: string | null
+          avatar_url?: string | null
           name?: string | null
           register_complete?: boolean | null
         }

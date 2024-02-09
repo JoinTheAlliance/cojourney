@@ -54,7 +54,7 @@ const AuthUser = (): JSX.Element => {
             },
           },
         }}
-        providers={[]}
+        providers={["google", "discord", "twitter"]}
         redirectTo="/"
         socialLayout="horizontal"
         supabaseClient={supabase}

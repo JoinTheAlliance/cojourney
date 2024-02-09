@@ -1,3 +1,4 @@
+import { Memory } from "./memory";
 import { messageExamples } from "./messageExamples";
 
 /** Get the actors who are participating in the message, for context injection of name and description
@@ -33,7 +34,7 @@ export async function getMessageActors({ supabase, userIds }: any) {
 export function formatMessageActors({ actors }: any) {
   // format actors as a string
   const actorStrings = actors.map((actor: { name: any; description: any; }) => {
-    const header = `${actor.name}: ${actor.description}`;
+    const header = `${actor.name}: ${actor.description ?? "No description"}`;
     return header;
   });
   const finalActorStrings = actorStrings.join("\n");
@@ -91,10 +92,9 @@ export const formatMessages = ({ messages, actors }: any) => {
 /** format conversation as string */
 export const formatReflections = (reflections: any[]) => {
   // format conversation as a string
-  const messageStrings = reflections.reverse().map((reflection: { toJSON: () => { (): any; new(): any; content: any; }; }) => {
-    const header = `${reflection.toJSON().content}`;
-    return header;
-  });
+  const messageStrings = reflections.reverse().map((reflection: Memory) =>
+    `${reflection.content}`
+  );
   const finalMessageStrings = messageStrings.join("\n");
   return finalMessageStrings;
 };
