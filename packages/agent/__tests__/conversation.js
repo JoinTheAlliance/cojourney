@@ -1,6 +1,6 @@
-// test that the agent stops talking when the user asks
+// TODO: test that the agent stops talking when the user asks
 
-// test that the agent stops when the user doesnt respond
+// TODO: test that the agent stops when the user doesnt respond
 
 describe('Conversation Function', () => {
     test('should return "Hello World"', async () => {

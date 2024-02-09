@@ -1,5 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { MemoryManager } from "./memory";
+import { defaultActions } from "./actions";
+import { defaultEvaluators } from "./evaluators";
 import axios from "axios";
 // create a typescrip tinterface for opts
 export type AgentRuntimeOpts = {
@@ -24,11 +26,27 @@ export class AgentRuntime {
   token: string | null;
   debugMode: boolean;
   supabase: SupabaseClient;
-  messageManager: MemoryManager;
-  descriptionManager: MemoryManager;
-  reflectionManager: MemoryManager;
-  messageHandlers: any[];
-  actionHandlers: any[];
+  messageManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "messages",
+    },
+  });;
+  descriptionManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "descriptions",
+    },
+  });
+  reflectionManager: MemoryManager = new MemoryManager({
+    runtime: this,
+    schema: {
+      tableName: "reflections",
+    },
+  });
+  messageHandlers: any[] = [];
+  actionHandlers: any[] = []
+  evaluationHandlers: any[] = []
   
   constructor(opts: AgentRuntimeOpts) {
     this.#recentMessageCount = opts.recentMessageCount || this.#recentMessageCount;
@@ -40,31 +58,6 @@ export class AgentRuntime {
     }
 
     this.token = opts.token;
-    
-    this.messageManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "messages",
-      },
-    });
-
-    this.descriptionManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "descriptions",
-      },
-    });
-
-    this.reflectionManager = new MemoryManager({
-      runtime: this,
-      schema: {
-        tableName: "reflections",
-      },
-    });
-
-    this.messageHandlers = [];
-
-    this.actionHandlers = [];
   }
 
   getRecentMessageCount() {
@@ -87,8 +80,15 @@ export class AgentRuntime {
     return [...new Set(this.actionHandlers)];
   }
 
+  registerEvaluationHandler(handler: any) {
+    this.evaluationHandlers.push(handler);
+  }
+
+  getEvaluationHandlers() {
+    return [...new Set(this.evaluationHandlers)];
+  }
+  
   async completion({ context = "", stop = [], model = "gpt-3.5-turbo-0125", frequency_penalty = 0.0, presence_penalty = 0.0 }) {
-    console.log('this.token', this.token)
     const requestOptions = {
       method: "post",
       url: `${this.serverUrl}/api/ai/chat/completions`,

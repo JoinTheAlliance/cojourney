@@ -8,8 +8,8 @@ const defaultMatchThreshold = 75
 const defaultMatchCount = 10
 
 type SearchOptions = {
-  match_threshold: number
-  match_count: number
+  match_threshold?: number
+  count?: number
   userIds: UUID[]
 }
 
@@ -27,8 +27,6 @@ export type Memory = {
   user_ids: UUID[]
   room_id: any
 }
-
-//
 
 export class MemoryManager {
   runtime: AgentRuntime
@@ -90,7 +88,7 @@ export class MemoryManager {
   async searchMemoriesByEmbedding(embedding: number[], opts: SearchOptions) {
     const {
       match_threshold = defaultMatchThreshold,
-      match_count = defaultMatchCount,
+      count = defaultMatchCount,
       userIds = [],
     } = opts
     console.log('embedding', embedding)
@@ -99,7 +97,7 @@ export class MemoryManager {
       query_user_ids: userIds,
       query_embedding: embedding, // Pass the embedding you want to compare
       query_match_threshold: match_threshold, // Choose an appropriate threshold for your data
-      query_match_count: match_count, // Choose the number of matches
+      query_match_count: count, // Choose the number of matches
     })
     if (result.error) {
       throw new Error(JSON.stringify(result.error))
@@ -149,7 +147,7 @@ export class MemoryManager {
     }
   }
 
-  async countMemoriesByUserIds(userIds: UUID) {
+  async countMemoriesByUserIds(userIds: UUID[]) {
     const result = await this.runtime.supabase.rpc('count_memories', {
       query_table_name: this.schema.tableName,
       query_user_ids: userIds,

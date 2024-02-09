@@ -28,7 +28,7 @@ describe('Agent Runtime', () => {
     }
 
     async function _createMemories() {
-      const bakedMemory = runtime.messageManager.addEmbeddingToMemory({
+      const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: user.id,
         user_ids: [user.id, zeroUuid],
         content: {
@@ -38,7 +38,7 @@ describe('Agent Runtime', () => {
       // create a memory
       await runtime.messageManager.createMemory(bakedMemory);
 
-      const bakedMemory2 = runtime.messageManager.addEmbeddingToMemory({
+      const bakedMemory2 = await runtime.messageManager.addEmbeddingToMemory({
         user_id: zeroUuid,
         user_ids: [user.id, zeroUuid],
         content: {

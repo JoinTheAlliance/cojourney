@@ -1,3 +1,51 @@
+import {
+  AgentRuntime
+} from '../lib'
+import { customActions } from './actions'
+import { customEvaluators } from './evaluations'
+
+export function shouldSkipMessage(state: any, agentId: string): boolean {
+  if (
+    state.recentMessagesData?.length > 2
+  ) {
+    // read the last messages
+    // if the last 3 messages are from the agent, or the last message from the agent has the WAIT action, then we should skip
+    const currentMessages = state.recentMessagesData ?? []
+    const lastThreeMessages = currentMessages.slice(-3)
+    const lastThreeMessagesFromAgent = lastThreeMessages.filter(
+      (message: any) => message.user_id === agentId
+    )
+    if (lastThreeMessagesFromAgent.length === 3) {
+      return true
+    }
+    // if the last two messages had the WAIT action from current agent, then we should skip
+    const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2)
+    const lastTwoMessagesFromAgentWithWaitAction =
+      lastTwoMessagesFromAgent.filter(
+        (message: any) => message.content.action === 'WAIT'
+      )
+    if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
+      return true
+    }
+  }
+  return false
+}
+
+export function addCustomActions(runtime: AgentRuntime) {
+  customActions.forEach((action) => {
+    if (!runtime.getActions().includes(action)) {
+      runtime.registerActionHandler(action)
+    }
+  });
+
+    // if runtime.evaluationHandlers does not include any customEvaluators, add them
+  customEvaluators.forEach((evaluation) => {
+  if (!runtime.evaluationHandlers.includes(evaluation)) {
+    runtime.evaluationHandlers.push(evaluation)
+  }
+});
+}
+
 export function parseJsonArrayFromText(text: any) {
   let jsonData = null;
 
