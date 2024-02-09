@@ -18,7 +18,7 @@ jobs:
           cache: 'npm'  # This tells the setup-node action to cache npm dependencies
 
       - name: Install dependencies
-        run: npm install @nx/nx-linux-x64-gnu && npm ci --include=optional && npm run build
+        run: npm install @nx/nx-linux-x64-gnu && npm ci --include=optional && npm run build:worker
 
       - uses: actions/checkout@v3
       - name: Deploy

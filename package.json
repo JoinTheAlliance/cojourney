@@ -23,6 +23,7 @@
     "dev:all": "lerna run dev",
     "cj": "cd packages/shell && npm run dev",
     "build": "lerna run build",
+    "build:worker": "lerna run build --scope @cojourney/agent --scope @cojourney/worker",
     "test": "lerna run test",
     "coverage": "lerna run coverage",
     "types": "lerna run types",
