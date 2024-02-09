@@ -13,7 +13,10 @@ interface Props {
   inputHandler: any;
 }
 
-const MessagesTextInput = ({ roomChannel, inputHandler }: Props): JSX.Element => {
+const MessagesTextInput = ({
+  roomChannel,
+  inputHandler,
+}: Props): JSX.Element => {
   const supabase = useSupabaseClient<Database>();
   const session = useSession();
 
@@ -138,11 +141,11 @@ const MessagesTextInput = ({ roomChannel, inputHandler }: Props): JSX.Element =>
   };
 
   const sendButton = (): JSX.Element | null => {
-    if (message.length <= 0) return null;
+    if (message.length <= 0) return <Send size={16} />;
 
     return (
       <ActionIcon type="submit">
-        {isSendingMessage ? <Loader size={16} /> : <Send size={16} />}
+        {isSendingMessage && <Loader size={16} />}
       </ActionIcon>
     );
   };

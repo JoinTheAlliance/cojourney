@@ -16,6 +16,7 @@ import SideMenu from "../../components/SideMenu/SideMenu";
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers";
 import useGlobalStore, { initialState } from "../../store/useGlobalStore";
 import useRootStyles from "./useRootStyles";
+import OAuthUser from "../../components/OAuthUser";
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData();
@@ -42,7 +43,7 @@ const Root = (): JSX.Element => {
   } = useGlobalStore();
   const navigate = useNavigate();
 
-  if (location.pathname === "/" && dms.length > 0){
+  if (location.pathname === "/" && dms.length > 0) {
     navigate(`/chat/${dms[0].id}`);
   }
 
@@ -113,6 +114,7 @@ const Root = (): JSX.Element => {
 
   if (!session) {
     return <AuthUser />;
+    // return <OAuthUser />;
   }
 
   if (session && !user.registerComplete) {
