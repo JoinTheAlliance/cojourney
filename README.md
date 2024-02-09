@@ -1,4 +1,4 @@
-# Cojourney<a href="https://discord.gg/qetWd7J9De"><img style="float: right" src="https://dcbadge.vercel.app/api/server/qetWd7J9De" alt=""></a>
+# Cojourney<a href="https://discord.gg/qetWd7J9De"><img style="margin-left: auto; float: right" src="https://dcbadge.vercel.app/api/server/qetWd7J9De" alt=""></a>
 
 <img src="packages/docs/static/img/banner.jpg" alt="Cojourney" width="100%">
 
