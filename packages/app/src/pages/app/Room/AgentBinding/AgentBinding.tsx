@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
   AgentRuntime,
-  initialize,
   onMessage,
   agentActions,
   getGoals,
   createGoal,
+  getRelationship,
 } from "@cojourney/agent";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import useGlobalStore from "../../../../store/useGlobalStore";
@@ -14,7 +14,6 @@ const agentId = "00000000-0000-0000-0000-000000000000";
 const userName = "User"; // TODO: get from user profile
 const agentName = "CJ";
 const debugMode = false;
-const updateInterval = 10000;
 
 const defaultGoal = {
   name: "First Time User Experience",
@@ -64,7 +63,6 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
   const supabase = useSupabaseClient();
   const [lastMessageCount, setLastMessageCount] = useState(0);
   const [lastRoomId, setLastRoomId] = useState("");
-  const [initialized, setInitialized] = useState(false);
   const {
     currentRoom: { messages, roomParticipants },
     user: { uid },
@@ -74,8 +72,6 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
 
   useEffect(() => {
     if (!supabase || !userId) return;
-    if(initialized) return;
-    setInitialized(true);
         // if roomData ID same as lastRoomId
     // and messages length is same as lastMessageCount, return
     if (
@@ -86,32 +82,24 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
     }
     setLastRoomId(roomData?.id);
     setLastMessageCount(messages?.length || 0);
+    
     async function startAgent(): Promise<void> {
       if(agentRuntime) return;
-      console.log("messages", messages);
-      console.log("roomParticipants", roomParticipants);
-
+      const { data: { session } } = await supabase.auth.getSession() as any;
       const runtime = new AgentRuntime({
         debugMode,
-        userId,
-        agentId,
         supabase,
+        token: session.access_token,
         serverUrl: import.meta.env.VITE_SERVER_URL,
       });
       setAgentRuntime(runtime);
 
       // get the room_id where user_id is user_a and agent_id is user_b OR vice versa
-      const { data, error } = await supabase
-        .from("relationships")
-        .select("*")
-        .or(
-          `user_a.eq.${userId},user_b.eq.${agentId},user_a.eq.${agentId},user_b.eq.${userId}`,
-        )
-        .single();
-
-      if (error) {
-        return console.error(new Error(JSON.stringify(error)));
-      }
+      const data = await getRelationship({
+        supabase,
+        userA: userId,
+        userB: agentId,
+      })
 
       // TODO, just get the room id from channel
       const room_id = data?.room_id;
@@ -129,18 +117,12 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
           goal: defaultGoal,
         });
       }
-      const {
-        start: startLoop,
-        reset: resetLoop,
-        registerHandler,
-      } = initialize();
 
       runtime.registerMessageHandler(
         async ({ agentName: _agentName, content, action }: any) => {
           console.log(
               `${_agentName}: ${content}${action ? ` (${action})` : ""}`,
           );
-          resetLoop();
         },
       );
 
@@ -159,8 +141,9 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
       }
 
       // Function to simulate agent's response
-      setInputHandler(async (content: any) => {
-        resetLoop(); // reset the update interval early to prevent async update race
+      setInputHandler({
+        send: async (content: any) => {
+          console.log('onMessage handling')
         await onMessage(
           {
             name: userName,
@@ -175,26 +158,8 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
           },
           runtime,
         );
-        // resetLoop(); // reset again
-      });
-
-      registerHandler(async () => {
-        await onMessage(
-          {
-            name: userName,
-            senderId: userId,
-            agentId,
-            eventType: "update",
-            userIds: [userId, agentId],
-            agentName,
-            data,
-            room_id,
-          },
-          runtime,
-        );
-      });
-
-      startLoop(updateInterval);
+      }
+    });
       return undefined;
     }
     startAgent();

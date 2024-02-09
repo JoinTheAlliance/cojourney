@@ -127,11 +127,7 @@ const Root = (): JSX.Element => {
         <>
           <div className={classes.header}>
             <h3>Cojourney</h3>
-            <ActionIcon
-              onClick={(): void => setApp({ isMobileMenuOpen: true })}
-            >
-              <Burger opened={app.isMobileMenuOpen} />
-            </ActionIcon>
+            <Burger opened={app.isMobileMenuOpen} onClick={(): void => setApp({ isMobileMenuOpen: true })} />
           </div>
           <Drawer
             onClose={(): void => setApp({ isMobileMenuOpen: false })}

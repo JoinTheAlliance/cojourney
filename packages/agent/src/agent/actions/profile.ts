@@ -1,7 +1,6 @@
-import chalk from 'chalk'
 import {parseJSONObjectFromText} from '../utils'
 import {composeContext} from '../../lib/context'
-import { Memory } from '@/lib'
+import { getRelationship } from '../../lib'
 
 const template = `You are writing a profile for {{senderName}} based on their existing profile and ongoing conversations.
 
@@ -22,11 +21,7 @@ Then respond with a JSON object containing a field for description in a JSON blo
 
 Your response must include the JSON block.`
 
-const handler = async (message: any, state: any, runtime: any) => {
-  console.log('profile update message', message)
-
-  console.log('state is', state)
-  
+const handler = async (_message: any, state: any, runtime: any) => {
   // 
 
   // TODO:
@@ -62,7 +57,7 @@ const handler = async (message: any, state: any, runtime: any) => {
     }
 
     if (runtime.debugMode) {
-      console.log(chalk.yellow(`UPDATE_PROFILE response: ${response}`))
+      console.log(`UPDATE_PROFILE response: ${response}`)
     }
   }
 
@@ -81,30 +76,18 @@ const handler = async (message: any, state: any, runtime: any) => {
     const userB = userRecord.id;
 
     // find the room_id in 'relationships' where user_a is the agent and user_b is the user, OR vice versa
-    const response2 = await runtime.supabase.from("relationships").select("*")
-      .or(`user_a.eq.${userA},user_b.eq.${userB},user_a.eq.${userB},user_b.eq.${userA}`)
-      .single();
-    const { data: relationshipRecord, error: error2 } = response2;
-    if(error2) {
-      console.error('error getting relationship', error2)
-      return
-    }
+    const relationshipRecord = await getRelationship({ supabase: runtime.supabase, userA, userB });
 
-    console.log('relationshipRecord is', relationshipRecord)
-
-    console.log('userRecord is', userRecord)
-
-    const descriptionMemory = new Memory({
+    const descriptionMemory = await runtime.descriptionManager.addEmbeddingToMemory({
       user_ids: [state.agentId, userRecord.id],
       user_id: state.agentId,
       content: description,
       room_id: relationshipRecord.room_id,
     })
-    console.log('descriptionMemory', descriptionMemory.toJSON())
-    await runtime.descriptionManager.upsertRawMemory(descriptionMemory);
-    console.log('stored descriptionMemory', descriptionMemory)
+
+    await runtime.descriptionManager.createMemory(descriptionMemory);
   } else if (runtime.debugMode) {
-    console.log(chalk.red('Could not parse response'))
+    console.log('Could not parse response')
   }
 }
 

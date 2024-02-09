@@ -127,13 +127,17 @@ const MessagesTextInput = ({
         title: "Error",
         message: "Unable to send message.",
       });
-      inputHandler?.send(message);
 
       return;
     }
 
     setIsSendingMessage(false);
     setMessage("");
+
+    if(inputHandler && inputHandler.send) {
+      console.log('inputHandler', inputHandler)
+      await inputHandler.send(message);
+    }
   };
 
   const sendButton = (): JSX.Element | null => {

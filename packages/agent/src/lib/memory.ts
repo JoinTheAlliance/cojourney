@@ -1,3 +1,4 @@
+import { UUID } from 'crypto';
 import AgentRuntime from './runtime'
 
 export const embeddingDimension = 768;
@@ -6,59 +7,25 @@ export const embeddingZeroVector = Array(embeddingDimension).fill(0)
 const defaultMatchThreshold = 75
 const defaultMatchCount = 10
 
-export class Memory extends EventTarget {
-  embedding?: any[]
-  user_ids?: any
-  content?: any
-  id?: any
-  user_id?: any
+type SearchOptions = {
+  match_threshold: number
+  match_count: number
+  userIds: UUID[]
+}
+
+type MemoryContent = string | {
+  content?: string
+  action?: string
+}
+
+export type Memory = {
+  id?: UUID
+  user_id: UUID
   created_at?: any
+  content: MemoryContent
+  embedding?: any
+  user_ids: UUID[]
   room_id: any
-
-  constructor(opts: {
-    id?: any
-    user_id: any
-    created_at?: any
-    content: any
-    embedding?: any
-    user_ids: any
-    room_id: any
-  }) {
-    super()
-
-    this.embedding = embeddingZeroVector
-    this.user_ids = opts?.user_ids ?? []
-    this.content = opts?.content ?? ''
-    this.id = opts?.id ?? ''
-    this.user_id = opts?.user_id ?? ''
-    this.user_ids = opts?.user_ids ?? []
-    this.created_at = opts?.created_at ?? new Date()
-    this.room_id = opts?.room_id ?? ''
-  }
-
-  toJSON() {
-    const {
-      id,
-      user_id,
-      content,
-      created_at,
-      embedding,
-      user_ids,
-      room_id,
-    } = this
-    const obj = {
-      user_id,
-      room_id,
-      content,
-      embedding,
-      created_at,
-      user_ids,
-    }
-    if(id) {
-      return {...obj, id}
-    }
-    return obj
-  }
 }
 
 //
@@ -77,19 +44,19 @@ export class MemoryManager {
     this.schema = schema
   }
 
-  async bakeMemory(memory: {embedding: any}) {
+  async addEmbeddingToMemory(memory: Memory) {
     const getMemoryEmbeddingString = (memory: Memory) => {
-      const json = memory.toJSON()
-      if (typeof json?.content === 'string') {
-        return json.content
+      if (typeof memory.content === 'string') {
+        return memory.content
       }
-      if (typeof json?.content === 'object' && json?.content !== null) {
-        return JSON.stringify(json.content)
+      if (typeof memory.content === 'object' && memory.content !== null) {
+        return JSON.stringify(memory.content.content ?? memory.content)
       }
       return ''
     }
 
-    const memoryText = getMemoryEmbeddingString(memory as any)
+    const memoryText = getMemoryEmbeddingString(memory)
+    console.log('memoryText', memoryText)
     memory.embedding = memoryText
       ? await this.runtime.embed(memoryText)
       : embeddingZeroVector.slice()
@@ -100,8 +67,8 @@ export class MemoryManager {
     userIds,
     count,
   }: {
-    userIds: any
-    count: any
+    userIds: UUID[]
+    count: number
   }) {
     const result = await this.runtime.supabase.rpc('get_memories', {
       query_table_name: this.schema.tableName,
@@ -118,52 +85,15 @@ export class MemoryManager {
       })
       return [];
     }
-    const memories = this.#formatMemories(result.data)
-    return memories
+    return result.data
   }
-
-  #formatMemories(dbMemories: any[]) {
-    return (
-      dbMemories?.map((dbMemory: any) => this.#formatMemory(dbMemory)) ?? []
-    )
-  }
-
-  #formatMemory(dbMemory: {
-    id: any
-    user_id: any
-    content: any
-    name: any
-    embedding: any
-    created_at: any
-    user_ids: any
-    room_id: any
-  }) {
-    const {
-      id,
-      user_id,
-      content,
-      embedding,
-      created_at,
-      user_ids,
-      room_id,
-    } = dbMemory
-    return new Memory({
-      id,
-      user_id,
-      content,
-      created_at,
-      embedding,
-      user_ids,
-      room_id,
-    })
-  }
-
-  async searchMemoriesByEmbedding(embedding: any, opts: any = {}) {
+  async searchMemoriesByEmbedding(embedding: number[], opts: SearchOptions) {
     const {
       match_threshold = defaultMatchThreshold,
       match_count = defaultMatchCount,
       userIds = [],
     } = opts
+    console.log('embedding', embedding)
     const result = await this.runtime.supabase.rpc('search_memories', {
       query_table_name: this.schema.tableName,
       query_user_ids: userIds,
@@ -175,13 +105,12 @@ export class MemoryManager {
       throw new Error(JSON.stringify(result.error))
     }
 
-    const memories = this.#formatMemories(result.data)
-    return memories
+    return result.data
   }
 
-  async upsertRawMemory(rawMemory: any) {
+  async createMemory(memory: Memory) {
     const {tableName} = this.schema
-    const result = await this.runtime.supabase.from(tableName).upsert(rawMemory)
+    const result = await this.runtime.supabase.from(tableName).upsert(memory)
     const {error} = result
     if (error) {
       throw new Error(JSON.stringify(error))
@@ -202,7 +131,25 @@ export class MemoryManager {
     }
   }
 
-  async countMemoriesByUserIds({userIds}: {userIds: any}) {
+  async removeAllMemoriesByUserIds(userIds: UUID[]) {
+    const result = await this.runtime.supabase.rpc('remove_memories', {
+      query_table_name: this.schema.tableName,
+      query_user_ids: userIds,
+    })
+
+    if (result.error) {
+      throw new Error(JSON.stringify(result.error))
+    }
+  }
+
+  async removeAllMemoriesByUserId(userId: UUID) {
+    const result = await this.runtime.supabase.from('memories').delete().eq('user_id', userId);
+    if (result.error) {
+      throw new Error(JSON.stringify(result.error))
+    }
+  }
+
+  async countMemoriesByUserIds(userIds: UUID) {
     const result = await this.runtime.supabase.rpc('count_memories', {
       query_table_name: this.schema.tableName,
       query_user_ids: userIds,

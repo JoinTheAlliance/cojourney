@@ -25,8 +25,6 @@ const useLoadUnreadMessages = () => {
       return;
     }
 
-    console.log('data', data)
-
     setUnreadMessages(data);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

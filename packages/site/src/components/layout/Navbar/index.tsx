@@ -1,18 +1,10 @@
-import { Button } from "@/components/ui/button";
+import React from "react";
 import { useUser } from "@/hooks/useUser";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useState } from "react";
 
 const links = [
-	{
-		label: "Products",
-		href: "/",
-	},
-	{
-		label: "Benefit",
-		href: "/",
-	},
 	{
 		label: "How it Works",
 		href: "/",
@@ -22,7 +14,7 @@ const links = [
 		href: "/#pricing",
 	},
 	{
-		label: "Company",
+		label: "Developers",
 		href: "/",
 	},
 ];
@@ -50,7 +42,7 @@ const Navbar = () => {
 					title="Company"
 					className="inline-flex items-center">
 					<span className="text-xl font-bold tracking-wide uppercase">
-						LOGO.
+						Cojourney
 					</span>
 				</Link>
 				<ul className="hidden items-center gap-12 lg:flex">
@@ -69,21 +61,13 @@ const Navbar = () => {
 				<div className="lg:flex items-center gap-4 hidden">
 					{!user ? (
 						<>
-							<Button variant="ghost">
-								<Link href="/sign-in">Login</Link>
-							</Button>
-							<Button variant="default">
-								<Link href="/">Get Demo</Link>
-							</Button>
+							<Link href="/sign-in">Login</Link>
+							<Link href="/">Sign Up Now</Link>
 						</>
 					) : (
 						<>
-							<Button variant="ghost">
-								<Link href="/dashboard">Dashboard</Link>
-							</Button>
-							<Button variant="default" onClick={handleLogout}>
-								Logout
-							</Button>
+							<Link href="/dashboard">Dashboard</Link>
+							Logout
 						</>
 					)}
 				</div>
@@ -190,7 +174,7 @@ const Navbar = () => {
 												About us
 											</Link>
 										</li>
-										<Button variant="default">Sign up</Button>
+										<Link href="/">Sign up</Link>
 									</ul>
 								</nav>
 							</div>

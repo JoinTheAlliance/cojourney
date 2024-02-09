@@ -20,9 +20,6 @@ const Messages = (): JSX.Element => {
     user: { uid },
   } = useGlobalStore();
 
-  const [lastMessageRead, setLastMessageRead] = useState<number | null>(null);
-  const [showLastReadLabel, setShowLastReadLabel] = useState(true);
-
   useEffect(() => {
     scrollToBottom();
   }, [messages?.length]);
@@ -34,26 +31,7 @@ const Messages = (): JSX.Element => {
     const me = roomParticipants.find(
       (participant) => participant.user_id === uid,
     );
-
-    if (me) {
-      setLastMessageRead(me.last_message_read);
-    }
   }, [roomParticipants, uid, messages]);
-
-  useEffect(() => {
-    if (!lastMessageRead) {
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      setShowLastReadLabel(false);
-    }, 5000);
-
-    // eslint-disable-next-line consistent-return
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [lastMessageRead]);
 
   if (isLoadingMessages) {
     return (
@@ -121,22 +99,6 @@ const Messages = (): JSX.Element => {
                       message={message}
                     />
                   </motion.div>
-
-                  <Collapse
-                    in={
-                    lastMessageRead === message.id &&
-                    lastMessageRead !== messages[messages.length - 1].id &&
-                    showLastReadLabel
-                  }
-                  >
-                    <Divider
-                      mt={10}
-                      mb={20}
-                      labelPosition="left"
-                      label="NEW"
-                      color="red"
-                    />
-                  </Collapse>
                 </AnimatePresence>
               </motion.div>
             </div>

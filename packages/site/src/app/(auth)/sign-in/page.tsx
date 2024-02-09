@@ -31,7 +31,7 @@ const SignIn = () => {
 					<div className="w-[350px]">
 						<Auth
 							supabaseClient={supabaseClient}
-							providers={["google"]}
+							providers={["google", "discord", "twitter"]}
 							magicLink={true}
 							appearance={{
 								theme: ThemeSupa,

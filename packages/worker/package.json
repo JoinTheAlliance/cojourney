@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "deploy": "wrangler deploy",
     "dev": "wrangler dev",
+    "dev:logs": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "dev:shell": "npm run dev",
     "start": "wrangler dev"
   },
   "devDependencies": {

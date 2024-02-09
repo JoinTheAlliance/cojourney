@@ -33,7 +33,6 @@ const useListenToMessagesChanges = ({ getRoomData }: Props) => {
         async (payload) => {
           // @ts-ignore
           addNewCurrentRoomMessage({ newMessage: payload.new, supabase });
-          console.warn('skipping last read update')
           // if (payload.new.room_id === currentRoom.roomData?.id) {
           //   const { error: lastReadError } = await supabase
           //     .from("participants")

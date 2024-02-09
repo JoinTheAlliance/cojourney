@@ -1,4 +1,3 @@
-import chalk from "chalk";
 /** create a connection
  * @todo This should only be allowable by the current user if they are connected to both userA and userB
 */
@@ -20,14 +19,13 @@ export async function createRelationship({ supabase, userA, userB}: { supabase: 
 }
 
 export async function getRelationship({ supabase, userA, userB }: { supabase: any, userA: string, userB: string }) {
-  const { data, error } = await supabase.from("relationships").select("*")
-  .or(`user_a.eq.${userA},user_b.eq.${userB},user_a.eq.${userB},user_b.eq.${userA}`);
+  const { data, error } = await supabase.rpc('get_relationship', { usera: userA, userb: userB });
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return data;
+  return data[0];
 }
 
 export async function getRelationships({ supabase, userId }: { supabase: any, userId: string }) {
@@ -58,7 +56,7 @@ export async function getRelationships({ supabase, userId }: { supabase: any, us
 
 export async function createProfileEmbedding({ supabase, agent, runtime }: { supabase: any, agent: any, runtime: any }) {
   if (runtime.debugMode) {
-    console.log(chalk.yellow(`Creating profile embedding for ${agent.name}`));
+    console.log(`Creating profile embedding for ${agent.name}`);
   }
   const embedding = await runtime.embed(agent.description);
   const { data, error } = await supabase.from("accounts").update({ profile_embedding: embedding }).eq("id", agent.id);

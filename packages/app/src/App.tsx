@@ -15,6 +15,7 @@ import RoomLayout from "./pages/app/Room/index";
 import Root from "./pages/app/root";
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences";
 import UserProfile from "./pages/app/UserProfile";
+import TestPage from "./pages/app/TestPage";
 import useGlobalStore from "./store/useGlobalStore";
 import CJProfile from "./pages/app/CJProfile";
 
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
         path: "cjprofile",
         element: <CJProfile />,
       },
+      {
+        path: "/test",
+        element: <TestPage />,
+      },
     ],
   },
 ]);
@@ -62,8 +67,7 @@ const App = (): JSX.Element => {
       <MantineProvider
         theme={{
           // @ts-ignore
-          colorScheme:
-            preferences.theme === "system" ? colorScheme : preferences.theme,
+          colorScheme,
           primaryColor: "blue",
           defaultRadius: "md",
           colors: {

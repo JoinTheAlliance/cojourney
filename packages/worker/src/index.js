@@ -13,7 +13,7 @@ class Handler {
     method = '*',
     regex = /^/,
     hostRegex = /^/,
-    fn = async ({req, env, match, userId, supabase}) => { },
+    fn = async ({ req, env, match, userId, supabase }) => { },
     isServerless = false,
     serverLessEndpoint = ''
   } = {}) {
@@ -35,35 +35,17 @@ class Server {
     const handler = new Handler(opts);
     this.handlers.push(handler);
   }
-
-  async serializeRequest(req) {
-    // Serialize request headers
-    const headers = {};
-    for (const [key, value] of req.headers) {
-      headers[key] = value;
-    }
-
-    // Serialize the request body if necessary
-    let body = null;
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-      try {
-        body = await req.text();
-      } catch (error) {
-        body = "Failed to read body: " + error.message;
-      }
-    }
-
-    return {
-      method: req.method,
-      url: req.url,
-      headers: headers,
-      body: body
-    };
-  }
-
   async handleRequest(req, env) {
     const { pathname, host } = new URL(req.url);
     let handlerFound = false;
+
+    if(req.method === "OPTIONS") {
+      return new Response('', {
+        status: 204,
+        statusText: 'OK',
+        headers,
+      })
+    }
 
     for (let handler of this.handlers) {
       const { method, hostRegex, regex, fn } = handler;
@@ -83,11 +65,9 @@ class Server {
             });
 
             const token = req.headers.get('Authorization') &&
-            req.headers.get('Authorization').replace('Bearer ', '');
-            
-            const out = await jwt.decode(token)
+              req.headers.get('Authorization').replace('Bearer ', '');
 
-            console.log('out', out)
+            const out = token && await jwt.decode(token)
 
             const userId = out?.payload?.sub || out?.payload?.id || out?.id;
 
@@ -95,11 +75,12 @@ class Server {
               return new Response('Unauthorized', { status: 401 });
             }
 
-            console.log('userId', userId)
+            if (!userId) {
+              console.log("Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.")
+            }
 
             return await fn({ req, env, match: matchUrl, host: matchHost, userId, supabase });
           } catch (err) {
-            console.log('erro', err)
             return new Response(err, { status: 500 });
           }
         }
@@ -119,32 +100,23 @@ class Server {
 const server = new Server();
 
 const headers = {
-  // 'Access-Control-Allow-Origin': '*',
-  // 'Access-Control-Allow-Methods': '*',
-  // 'Access-Control-Allow-Headers': '*',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': '*',
+  'Access-Control-Allow-Headers': '*',
 }
-
-server.registerHandler({
-  method: 'OPTIONS',
-  async fn({ req, env }) {
-    return new Response('', {
-      status: 200,
-      headers,
-    }
-    );
-  },
-});
 
 server.registerHandler({
   regex: /^\/api\/ai\/((?:completions|chat|files|embeddings|images|audio|assistants|threads)(?:\/.*)?)/,
   async fn({ req, env, match }) {
-    console.log('calling openai', env.OPENAI_API_KEY)
+    if (req.method === 'OPTIONS') {
+      return
+    }
     const headers = {
       'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
     };
-    console.log('headers', headers)
+
     let url = 'https://api.openai.com/v1';
-    console.log('url', url)
+
     return await proxyPipeApi({ req, match, env, headers, url })
   },
 });
@@ -156,7 +128,7 @@ const defaultHeaders = [
   },
   {
     "key": "Access-Control-Allow-Methods",
-    "value": "*"
+    "value": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
   },
   {
     "key": "Access-Control-Allow-Headers",
@@ -229,8 +201,7 @@ export default {
   async fetch(request, env, ctx) {
     try {
       let res = await server.handleRequest(request, env);
-      _setHeaders(res);  // Ensure _setHeaders modifies the response and returns it
-      return res;
+      return _setHeaders(res);  // Ensure _setHeaders modifies the response and returns it
     } catch (error) {
       // Catch any errors that occur during handling and return a Response object
       return new Response(JSON.stringify({ error: error.message }), {
@@ -243,7 +214,9 @@ export default {
 
 function _setHeaders(res) {
   for (const { key, value } of defaultHeaders) {
-    res.headers.append(key, value);
+    // if res.headers doesnt contain, add
+    if (!res.headers.has(key))
+      res.headers.append(key, value);
   }
   return res;
 }

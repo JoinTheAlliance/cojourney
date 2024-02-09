@@ -18,7 +18,7 @@ interface Props {
   };
 }
 
-const UserPopup = ({ user, children }: Props): JSX.Element => {
+const UserPopup = ({ children }: Props): JSX.Element => {
   const {
     relationships: { friends },
     setApp,
