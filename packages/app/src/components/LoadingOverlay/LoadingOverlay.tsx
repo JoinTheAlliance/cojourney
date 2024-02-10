@@ -1,14 +1,14 @@
-import { Loader } from "@mantine/core";
-import React from "react";
-import useGlobalStore from "../../store/useGlobalStore";
-import useLoadingOverlayStyles from "./useLoadingOverlayStyles";
+import { Loader } from "@mantine/core"
+import React from "react"
+import useGlobalStore from "../../store/useGlobalStore"
+import useLoadingOverlayStyles from "./useLoadingOverlayStyles"
 
 const LoadingOverlay = (): JSX.Element | null => {
-  const { app } = useGlobalStore();
+  const { app } = useGlobalStore()
 
-  const { classes } = useLoadingOverlayStyles();
+  const { classes } = useLoadingOverlayStyles()
 
-  if (!app.isLoading) return null;
+  if (!app.isLoading) return null
 
   return (
     <div>
@@ -17,7 +17,7 @@ const LoadingOverlay = (): JSX.Element | null => {
         <Loader />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LoadingOverlay;
+export default LoadingOverlay

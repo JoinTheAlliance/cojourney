@@ -1,25 +1,25 @@
-import { Button, Flex } from "@mantine/core";
-import { closeAllModals, openModal } from "@mantine/modals";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import React, { useState } from "react";
-import useGlobalStore from "../store/useGlobalStore";
+import { Button, Flex } from "@mantine/core"
+import { closeAllModals, openModal } from "@mantine/modals"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useState } from "react"
+import useGlobalStore from "../store/useGlobalStore"
 
 const useHandleSignout = (): {
-  handleSignout: () => Promise<void>;
-  isLoadingSignout: boolean;
+  handleSignout: () => Promise<void>
+  isLoadingSignout: boolean
 } => {
-  const supabase = useSupabaseClient();
-  const { clearState } = useGlobalStore();
+  const supabase = useSupabaseClient()
+  const { clearState } = useGlobalStore()
 
-  const [isLoadingSignout, setIsLoadingSignout] = useState(false);
+  const [isLoadingSignout, setIsLoadingSignout] = useState(false)
 
   const signOut = async (): Promise<void> => {
-    setIsLoadingSignout(true);
+    setIsLoadingSignout(true)
 
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut()
 
-    clearState();
-    setIsLoadingSignout(false);
+    clearState()
+    setIsLoadingSignout(false)
 
     if (error) {
       openModal({
@@ -34,21 +34,21 @@ const useHandleSignout = (): {
               justify="end"
               mt={20}
             >
-              <Button onClick={(): void => closeAllModals()}>Ok</Button>
+              <Button onClick={(): void => { closeAllModals() }}>Ok</Button>
             </Flex>
           </>
-        ),
-      });
+        )
+      })
     }
-  };
+  }
 
   const handleSignout = async (): Promise<void> => {
-    setIsLoadingSignout(true);
+    setIsLoadingSignout(true)
 
-    signOut();
-  };
+    signOut()
+  }
 
-  return { handleSignout, isLoadingSignout };
-};
+  return { handleSignout, isLoadingSignout }
+}
 
-export default useHandleSignout;
+export default useHandleSignout

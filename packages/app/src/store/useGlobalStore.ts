@@ -1,119 +1,119 @@
-import { RealtimePresenceState, SupabaseClient } from "@supabase/supabase-js";
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
-import { Database } from "../../types/database.types";
+import { type RealtimePresenceState, type SupabaseClient } from "@supabase/supabase-js"
+import { create } from "zustand"
+import { devtools, persist } from "zustand/middleware"
+import { type Database } from "../../types/database.types"
 
-export type IDatabaseRoom = Database["public"]["Tables"]["rooms"]["Row"];
+export type IDatabaseRoom = Database["public"]["Tables"]["rooms"]["Row"]
 type IDatabaseParticipantsWithoutUsers =
-  Database["public"]["Tables"]["participants"]["Row"];
+  Database["public"]["Tables"]["participants"]["Row"]
 type IDatabaseMessagesWithoutUsers =
-  Database["public"]["Tables"]["messages"]["Row"];
-export type IDatabaseUser = Database["public"]["Tables"]["accounts"]["Row"];
-type IDatabaseFriends = Database["public"]["Tables"]["relationships"]["Row"];
+  Database["public"]["Tables"]["messages"]["Row"]
+export type IDatabaseUser = Database["public"]["Tables"]["accounts"]["Row"]
+type IDatabaseFriends = Database["public"]["Tables"]["relationships"]["Row"]
 
 export interface IUser {
-  email: string | null;
-  imageUrl: string | null;
-  name: string | null;
-  registerComplete: boolean | null;
-  uid: string | null;
+  email: string | null
+  imageUrl: string | null
+  name: string | null
+  registerComplete: boolean | null
+  uid: string | null
 }
 
 interface IPreferences {
-  theme: string;
+  theme: string
 }
 
 export interface IDatabaseParticipants
   extends IDatabaseParticipantsWithoutUsers {
-  userData: IDatabaseUser | IDatabaseUser[] | null;
+  userData: IDatabaseUser | IDatabaseUser[] | null
 }
 
 export interface IDatabaseMessages extends IDatabaseMessagesWithoutUsers {
-  userData: IDatabaseUser | IDatabaseUser[] | null;
+  userData: IDatabaseUser | IDatabaseUser[] | null
 }
 
 export interface IRoom extends IDatabaseRoom {
-  relationships: IFriend[];
-  participants: IDatabaseParticipants[];
+  participants: IDatabaseParticipants[]
+  relationships: IFriend[]
 }
 
 interface IApp {
-  isLoading: boolean;
-  isLoadingRooms: boolean;
-  isMobileMenuOpen: boolean;
-  isTldrMenuOpen: boolean;
-  mainActiveSideMenu: string | null;
-  messageAccordionSelected: string | null;
-  onlineUsers: RealtimePresenceState | null;
-  registerUserActiveStep: number;
-  secondaryActiveSideMenu: string | null;
+  isLoading: boolean
+  isLoadingRooms: boolean
+  isMobileMenuOpen: boolean
+  isTldrMenuOpen: boolean
+  mainActiveSideMenu: string | null
+  messageAccordionSelected: string | null
+  onlineUsers: RealtimePresenceState | null
+  registerUserActiveStep: number
+  secondaryActiveSideMenu: string | null
 }
 
 export interface IUsersTyping {
-  email: string;
-  isTyping: boolean;
-  name: string;
-  uid: string;
+  email: string
+  isTyping: boolean
+  name: string
+  uid: string
 }
 
 export interface IFriend extends IDatabaseFriends {
-  actionUserData: IDatabaseUser | IDatabaseUser[] | null;
-  userData1: IDatabaseUser | IDatabaseUser[] | null;
-  userData2: IDatabaseUser | IDatabaseUser[] | null;
+  actionUserData: IDatabaseUser | IDatabaseUser[] | null
+  userData1: IDatabaseUser | IDatabaseUser[] | null
+  userData2: IDatabaseUser | IDatabaseUser[] | null
 }
 
 export interface ICurrentRoom {
-  isLoading: boolean;
-  isLoadingMessages: boolean;
-  isRoomMember: boolean;
-  messages: IDatabaseMessages[] | null;
-  myMessage: string;
-  roomData: Database["public"]["Tables"]["rooms"]["Row"] | null;
-  roomNotFound: boolean;
-  roomParticipants: IDatabaseParticipants[] | null;
-  usersTyping: IUsersTyping[];
+  isLoading: boolean
+  isLoadingMessages: boolean
+  isRoomMember: boolean
+  messages: IDatabaseMessages[] | null
+  myMessage: string
+  roomData: Database["public"]["Tables"]["rooms"]["Row"] | null
+  roomNotFound: boolean
+  roomParticipants: IDatabaseParticipants[] | null
+  usersTyping: IUsersTyping[]
 }
 
 interface IFriendships {
-  friends: IFriend[];
-  pending: IFriend[];
-  requests: IFriend[];
+  friends: IFriend[]
+  pending: IFriend[]
+  requests: IFriend[]
 }
 
 export interface IUnreadMessages {
-  message_count: number;
-  room_id: string;
+  message_count: number
+  room_id: string
 }
 
 interface IGlobalStateValues {
-  app: IApp;
-  currentRoom: ICurrentRoom;
-  dms: IRoom[];
-  relationships: IFriendships;
-  preferences: IPreferences;
-  rooms: IRoom[];
-  unreadMessages: IUnreadMessages[];
-  user: IUser;
+  app: IApp
+  currentRoom: ICurrentRoom
+  dms: IRoom[]
+  preferences: IPreferences
+  relationships: IFriendships
+  rooms: IRoom[]
+  unreadMessages: IUnreadMessages[]
+  user: IUser
 }
 
 export interface IGlobalState extends IGlobalStateValues {
   addNewCurrentRoomMessage: ({
     newMessage,
-    supabase,
+    supabase
   }: {
-    newMessage: IDatabaseMessages;
-    supabase: SupabaseClient<Database>;
-  }) => void;
-  clearState: () => void;
-  setApp: (state: Partial<IApp>) => void;
-  setCurrentRoom: (state: Partial<ICurrentRoom>) => void;
-  setDms: (state: IRoom[]) => void;
-  setFriendships: (state: Partial<IFriendships>) => void;
-  setPreferences: (state: Partial<IPreferences>) => void;
-  setRooms: (state: IRoom[]) => void;
-  setState: (state: Partial<IGlobalStateValues>) => void;
-  setUnreadMessages: (state: IUnreadMessages[]) => void;
-  setUser: (state: Partial<IUser>) => void;
+    newMessage: IDatabaseMessages
+    supabase: SupabaseClient<Database>
+  }) => void
+  clearState: () => void
+  setApp: (state: Partial<IApp>) => void
+  setCurrentRoom: (state: Partial<ICurrentRoom>) => void
+  setDms: (state: IRoom[]) => void
+  setFriendships: (state: Partial<IFriendships>) => void
+  setPreferences: (state: Partial<IPreferences>) => void
+  setRooms: (state: IRoom[]) => void
+  setState: (state: Partial<IGlobalStateValues>) => void
+  setUnreadMessages: (state: IUnreadMessages[]) => void
+  setUser: (state: Partial<IUser>) => void
 }
 
 export const initialState: IGlobalStateValues = {
@@ -123,14 +123,14 @@ export const initialState: IGlobalStateValues = {
   relationships: {
     friends: [],
     requests: [],
-    pending: [],
+    pending: []
   },
   user: {
     email: null,
     name: null,
     uid: null,
     imageUrl: null,
-    registerComplete: false,
+    registerComplete: false
   },
   currentRoom: {
     isLoadingMessages: false,
@@ -141,7 +141,7 @@ export const initialState: IGlobalStateValues = {
     roomNotFound: false,
     roomParticipants: null,
     messages: null,
-    usersTyping: [],
+    usersTyping: []
   },
   app: {
     isTldrMenuOpen: false,
@@ -152,12 +152,12 @@ export const initialState: IGlobalStateValues = {
     isLoading: false,
     mainActiveSideMenu: "Friends",
     secondaryActiveSideMenu: null,
-    registerUserActiveStep: 0,
+    registerUserActiveStep: 0
   },
   preferences: {
-    theme: "system",
-  },
-};
+    theme: "system"
+  }
+}
 
 const useGlobalStore = create<IGlobalState>()(
   devtools(
@@ -166,102 +166,102 @@ const useGlobalStore = create<IGlobalState>()(
         ...initialState,
         addNewCurrentRoomMessage: async ({
           newMessage,
-          supabase,
+          supabase
         }): Promise<void> => {
-          const formattedMessage = newMessage;
+          const formattedMessage = newMessage
 
           const { data: user, error } = await supabase
             .from("accounts")
             .select("*")
             .eq("id", newMessage.user_id)
-            .single();
+            .single()
 
           if (!user || error) {
-            formattedMessage.userData = null;
+            formattedMessage.userData = null
           } else {
-            formattedMessage.userData = user;
+            formattedMessage.userData = user
           }
 
-          const newCurrentRoom = get().currentRoom;
+          const newCurrentRoom = get().currentRoom
 
           if (newCurrentRoom.roomData?.id === newMessage.room_id) {
-            newCurrentRoom.messages?.push(formattedMessage);
+            newCurrentRoom.messages?.push(formattedMessage)
 
             set((state) => ({
               currentRoom: {
                 ...state.currentRoom,
-                ...newCurrentRoom,
-              },
-            }));
+                ...newCurrentRoom
+              }
+            }))
           }
         },
         setPreferences: (newPreferences): void => {
           set((state) => ({
             preferences: {
               ...state.preferences,
-              ...newPreferences,
-            },
-          }));
+              ...newPreferences
+            }
+          }))
         },
         setFriendships: (newFriendships): void => {
           set((state) => ({
             relationships: {
               ...state.relationships,
-              ...newFriendships,
-            },
-          }));
+              ...newFriendships
+            }
+          }))
         },
         setRooms: (newRooms): void => {
           set(() => ({
-            rooms: newRooms,
-          }));
+            rooms: newRooms
+          }))
         },
         setUnreadMessages: (newUnreadMessages): void => {
           set(() => ({
-            unreadMessages: newUnreadMessages,
-          }));
+            unreadMessages: newUnreadMessages
+          }))
         },
         setDms: (newRooms): void => {
           set(() => ({
-            dms: newRooms,
-          }));
+            dms: newRooms
+          }))
         },
         setCurrentRoom: (newCurrentRoom): void => {
           set((state) => ({
             currentRoom: {
               ...state.currentRoom,
-              ...newCurrentRoom,
-            },
-          }));
+              ...newCurrentRoom
+            }
+          }))
         },
         setApp: (newApp): void => {
           set((state) => ({
             app: {
               ...state.app,
-              ...newApp,
-            },
-          }));
+              ...newApp
+            }
+          }))
         },
         setUser: (newUser): void => {
           set((state) => ({
             user: {
               ...state.user,
-              ...newUser,
-            },
-          }));
+              ...newUser
+            }
+          }))
         },
         setState: (newState): void => {
-          set((state) => ({ ...state, ...newState }));
+          set((state) => ({ ...state, ...newState }))
         },
         clearState: (): void => {
-          set({ ...initialState });
-        },
+          set({ ...initialState })
+        }
       }),
       {
-        name: "global-store",
-      },
-    ),
-  ),
-);
+        name: "global-store"
+      }
+    )
+  )
+)
 
-export default useGlobalStore;
+export default useGlobalStore

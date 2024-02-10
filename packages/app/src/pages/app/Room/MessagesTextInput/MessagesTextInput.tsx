@@ -1,111 +1,114 @@
-import { ActionIcon, Loader, Text, TextInput } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import React, { useEffect, useState } from "react";
-import { Send } from "react-feather";
-import { RealtimeChannel } from "@supabase/supabase-js";
-import { Database } from "../../../../../types/database.types";
-import useGlobalStore from "../../../../store/useGlobalStore";
-import useTypingBroadCast from "../../../../Hooks/rooms/useTypingBroadcast";
+import { ActionIcon, Loader, Text, TextInput } from "@mantine/core"
+import { showNotification } from "@mantine/notifications"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useEffect, useState } from "react"
+import { Send } from "react-feather"
+import { type RealtimeChannel } from "@supabase/supabase-js"
+import { type Database } from "../../../../../types/database.types"
+import useGlobalStore from "../../../../store/useGlobalStore"
+import useTypingBroadCast from "../../../../Hooks/rooms/useTypingBroadcast"
 
 interface Props {
-  roomChannel: RealtimeChannel;
+  inputHandler: { send: (message: string) => Promise<void> } | null
+  roomChannel: RealtimeChannel
 }
 
-const MessagesTextInput = ({ roomChannel }: Props): JSX.Element => {
-  const supabase = useSupabaseClient<Database>();
-  const session = useSession();
+const MessagesTextInput = ({
+  roomChannel,
+  inputHandler
+}: Props): JSX.Element => {
+  const supabase = useSupabaseClient<Database>()
+  const session = useSession()
 
   const {
     currentRoom: { roomData, usersTyping, myMessage },
-    setCurrentRoom,
-  } = useGlobalStore();
+    setCurrentRoom
+  } = useGlobalStore()
 
-  const [message, setMessage] = useState("");
-  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [message, setMessage] = useState("")
+  const [isSendingMessage, setIsSendingMessage] = useState(false)
 
-  useTypingBroadCast({ roomChannel, message });
+  useTypingBroadCast({ roomChannel, message })
 
   useEffect(() => {
     if (myMessage && myMessage.length >= 1) {
-      setMessage(myMessage);
+      setMessage(myMessage)
     }
-  }, [myMessage]);
+  }, [myMessage])
 
   const getUsersTypingMessage = () => {
-    if (!usersTyping) return false;
+    if (!usersTyping) return false
 
     if (usersTyping.length === 1) {
-      return `${usersTyping[0].name} is typing...`;
+      return `${usersTyping[0].name} is typing...`
     }
 
     if (usersTyping.length === 2) {
-      return `${usersTyping[0].name} and ${usersTyping[1].name} are typing...`;
+      return `${usersTyping[0].name} and ${usersTyping[1].name} are typing...`
     }
 
     if (usersTyping.length >= 3) {
-      return "Multiple people typing...";
+      return "Multiple people typing..."
     }
 
-    return true;
-  };
+    return true
+  }
 
   const onMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
     setCurrentRoom({
-      myMessage: "",
-    });
+      myMessage: ""
+    })
 
     const noMessageNotification = [
       "At least type something",
       "Message is empty!",
       "I think you forgot to type something",
-      "Wow, sending a message with no message",
-    ];
+      "Wow, sending a message with no message"
+    ]
 
-    const ranInt = Math.floor(Math.random() * 4);
+    const ranInt = Math.floor(Math.random() * 4)
 
     if (message.length <= 0) {
       showNotification({
         title: "Error",
         color: "red",
         variant: "filled",
-        message: `${noMessageNotification[ranInt]}`,
-      });
+        message: `${noMessageNotification[ranInt]}`
+      })
 
-      return;
+      return
     }
 
     if (!roomData?.id || !session?.user.id) {
       showNotification({
         title: "Error",
-        message: "Unable to send message",
-      });
+        message: "Unable to send message"
+      })
 
-      return;
+      return
     }
 
-    setIsSendingMessage(true);
+    setIsSendingMessage(true)
 
-    console.log("roomData", roomData);
-    console.log("user_id", session.user.id);
+    console.log("roomData", roomData)
+    console.log("user_id", session.user.id)
 
-    const userIds: any[] = [];
+    const userIds: string[] = []
 
-    const roomDataRelationships = (roomData as any).relationships as any[];
+    const roomDataRelationships = (roomData as unknown as { relationships: { user_a: string, user_b: string } }).relationships as unknown as Array<{ user_a: string, user_b: string }>
 
     // add all userIds from the roomData.relationships array, check user_a or user_b
     roomDataRelationships.forEach((relationship) => {
       if (!userIds.includes(relationship.user_a)) {
-        userIds.push(relationship.user_a);
+        userIds.push(relationship.user_a)
       }
 
       if (!userIds.includes(relationship.user_b)) {
-        userIds.push(relationship.user_b);
+        userIds.push(relationship.user_b)
       }
-    });
-
+    })
     const { data, error } = await supabase
       .from("messages")
       .insert({
@@ -113,39 +116,44 @@ const MessagesTextInput = ({ roomChannel }: Props): JSX.Element => {
         room_id: roomData.id,
         is_edited: false,
         user_id: session.user.id,
-        user_ids: userIds,
+        user_ids: userIds
       })
       .select()
-      .single();
+      .single()
 
     if (!data || error) {
-      setIsSendingMessage(false);
+      setIsSendingMessage(false)
       showNotification({
         title: "Error",
-        message: "Unable to send message.",
-      });
+        message: "Unable to send message."
+      })
 
-      return;
+      return
     }
 
-    setIsSendingMessage(false);
-    setMessage("");
-  };
+    setIsSendingMessage(false)
+    setMessage("")
+
+    if (inputHandler?.send) {
+      console.log("inputHandler", inputHandler)
+      await inputHandler.send(message)
+    }
+  }
 
   const sendButton = (): JSX.Element | null => {
-    if (message.length <= 0) return null;
+    if (message.length <= 0) return <Send size={16} />
 
     return (
       <ActionIcon type="submit">
-        {isSendingMessage ? <Loader size={16} /> : <Send size={16} />}
+        {isSendingMessage && <Loader size={16} />}
       </ActionIcon>
-    );
-  };
+    )
+  }
 
   return (
-    <form onSubmit={(e): Promise<void> => onMessageSend(e)}>
+    <form onSubmit={async (e): Promise<void> => { await onMessageSend(e) }}>
       <TextInput
-        onChange={(event): void => setMessage(event.target.value)}
+        onChange={(event): void => { setMessage(event.target.value) }}
         placeholder="Send message"
         rightSection={sendButton()}
         value={message}
@@ -154,7 +162,7 @@ const MessagesTextInput = ({ roomChannel }: Props): JSX.Element => {
       />
       <Text size={12}>{getUsersTypingMessage()}</Text>
     </form>
-  );
-};
+  )
+}
 
-export default MessagesTextInput;
+export default MessagesTextInput

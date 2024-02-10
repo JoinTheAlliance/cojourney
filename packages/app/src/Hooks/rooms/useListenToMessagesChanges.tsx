@@ -1,24 +1,22 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useEffect } from "react";
-import { showNotification } from "@mantine/notifications";
-import { Database } from "../../../types/database.types";
-import useGlobalStore from "../../store/useGlobalStore";
-import useGetRoomMessages from "./useGetRoomMessages";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useEffect } from "react"
+import { type Database } from "../../../types/database.types"
+import useGlobalStore from "../../store/useGlobalStore"
+import useGetRoomMessages from "./useGetRoomMessages"
 
 interface Props {
-  getRoomData?: () => Promise<void>;
+  getRoomData?: () => Promise<void>
 }
 
 const useListenToMessagesChanges = ({ getRoomData }: Props) => {
-  const supabase = useSupabaseClient<Database>();
-  const { getRoomMessages } = useGetRoomMessages();
+  const supabase = useSupabaseClient<Database>()
+  const { getRoomMessages } = useGetRoomMessages()
 
   const {
     addNewCurrentRoomMessage,
-    currentRoom,
-    user: { uid },
-    currentRoom: { roomData },
-  } = useGlobalStore();
+    currentRoom: { roomData }
+  } = useGlobalStore()
+  const session = useSession()
 
   useEffect(() => {
     const channel = supabase
@@ -28,12 +26,11 @@ const useListenToMessagesChanges = ({ getRoomData }: Props) => {
         {
           event: "INSERT",
           schema: "public",
-          table: "messages",
+          table: "messages"
         },
         async (payload) => {
-          // @ts-ignore
-          addNewCurrentRoomMessage({ newMessage: payload.new, supabase });
-          console.warn('skipping last read update')
+          // @ts-expect-error
+          addNewCurrentRoomMessage({ newMessage: payload.new, supabase })
           // if (payload.new.room_id === currentRoom.roomData?.id) {
           //   const { error: lastReadError } = await supabase
           //     .from("participants")
@@ -50,14 +47,14 @@ const useListenToMessagesChanges = ({ getRoomData }: Props) => {
           //     });
           //   }
           // }
-        },
+        }
       )
       .on(
         "postgres_changes",
         {
           event: "UPDATE",
           schema: "public",
-          table: "messages",
+          table: "messages"
         },
         (payload) => {
           // We only wanna fetch the new messages if we are currently in that room
@@ -65,55 +62,56 @@ const useListenToMessagesChanges = ({ getRoomData }: Props) => {
           // of a couple chats and people are editing messages, we would be fetching that data
           // even though we are not in that room at that time
           if (payload.new.room_id && payload.new.room_id === roomData?.id) {
-            getRoomMessages({ roomId: payload.new.room_id });
+            getRoomMessages({ roomId: payload.new.room_id })
           }
-        },
+        }
       )
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
-          table: "participants",
+          table: "participants"
         },
         () => {
-          if (!getRoomData) return;
+          if (!getRoomData) return
 
-          getRoomData();
-        },
+          getRoomData()
+        }
       )
       .on(
         "postgres_changes",
         {
           event: "DELETE",
           schema: "public",
-          table: "participants",
+          table: "participants"
         },
         () => {
-          if (!getRoomData) return;
+          if (!getRoomData) return
 
-          getRoomData();
-        },
+          getRoomData()
+        }
       )
       .on(
         "postgres_changes",
         {
           event: "DELETE",
           schema: "public",
-          table: "messages",
+          table: "messages"
         },
         () => {
-          if (!getRoomData) return;
-          getRoomData();
-        },
+          if (!getRoomData) return
+          getRoomData()
+        }
       )
-      .subscribe();
+      .subscribe()
+
+      supabase.realtime.accessToken = (session!).access_token // THIS IS REQUIRED FOR RLS!!!
 
     return () => {
-      channel.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-};
+      channel.unsubscribe()
+    }
+  }, [])
+}
 
-export default useListenToMessagesChanges;
+export default useListenToMessagesChanges

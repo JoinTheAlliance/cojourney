@@ -1,15 +1,15 @@
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useEffect } from "react";
-import { Database } from "../../../types/database.types";
-import useLoadUnreadMessages from "./useLoadUnreadMessages";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useEffect } from "react"
+import { type Database } from "../../../types/database.types"
+import useLoadUnreadMessages from "./useLoadUnreadMessages"
 
 const useListenToUnreadMessagesChanges = () => {
-  const supabase = useSupabaseClient<Database>();
-  const { getUnreadMessages } = useLoadUnreadMessages();
-  const session = useSession();
+  const supabase = useSupabaseClient<Database>()
+  const { getUnreadMessages } = useLoadUnreadMessages()
+  const session = useSession()
 
   useEffect(() => {
-    if (!session) return;
+    if (!session) return
 
     const channel = supabase
       .channel("table-db-changes-unread-messages")
@@ -18,20 +18,21 @@ const useListenToUnreadMessagesChanges = () => {
         {
           event: "INSERT",
           schema: "public",
-          table: "messages",
+          table: "messages"
         },
         () => {
-          getUnreadMessages();
-        },
+          getUnreadMessages()
+        }
       )
-      .subscribe();
+      .subscribe()
+
+    supabase.realtime.accessToken = session?.access_token // THIS IS REQUIRED FOR RLS!!!
 
     // eslint-disable-next-line consistent-return
     return () => {
-      channel.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
-};
+      channel.unsubscribe()
+    }
+  }, [session])
+}
 
-export default useListenToUnreadMessagesChanges;
+export default useListenToUnreadMessagesChanges

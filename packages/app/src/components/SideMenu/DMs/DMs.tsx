@@ -1,34 +1,34 @@
-import React from "react";
-import { Alert, Badge, Text } from "@mantine/core";
-import { useNavigate } from "react-router";
+import React from "react"
+import { Alert, Badge, Text } from "@mantine/core"
+import { useNavigate } from "react-router"
 import useGlobalStore, {
-  IDatabaseUser,
-  IFriend,
-} from "../../../store/useGlobalStore";
-import useSideMenuStyles from "../SideMenu.styles";
-import getFriend from "../../../utils/getFriend";
-import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator";
+  type IDatabaseUser,
+  type IFriend
+} from "../../../store/useGlobalStore"
+import useSideMenuStyles from "../SideMenu.styles"
+import getFriend from "../../../utils/getFriend"
+import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator"
 
 const DMs = (): JSX.Element => {
-  const { classes, cx } = useSideMenuStyles();
+  const { classes, cx } = useSideMenuStyles()
   const {
     app,
     setApp,
     dms,
     unreadMessages,
-    user: { uid },
-  } = useGlobalStore();
-  const navigate = useNavigate();
+    user: { uid }
+  } = useGlobalStore()
+  const navigate = useNavigate()
 
   const getFriendData = (friendship: IFriend[]): IDatabaseUser | null => {
-    if (friendship.length === 0) return null;
+    if (friendship.length === 0) return null
 
-    const friend = getFriend({ friendship: friendship[0], userId: uid || "" });
+    const friend = getFriend({ friendship: friendship[0], userId: uid || "" })
 
-    if (!friend || !friend.friendData) return null;
+    if (!friend?.friendData) return null
 
-    return friend.friendData;
-  };
+    return friend.friendData
+  }
 
   if (dms.length === 0) {
     return (
@@ -39,39 +39,39 @@ const DMs = (): JSX.Element => {
       >
         You have no DMs yet. Go to a public room to start chatting with people.
       </Alert>
-    );
+    )
   }
 
   return (
     <div>
       {dms.map((room) => {
-        const friendData = getFriendData(room.relationships);
-        const unread = unreadMessages.find((r) => r.room_id === room.id);
+        const friendData = getFriendData(room.relationships)
+        const unread = unreadMessages.find((r) => r.room_id === room.id)
 
-        if (!friendData) return null;
+        if (!friendData) return null
 
         return (
           <a
             key={room.id}
             className={cx(classes.link, {
               [classes.linkActive]:
-                app.secondaryActiveSideMenu === room.id.toString(),
+                app.secondaryActiveSideMenu === room.id.toString()
             })}
             href="/"
             onClick={(event): void => {
-              event.preventDefault();
+              event.preventDefault()
               setApp({
                 secondaryActiveSideMenu: room.id.toString(),
-                isMobileMenuOpen: false,
-              });
-              navigate(`/chat/${room.id}`);
+                isMobileMenuOpen: false
+              })
+              navigate(`/chat/${room.id}`)
             }}
           >
             <UserAvatarWithIndicator
               checkOnline
               size={35}
               user_email={friendData?.email || "Error"}
-              image={friendData?.image_url || ""}
+              image={friendData?.avatar_url || ""}
             />
             {unread && unread?.message_count >= 1 && (
               <Badge
@@ -90,10 +90,10 @@ const DMs = (): JSX.Element => {
               {friendData?.name || "Error"}
             </Text>
           </a>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default DMs;
+export default DMs

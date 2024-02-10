@@ -1,44 +1,46 @@
-import { Avatar, Indicator } from "@mantine/core";
-import React, { useEffect, useState } from "react";
-import useGlobalStore from "../../store/useGlobalStore";
-import constants from "../../constants/constants";
+import { Avatar, Indicator } from "@mantine/core"
+import React, { useEffect, useState } from "react"
+import useGlobalStore from "../../store/useGlobalStore"
+import constants from "../../constants/constants"
 
 interface Props {
-  checkOnline?: boolean;
-  image: string;
-  size: number;
-  user_email: string;
+  checkOnline?: boolean
+  image: string
+  radius?: number
+  size: number
+  user_email: string
 }
 
 const UserAvatarWithIndicator = ({
   image,
   size,
   user_email,
-  checkOnline = false,
+  radius,
+  checkOnline = false
 }: Props): JSX.Element => {
   const {
     app,
-    app: { onlineUsers },
-  } = useGlobalStore();
+    app: { onlineUsers }
+  } = useGlobalStore()
 
-  const [isOnline, setIsOnline] = useState(false);
+  const [isOnline, setIsOnline] = useState(false)
 
   useEffect(() => {
-    if (!checkOnline) return;
-    if (!onlineUsers) return;
-    setIsOnline(false);
+    if (!checkOnline) return
+    if (!onlineUsers) return
+    setIsOnline(false)
 
     // eslint-disable-next-line consistent-return
     Object.keys(onlineUsers).forEach((key) => {
       if (key === user_email) {
-        return setIsOnline(true);
+        setIsOnline(true)
       }
-    });
-  }, [onlineUsers, user_email, app, checkOnline]);
+    })
+  }, [onlineUsers, user_email, app, checkOnline])
 
   return (
     <Indicator
-      disabled={!isOnline}
+      color={isOnline ? "#0AB161" : "#8a8a8a"}
       offset={5}
       position="bottom-end"
       size={15}
@@ -46,16 +48,16 @@ const UserAvatarWithIndicator = ({
       style={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
       }}
     >
       <Avatar
-        radius="xl"
+        radius={radius}
         size={size}
         src={image || constants.avatarPlaceholder(user_email)}
       />
     </Indicator>
-  );
-};
+  )
+}
 
-export default UserAvatarWithIndicator;
+export default UserAvatarWithIndicator

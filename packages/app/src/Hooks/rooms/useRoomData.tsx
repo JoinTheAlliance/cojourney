@@ -1,21 +1,21 @@
-import { useCallback, useEffect } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Database } from "../../../types/database.types";
-import useGlobalStore from "../../store/useGlobalStore";
+import { useCallback, useEffect } from "react"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import { type Database } from "../../../types/database.types"
+import useGlobalStore from "../../store/useGlobalStore"
 
 interface Props {
-  roomId?: string;
+  roomId?: string
 }
 
 const useRoomData = ({ roomId }: Props) => {
-  const session = useSession();
-  const supabase = useSupabaseClient<Database>();
+  const session = useSession()
+  const supabase = useSupabaseClient<Database>()
 
-  const { setCurrentRoom } = useGlobalStore();
+  const { setCurrentRoom } = useGlobalStore()
 
   const getRoomData = useCallback(
     async (): Promise<void> => {
-      if (!session) return;
+      if (!session) return
 
       setCurrentRoom({
         isLoading: true,
@@ -23,8 +23,10 @@ const useRoomData = ({ roomId }: Props) => {
         roomNotFound: false,
         roomParticipants: null,
         messages: null,
-        usersTyping: [],
-      });
+        usersTyping: []
+      })
+
+      console.log("getting rooms", roomId)
 
       const { error: roomDataError, data: roomDataReq } = await supabase
         .from("rooms")
@@ -37,67 +39,65 @@ const useRoomData = ({ roomId }: Props) => {
         ),
         actionUserData:accounts!relationships_user_id_fkey(
           *
-        ))`,
+        ))`
         )
         .eq("participants.user_id", session.user.id)
-        .eq("id", roomId)
-        .single();
+        .eq("id", roomId!)
+        .single()
 
       if (!roomDataReq || roomDataError) {
-        setCurrentRoom({ roomNotFound: true, isLoading: false });
-        return;
+        setCurrentRoom({ roomNotFound: true, isLoading: false })
+        return
       }
-
-      setCurrentRoom({ roomData: roomDataReq });
+      console.log("roomDataReq", roomDataReq)
+      setCurrentRoom({ roomData: roomDataReq })
 
       const { data: participantsData, error: participantsError } =
         await supabase
           .from("participants")
           .select("*, userData:accounts(*)")
-          .eq("room_id", roomDataReq.id);
+          .eq("room_id", roomDataReq.id)
 
       if (!participantsData || participantsError) {
-        setCurrentRoom({ isLoading: false });
+        setCurrentRoom({ isLoading: false })
 
-        return;
+        return
       }
 
-      // @ts-ignore
       if (!roomDataReq.participants[0]) {
         setCurrentRoom({
           isRoomMember: false,
           roomParticipants: participantsData,
-          isLoading: false,
-        });
+          isLoading: false
+        })
 
-        return;
+        return
       }
 
       setCurrentRoom({
         roomParticipants: participantsData,
         isRoomMember: true,
-        isLoading: false,
-      });
+        isLoading: false
+      })
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [roomId, supabase, session],
-  );
+
+    [roomId, supabase, session]
+  )
 
   useEffect(() => {
-    if (!session) return;
-    if (!roomId) return;
+    if (!session) return
+    if (!roomId) return
 
-    setCurrentRoom({ isLoading: true });
+    setCurrentRoom({ isLoading: true })
 
     getRoomData().finally(() => {
-      setCurrentRoom({ isLoading: false });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, session, getRoomData]);
+      setCurrentRoom({ isLoading: false })
+    })
+  }, [roomId, session, getRoomData])
 
   return {
-    getRoomData,
-  };
-};
+    getRoomData
+  }
+}
 
-export default useRoomData;
+export default useRoomData

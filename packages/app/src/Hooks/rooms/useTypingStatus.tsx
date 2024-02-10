@@ -1,49 +1,48 @@
-import { RealtimeChannel } from "@supabase/supabase-js";
-import { useEffect } from "react";
-import useGlobalStore from "../../store/useGlobalStore";
+import { type RealtimeChannel } from "@supabase/supabase-js"
+import { useEffect } from "react"
+import useGlobalStore, { type IUsersTyping } from "../../store/useGlobalStore"
 
 interface Props {
-  roomChannel: RealtimeChannel;
+  roomChannel: RealtimeChannel
 }
 
 const useTypingStatus = ({ roomChannel }: Props) => {
   const {
     setCurrentRoom,
-    currentRoom: { usersTyping },
-  } = useGlobalStore();
+    currentRoom: { usersTyping }
+  } = useGlobalStore()
 
   roomChannel.subscribe((status) => {
     if (status === "SUBSCRIBED") {
       roomChannel.on("broadcast", { event: "typing" }, (data) => {
-        const newUsersTyping = usersTyping;
+        const newUsersTyping = usersTyping
 
-        const { payload } = data;
+        const { payload } = data
 
         if (payload.isTyping) {
           if (!newUsersTyping.find((user) => user.email === payload.email)) {
-            newUsersTyping?.push(payload);
+            newUsersTyping?.push(payload as IUsersTyping)
 
-            setCurrentRoom({ usersTyping: newUsersTyping });
+            setCurrentRoom({ usersTyping: newUsersTyping })
           }
         } else {
           const removed = newUsersTyping.filter(
-            (user) => user.email !== payload.email,
-          );
+            (user) => user.email !== payload.email
+          )
 
           setCurrentRoom({
-            usersTyping: removed,
-          });
+            usersTyping: removed
+          })
         }
-      });
+      })
     }
-  });
+  })
 
   useEffect(() => {
     return () => {
-      roomChannel.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-};
+      roomChannel.unsubscribe()
+    }
+  }, [])
+}
 
-export default useTypingStatus;
+export default useTypingStatus

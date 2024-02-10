@@ -1,43 +1,41 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Auth } from "@supabase/auth-ui-react";
-import React, { useState } from "react";
-import { Card, useMantineTheme, Alert, Button, HoverCard } from "@mantine/core";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useColorScheme } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
-import styles from "./AuthUser.module.css";
-import useGlobalStore from "../../store/useGlobalStore";
-import { Database } from "../../../types/database.types";
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { Auth } from "@supabase/auth-ui-react"
+import React, { useState } from "react"
+import { Card, useMantineTheme, Alert, Button, HoverCard } from "@mantine/core"
+import { ThemeSupa } from "@supabase/auth-ui-shared"
+import { useColorScheme } from "@mantine/hooks"
+import { showNotification } from "@mantine/notifications"
+import useGlobalStore from "../../store/useGlobalStore"
+import { type Database } from "../../../types/database.types"
 
 const AuthUser = (): JSX.Element => {
-  const supabase = useSupabaseClient<Database>();
-  const theme = useMantineTheme();
-  const { preferences } = useGlobalStore();
-  const colorScheme = useColorScheme();
+  const supabase = useSupabaseClient<Database>()
+  const theme = useMantineTheme()
+  const { preferences } = useGlobalStore()
+  const colorScheme = useColorScheme()
 
-  const [isLoadingDemoSignup, setIsLoadingDemoSignup] = useState(false);
+  const [isLoadingDemoSignup, setIsLoadingDemoSignup] = useState(false)
 
   const handleDemoSignup = async () => {
-    setIsLoadingDemoSignup(true);
+    setIsLoadingDemoSignup(true)
 
     const { error } = await supabase.auth.signUp({
       email: `${Math.random().toString(36).substring(2, 15)}@demo.com`,
-      password: "123456",
-    });
+      password: "123456"
+    })
 
     if (error) {
       showNotification({
         title: "Error",
-        message: error.message,
-      });
+        message: error.message
+      })
 
-      setIsLoadingDemoSignup(false);
+      setIsLoadingDemoSignup(false)
     }
-  };
+  }
 
   return (
     <Card
-      className={styles.container}
       withBorder
     >
       <h1>Account.</h1>
@@ -49,12 +47,12 @@ const AuthUser = (): JSX.Element => {
             default: {
               colors: {
                 brand: theme.colors.blue[6],
-                brandAccent: theme.colors.blue[7],
-              },
-            },
-          },
+                brandAccent: theme.colors.blue[7]
+              }
+            }
+          }
         }}
-        providers={[]}
+        providers={["google", "discord", "twitter"]}
         redirectTo="/"
         socialLayout="horizontal"
         supabaseClient={supabase}
@@ -73,7 +71,7 @@ const AuthUser = (): JSX.Element => {
         >
           <HoverCard.Target>
             <Button
-              onClick={() => handleDemoSignup()}
+              onClick={async () => { await handleDemoSignup() }}
               loading={isLoadingDemoSignup}
               fullWidth
               mt={20}
@@ -90,7 +88,7 @@ const AuthUser = (): JSX.Element => {
         </HoverCard>
       </Alert>
     </Card>
-  );
-};
+  )
+}
 
-export default AuthUser;
+export default AuthUser

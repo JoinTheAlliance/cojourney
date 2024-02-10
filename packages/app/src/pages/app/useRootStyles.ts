@@ -1,11 +1,11 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/core"
 
 const useRootStyles = createStyles((theme) => ({
   container: {
     marginLeft: 400,
     "@media (max-width: 900px)": {
-      marginLeft: 0,
-    },
+      marginLeft: 0
+    }
   },
   content: {
     maxWidth: "calc(100%)",
@@ -13,11 +13,11 @@ const useRootStyles = createStyles((theme) => ({
     paddingRight: 20,
     paddingLeft: 20,
     "@media (max-width: 900px)": {
-      marginTop: 60,
+      marginTop: 60
     },
     "@media (max-width: 1200px)": {
-      maxWidth: "calc(100%)",
-    },
+      maxWidth: "calc(100%)"
+    }
   },
   header: {
     position: "fixed",
@@ -34,8 +34,8 @@ const useRootStyles = createStyles((theme) => ({
 
     borderBottom: `1px solid ${
       theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[3]
-    }`,
-  },
-}));
+    }`
+  }
+}))
 
-export default useRootStyles;
+export default useRootStyles

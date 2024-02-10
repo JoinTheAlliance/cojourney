@@ -1,59 +1,27 @@
-import { Box, Collapse, Divider, ScrollArea, Skeleton } from "@mantine/core";
-import React, { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import useGlobalStore from "../../../../store/useGlobalStore";
+import { Box, ScrollArea, Skeleton } from "@mantine/core"
+import { AnimatePresence, motion } from "framer-motion"
+import React, { useEffect, useRef } from "react"
+import useGlobalStore from "../../../../store/useGlobalStore"
 
-import EmptyRoom from "../../../../components/InfoScreens/EmptyRoom";
-import Message from "./Message/Message";
+import EmptyRoom from "../../../../components/InfoScreens/EmptyRoom"
+import Message from "./Message/Message"
 
 const Messages = (): JSX.Element => {
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView();
-    console.log("messagesEndRef.current scroll", messagesEndRef.current);
-  };
+    messagesEndRef.current?.scrollIntoView()
+    console.log("messagesEndRef.current scroll", messagesEndRef.current)
+  }
 
-  console.log("messagesEndRef", messagesEndRef.current);
+  console.log("messagesEndRef", messagesEndRef.current)
 
   const {
-    currentRoom: { messages, roomParticipants, isLoadingMessages },
-    user: { uid },
-  } = useGlobalStore();
-
-  const [lastMessageRead, setLastMessageRead] = useState<number | null>(null);
-  const [showLastReadLabel, setShowLastReadLabel] = useState(true);
+    currentRoom: { messages, isLoadingMessages }
+  } = useGlobalStore()
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages?.length]);
-
-  useEffect(() => {
-    if (!roomParticipants) return;
-    if (roomParticipants.length === 0) return;
-
-    const me = roomParticipants.find(
-      (participant) => participant.user_id === uid,
-    );
-
-    if (me) {
-      setLastMessageRead(me.last_message_read);
-    }
-  }, [roomParticipants, uid, messages]);
-
-  useEffect(() => {
-    if (!lastMessageRead) {
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      setShowLastReadLabel(false);
-    }, 5000);
-
-    // eslint-disable-next-line consistent-return
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [lastMessageRead]);
+    scrollToBottom()
+  }, [messages?.length])
 
   if (isLoadingMessages) {
     return (
@@ -94,11 +62,11 @@ const Messages = (): JSX.Element => {
           width="30%"
         />
       </>
-    );
+    )
   }
 
-  if (!messages) return <p>Error loading messages</p>;
-  if (messages.length === 0) return <EmptyRoom />;
+  if (!messages) return <p>Error loading messages</p>
+  if (messages.length === 0) return <EmptyRoom />
 
   return (
     <ScrollArea
@@ -121,31 +89,15 @@ const Messages = (): JSX.Element => {
                       message={message}
                     />
                   </motion.div>
-
-                  <Collapse
-                    in={
-                    lastMessageRead === message.id &&
-                    lastMessageRead !== messages[messages.length - 1].id &&
-                    showLastReadLabel
-                  }
-                  >
-                    <Divider
-                      mt={10}
-                      mb={20}
-                      labelPosition="left"
-                      label="NEW"
-                      color="red"
-                    />
-                  </Collapse>
                 </AnimatePresence>
               </motion.div>
             </div>
-          );
+          )
         })}
         <div ref={messagesEndRef} />
       </Box>
     </ScrollArea>
-  );
-};
+  )
+}
 
-export default Messages;
+export default Messages

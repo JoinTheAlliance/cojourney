@@ -1,28 +1,28 @@
-import { RealtimeChannel } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
-import useGlobalStore from "../../store/useGlobalStore";
+import { type RealtimeChannel } from "@supabase/supabase-js"
+import { useEffect, useState } from "react"
+import useGlobalStore from "../../store/useGlobalStore"
 
 interface Props {
-  message: string;
-  roomChannel: RealtimeChannel;
+  message: string
+  roomChannel: RealtimeChannel
 }
 
 const useTypingBroadCast = ({ roomChannel, message }: Props) => {
-  const { user } = useGlobalStore();
+  const { user } = useGlobalStore()
 
-  const [isTyping, setIsTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false)
 
   useEffect(() => {
     if (message.length >= 1) {
-      return setIsTyping(true);
+      setIsTyping(true); return
     }
 
-    return setIsTyping(false);
-  }, [message]);
+    setIsTyping(false)
+  }, [message])
 
   useEffect(() => {
-    if (!user) return;
-    if (roomChannel.state !== "joined") return;
+    if (!user) return
+    if (roomChannel.state !== "joined") return
 
     roomChannel.send({
       type: "broadcast",
@@ -31,10 +31,10 @@ const useTypingBroadCast = ({ roomChannel, message }: Props) => {
         isTyping,
         email: user.email,
         name: user.name,
-        uid: user.uid,
-      },
-    });
-  }, [isTyping, roomChannel, user]);
-};
+        uid: user.uid
+      }
+    })
+  }, [isTyping, roomChannel, user])
+}
 
-export default useTypingBroadCast;
+export default useTypingBroadCast

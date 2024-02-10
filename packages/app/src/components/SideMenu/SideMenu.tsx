@@ -1,30 +1,18 @@
-import React from "react";
-import {
-  Avatar,
-  Navbar,
-  Title,
-} from "@mantine/core";
-import { useNavigate } from "react-router";
-import { useMediaQuery } from "@mantine/hooks";import useGlobalStore from "../../store/useGlobalStore";
-import useSideMenuStyles from "./SideMenu.styles";
-import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen";
+import { Avatar, Navbar, Title } from "@mantine/core"
+import React from "react"
+import { useNavigate } from "react-router-dom"
+import constants from "../../constants/constants"
+import useGlobalStore from "../../store/useGlobalStore"
+import useSideMenuStyles from "./SideMenu.styles"
+import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen"
 
 const SideMenu = (): JSX.Element => {
-  const navigate = useNavigate();
-
   const {
-    app,
-    setApp,
-    relationships: { friends, requests, pending },
-  } = useGlobalStore();
+    setApp
+  } = useGlobalStore()
 
-  const { classes, cx } = useSideMenuStyles();
-
-  const links = (): JSX.Element | JSX.Element[] => {
-    return <FriendsSideMenuScreen />;
-  };
-  // const hasMoreThanOneFriend = friends.length > 1 || requests.length > 0 || pending.length > 0;
-
+  const { classes } = useSideMenuStyles()
+  const navigate = useNavigate()
   return (
     <Navbar
       className={classes.container}
@@ -39,26 +27,29 @@ const SideMenu = (): JSX.Element => {
             className={classes.title}
             order={4}
           >
-              Cojourney
-
-              <Avatar
-                onClick={(): void => {
-                  setApp({
+            Cojourney
+            <Avatar
+              onClick={(): void => {
+                setApp({
                   secondaryActiveSideMenu: "Settings/Account",
-                  isMobileMenuOpen: false,
-                });
-                navigate("/account");
-              }
-            }
-            radius="xl"
-              />
+                  isMobileMenuOpen: false
+                })
+                navigate("/profile")
+              }}
+              radius="xl"
+              size={50}
+              style={{ cursor: "pointer" }}
+              src={constants.avatarPlaceholder(
+                "00000000-0000-0000-0000-000000000000"
+              )}
+            />
           </Title>
 
           <FriendsSideMenuScreen />
         </div>
       </Navbar.Section>
     </Navbar>
-  );
-};
+  )
+}
 
-export default SideMenu;
+export default SideMenu

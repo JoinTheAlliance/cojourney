@@ -1,10 +1,10 @@
-import React from "react";
-import { Select, Divider, Flex, Button } from "@mantine/core";
-import { closeAllModals } from "@mantine/modals";
-import useGlobalStore from "../../../store/useGlobalStore";
+import React from "react"
+import { Select, Divider, Flex, Button } from "@mantine/core"
+import { closeAllModals } from "@mantine/modals"
+import useGlobalStore from "../../../store/useGlobalStore"
 
 const ChangeThemeModal = (): JSX.Element => {
-  const { setState } = useGlobalStore();
+  const { setState } = useGlobalStore()
 
   return (
     <div>
@@ -12,17 +12,17 @@ const ChangeThemeModal = (): JSX.Element => {
         data={[
           { value: "system", label: "System Default" },
           { value: "dark", label: "Dark" },
-          { value: "light", label: "Light" },
+          { value: "light", label: "Light" }
         ]}
         label="Select the App's theme"
         onChange={(value): void => {
-          if (!value) return;
+          if (!value) return
 
           setState({
             preferences: {
-              theme: value,
-            },
-          });
+              theme: value
+            }
+          })
         }}
         placeholder="Dark's better..."
         withinPortal
@@ -34,14 +34,14 @@ const ChangeThemeModal = (): JSX.Element => {
       <Flex justify="flex-end">
         <Button
           onClick={(): void => {
-            closeAllModals();
+            closeAllModals()
           }}
         >
           Done
         </Button>
       </Flex>
     </div>
-  );
-};
+  )
+}
 
-export default ChangeThemeModal;
+export default ChangeThemeModal

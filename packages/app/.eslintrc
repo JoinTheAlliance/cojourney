@@ -7,11 +7,7 @@
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:import/typescript",
-    "airbnb",
-    "airbnb/hooks",
-    "airbnb-typescript",
-    "plugin:jest/recommended"
+    "plugin:import/typescript"
   ],
   "overrides": [],
   "parser": "@typescript-eslint/parser",
@@ -24,9 +20,7 @@
   "plugins": [
     "react",
     "@typescript-eslint",
-    "import",
-    "jest",
-    "typescript-sort-keys"
+    "import"
   ],
   "rules": {
     "react/no-unknown-property": "off",
@@ -45,8 +39,6 @@
     "max-lines": ["error", 400],
     "arrow-body-style": "off",
     "react/jsx-props-no-spreading": "off",
-    "typescript-sort-keys/interface": "error",
-    "typescript-sort-keys/string-enum": "error",
     "react/jsx-sort-props": "off",
     "operator-linebreak": "off",
     "linebreak-style": "off",

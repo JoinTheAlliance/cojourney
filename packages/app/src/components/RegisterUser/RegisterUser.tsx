@@ -1,29 +1,29 @@
-import { Stepper } from "@mantine/core";
-import React from "react";
-import useGlobalStore from "../../store/useGlobalStore";
-import useRegisterUserStyles from "./RegisterUser.styles";
-import Step1 from "./steps/step1";
-import Step2 from "./steps/step2";
+import { Stepper } from "@mantine/core"
+import React from "react"
+import useGlobalStore from "../../store/useGlobalStore"
+import useRegisterUserStyles from "./RegisterUser.styles"
+import Step1 from "./steps/step1"
+import Step2 from "./steps/step2"
 
 export interface IStepProps {
-  active: number;
-  nextStep: () => void;
-  prevStep: () => void;
+  active: number
+  nextStep: () => void
+  prevStep: () => void
 }
 
 const RegisterUser = (): JSX.Element => {
-  const { classes } = useRegisterUserStyles();
+  const { classes } = useRegisterUserStyles()
 
-  const { app, setApp } = useGlobalStore();
+  const { app, setApp } = useGlobalStore()
 
-  const current = app.registerUserActiveStep;
+  const current = app.registerUserActiveStep
 
   const nextStep = (): void => {
-    setApp({ registerUserActiveStep: current < 2 ? current + 1 : current });
-  };
+    setApp({ registerUserActiveStep: current < 2 ? current + 1 : current })
+  }
   const prevStep = (): void => {
-    setApp({ registerUserActiveStep: current > 0 ? current - 1 : current });
-  };
+    setApp({ registerUserActiveStep: current > 0 ? current - 1 : current })
+  }
 
   return (
     <div className={classes.content}>
@@ -57,7 +57,7 @@ const RegisterUser = (): JSX.Element => {
         </Stepper.Completed>
       </Stepper>
     </div>
-  );
-};
+  )
+}
 
-export default RegisterUser;
+export default RegisterUser

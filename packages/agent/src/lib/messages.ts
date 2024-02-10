@@ -1,100 +1,118 @@
-import { messageExamples } from "./messageExamples";
+import { type Actor, type Content, type Memory } from './types'
+import { messageExamples } from './messageExamples'
+import { type SupabaseClient } from '@supabase/supabase-js'
+import { type UUID } from 'crypto'
 
 /** Get the actors who are participating in the message, for context injection of name and description
  * agents is the array of default agents to search from
  * userIds are UUIDs of users, stored in DB
  */
-export async function getMessageActors({ supabase, userIds }: any) {
+export async function getMessageActors ({
+  supabase,
+  userIds
+}: {
+  supabase: SupabaseClient
+  userIds: UUID[]
+}) {
   const response = await supabase
-    .from("accounts")
-    .select("*")
-    .in("id", userIds);
+    .from('accounts')
+    .select('*')
+    .in('id', userIds)
 
   if (response.error) {
-    console.error(response.error);
-    return null;
+    console.error(response.error)
+    return []
   }
 
-  const { data } = response;
+  const { data } = response
 
   // join the data from the database with the data from the exampleNpcs
-  const characters = data.map((character: any) => {
-    const { name, description, id } = character;
+  const actors = data.map((actor: Actor) => {
+    const { name, description, id } = actor
     return {
       name,
       description,
       id
-    };
-  });
+    }
+  })
 
-  return characters;
+  return actors as Actor[]
 }
 
-export function formatMessageActors({ actors }: any) {
+export function formatMessageActors ({ actors }: { actors: Actor[] }) {
   // format actors as a string
-  const actorStrings = actors.map((actor: { name: any; description: any; }) => {
-    const header = `${actor.name}: ${actor.description}`;
-    return header;
-  });
-  const finalActorStrings = actorStrings.join("\n");
-  return finalActorStrings;
+  const actorStrings = actors.map((actor: Actor) => {
+    const header = `${actor.name}: ${actor.description ?? 'No description'}`
+    return header
+  })
+  const finalActorStrings = actorStrings.join('\n')
+  return finalActorStrings
 }
 
 /** get random conversation examples
  * return an array of random conversation examples from the messageExamples array
  */
-export const getRandomMessageExamples = ({ count }: any) => {
+export const getRandomMessageExamples = (count: number) => {
   // return an array of random conversation examples from the messageExamples array
-  const examples: ({ user: string; content: string; action: null; } | { user: string; content: string; action: string; })[][] = [];
+  const examples: Array<
+    Array<
+      | { user: string, content: string, action: null }
+      | { user: string, content: string, action: string }
+    >
+  > = []
   // make sure the examples are not duplicated
   while (examples.length < count && examples.length < messageExamples.length) {
-    const randomIndex = Math.floor(Math.random() * messageExamples.length);
-    const randomExample = messageExamples[randomIndex];
+    const randomIndex = Math.floor(Math.random() * messageExamples.length)
+    const randomExample = messageExamples[randomIndex]
     if (!examples.includes(randomExample)) {
-      examples.push(randomExample);
+      examples.push(randomExample)
     }
   }
 
   // exampe messages is an array of arrays of objects
   // format the examples so that each object is on one line
   const formattedExamples = examples.map((example) => {
-    return (
-      `\n\n${
-      example
-        .map((message) => {
-          return JSON.stringify(message);
-        })
-        .join("\n")}`
-    );
-  });
+    return `\n\n${example
+      .map((message) => {
+        return JSON.stringify(message)
+      })
+      .join('\n')}`
+  })
 
-  return formattedExamples;
-
-  // return JSON.stringify(examples, null, 2);
-};
+  return formattedExamples.join('\n')
+}
 
 // format conversation as string
-export const formatMessages = ({ messages, actors }: any) => {
+export const formatMessages = ({
+  messages,
+  actors
+}: {
+  messages: Memory[]
+  actors: Actor[]
+}) => {
   // format conversation as a string
   const messageStrings = messages
     .reverse()
-    .filter((message: { user_id: any; }) => message.user_id)
-    .map((message: { user_id: any; content: { content: any; action: any; }; }) => {
-      const sender = actors.find((actor: { id: any; }) => actor.id === message.user_id);
-      const senderName = sender.name ?? sender.content?.user;
-      return `{ "user": "${senderName}", "content": "${message.content.content}", "action": "${message.content.action}" }`;
+    .filter((message: Memory) => message.user_id)
+    .map((message: Memory) => {
+      const sender = actors.find(
+        (actor: Actor) => actor.id === message.user_id
+      )!
+      return `{ "user": "${sender.name}", "content": "${(message.content as Content).content}", "action": "${(message.content as Content).action}" }`
     })
-    .join("\n");
-  return messageStrings;
-};
+    .join('\n')
+  return messageStrings
+}
 
 /** format conversation as string */
-export const formatReflections = (reflections: any[]) => {
+export const formatReflections = (reflections: Memory[]) => {
   // format conversation as a string
-  const messageStrings = reflections.reverse().map((reflection: { toJSON: () => { (): any; new(): any; content: any; }; }) => {
-    const header = `${reflection.toJSON().content}`;
-    return header;
-  });
-  const finalMessageStrings = messageStrings.join("\n");
-  return finalMessageStrings;
-};
+  const messageStrings = reflections
+    .reverse()
+    .map(
+      (reflection: Memory) =>
+        `${(reflection.content as Content)?.content ?? reflection.content}`
+    )
+  const finalMessageStrings = messageStrings.join('\n')
+  return finalMessageStrings
+}

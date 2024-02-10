@@ -1,5 +1,5 @@
-import { Flex, Skeleton } from "@mantine/core";
-import React from "react";
+import { Flex, Skeleton } from "@mantine/core"
+import React from "react"
 
 const LoadingRoomData = (): JSX.Element => {
   return (
@@ -58,7 +58,7 @@ const LoadingRoomData = (): JSX.Element => {
         />
       </Flex>
     </div>
-  );
-};
+  )
+}
 
-export default LoadingRoomData;
+export default LoadingRoomData

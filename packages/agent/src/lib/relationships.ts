@@ -1,48 +1,74 @@
-import chalk from "chalk";
+import { type SupabaseClient } from '@supabase/supabase-js'
+import { type UUID } from 'crypto'
+import { type Relationship } from './types'
+
 /** create a connection
  * @todo This should only be allowable by the current user if they are connected to both userA and userB
-*/
-export async function createRelationship({ supabase, userA, userB}: { supabase: any, userA: string, userB: string }) {
+ */
+export async function createRelationship ({
+  supabase,
+  userA,
+  userB
+}: {
+  supabase: SupabaseClient
+  userA: UUID
+  userB: UUID
+}) {
   // create a connection
   // return the connection
-  const response = supabase.from("relationships").upsert({
+  const { data, error } = await supabase.from('relationships').upsert({
     user_a: userA,
-    user_b: userB,
-  }, { returning: "minimal" });
-
-  const { data, error } = response;
+    user_b: userB
+  })
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(error.message)
   }
 
-  return data;
+  return data
 }
 
-export async function getRelationship({ supabase, userA, userB }: { supabase: any, userA: string, userB: string }) {
-  const { data, error } = await supabase.from("relationships").select("*")
-    .or(`user_a.eq.${userA},user_b.eq.${userB}`)
-    .or(`user_a.eq.${userB},user_b.eq.${userA}`);
+export async function getRelationship ({
+  supabase,
+  userA,
+  userB
+}: {
+  supabase: SupabaseClient
+  userA: string
+  userB: string
+}) {
+  const { data, error } = await supabase.rpc('get_relationship', {
+    usera: userA,
+    userb: userB
+  })
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(error.message)
   }
 
-  return data;
+  return data[0]
 }
 
-export async function getRelationships({ supabase, userId }: { supabase: any, userId: string }) {
+export async function getRelationships ({
+  supabase,
+  userId
+}: {
+  supabase: SupabaseClient
+  userId: string
+}) {
   // Await the query to complete and get the response directly
-  const { data, error } = await supabase.from("relationships").select("*")
+  const { data, error } = await supabase
+    .from('relationships')
+    .select('*')
     // Check for userId in either user_a or user_b columns
     .or(`user_a.eq.${userId},user_b.eq.${userId}`)
-    .eq("status", "FRIENDS");
+    .eq('status', 'FRIENDS')
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(error.message)
   }
 
-  return data;
+  return data as Relationship[]
 }
 
 /**
@@ -57,31 +83,39 @@ export async function getRelationships({ supabase, userId }: { supabase: any, us
 // export async function searchRelationships({ supabase, userId, embedding }) {
 // }
 
-export async function createProfileEmbedding({ supabase, agent, runtime }: { supabase: any, agent: any, runtime: any }) {
-  if (runtime.debugMode) {
-    console.log(chalk.yellow(`Creating profile embedding for ${agent.name}`));
-  }
-  const embedding = await runtime.embed(agent.description);
-  const { data, error } = await supabase.from("accounts").update({ profile_embedding: embedding }).eq("id", agent.id);
-  if (error) {
-    throw new Error(error.message);
-  }
+// export async function createProfileEmbedding({ supabase, agent, runtime }: { supabase: SupabaseClient, agent: Actor, runtime: CojourneyRuntime }) {
+//   if (runtime.debugMode) {
+//     console.log(`Creating profile embedding for ${agent.name}`);
+//   }
+//   const embedding = await runtime.embed(agent.description);
+//   const { data, error } = await supabase.from("accounts").update({ profile_embedding: embedding }).eq("id", agent.id);
+//   if (error) {
+//     throw new Error(error.message);
+//   }
 
-  return data;
-}
+//   return data;
+// }
 
-export async function formatRelationships({ supabase, userId }: { supabase: any, userId: string }) {
-  const relationships = await getRelationships({ supabase, userId });
+export async function formatRelationships ({
+  supabase,
+  userId
+}: {
+  supabase: SupabaseClient
+  userId: string
+}) {
+  const relationships = await getRelationships({ supabase, userId })
 
-  const formattedRelationships = relationships.map((relationship: any) => {
-    const { user_a, user_b } = relationship;
+  const formattedRelationships = relationships.map(
+    (relationship: Relationship) => {
+      const { user_a, user_b } = relationship
 
-    if (user_a === userId) {
-      return user_b;
+      if (user_a === userId) {
+        return user_b
+      }
+
+      return user_a
     }
+  )
 
-    return user_a;
-  });
-
-  return formattedRelationships;
+  return formattedRelationships
 }

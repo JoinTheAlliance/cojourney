@@ -1,33 +1,32 @@
 import {
   ActionIcon,
-  Alert,
   Flex,
   Loader,
   Menu,
   Text,
-  Title,
-} from "@mantine/core";
-import React from "react";
-import { MoreHorizontal, Trash, UserPlus } from "react-feather";
-import useGlobalStore from "../../../store/useGlobalStore";
-import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator";
-import getFriend from "../../../utils/getFriend";
-import UserPopup from "../../UserPopup/UserPopup";
-import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests";
+  Title
+} from "@mantine/core"
+import React from "react"
+import { MoreHorizontal, Trash, UserPlus } from "react-feather"
+import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests"
+import useGlobalStore from "../../../store/useGlobalStore"
+import getFriend from "../../../utils/getFriend"
+import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator"
+import UserPopup from "../../UserPopup/UserPopup"
 
 const FriendsRequestsList = (): JSX.Element => {
   const {
     relationships: { requests },
-    user: { uid },
-  } = useGlobalStore();
+    user: { uid }
+  } = useGlobalStore()
 
   const { isLoading, handleAcceptFriendRequest, handleDeleteFriendship } =
-    useHandleFriendsRequests();
+    useHandleFriendsRequests()
 
   if (requests.length === 0) {
     return (
-        <p>No friend requests</p>
-    );
+      <p>No friend requests</p>
+    )
   }
 
   return (
@@ -35,17 +34,17 @@ const FriendsRequestsList = (): JSX.Element => {
       {requests.map((friendship) => {
         const { friendData } = getFriend({
           friendship,
-          userId: uid || "",
-        });
+          userId: uid || ""
+        })
 
-        if (!friendData) return null;
+        if (!friendData) return null
 
         return (
           <Flex
             sx={{
               padding: 5,
               borderRadius: 5,
-              cursor: "pointer",
+              cursor: "pointer"
             }}
             key={friendship.id}
             align="center"
@@ -53,16 +52,9 @@ const FriendsRequestsList = (): JSX.Element => {
             mt={10}
           >
             <Flex>
-              <UserPopup
-                user={{
-                  email: friendData.email || "",
-                  id: friendData.id,
-                  imageUrl: friendData.image_url || "",
-                  name: friendData.name || "",
-                }}
-              >
+              <UserPopup>
                 <UserAvatarWithIndicator
-                  image={friendData.image_url || ""}
+                  image={friendData.avatar_url || ""}
                   size={40}
                   user_email={friendData.email || ""}
                   checkOnline
@@ -97,9 +89,11 @@ const FriendsRequestsList = (): JSX.Element => {
             >
               <Menu.Target>
                 <ActionIcon disabled={isLoading}>
-                  {isLoading ? (
+                  {isLoading
+? (
                     <Loader size={16} />
-                  ) : (
+                  )
+: (
                     <MoreHorizontal size={20} />
                   )}
                 </ActionIcon>
@@ -110,8 +104,8 @@ const FriendsRequestsList = (): JSX.Element => {
                   onClick={() => {
                     handleAcceptFriendRequest({
                       friendData,
-                      friendship,
-                    });
+                      friendship
+                    })
                   }}
                   icon={<UserPlus size={16} />}
                 >
@@ -124,8 +118,8 @@ const FriendsRequestsList = (): JSX.Element => {
                 <Menu.Item
                   onClick={() => {
                     handleDeleteFriendship({
-                      friendship,
-                    });
+                      friendship
+                    })
                   }}
                   icon={<Trash size={16} />}
                 >
@@ -134,10 +128,10 @@ const FriendsRequestsList = (): JSX.Element => {
               </Menu.Dropdown>
             </Menu>
           </Flex>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default FriendsRequestsList;
+export default FriendsRequestsList

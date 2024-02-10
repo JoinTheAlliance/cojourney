@@ -1,21 +1,21 @@
-import { Edit } from "react-feather";
-import React from "react";
-import { ActionIcon, Flex, Tooltip } from "@mantine/core";
+import { Edit } from "react-feather"
+import React from "react"
+import { ActionIcon, Flex, Tooltip } from "@mantine/core"
 import useGlobalStore, {
-  IDatabaseMessages,
-} from "../../../../../store/useGlobalStore";
+  type IDatabaseMessages
+} from "../../../../../store/useGlobalStore"
 
 interface IMessageFunctions {
-  handleEdit: () => void;
-  message: IDatabaseMessages;
+  handleEdit: () => void
+  message: IDatabaseMessages
 }
 const MessageFunctions = ({
   handleEdit,
-  message,
+  message
 }: IMessageFunctions): JSX.Element => {
   const {
-    user: { uid },
-  } = useGlobalStore();
+    user: { uid }
+  } = useGlobalStore()
 
   return (
     <Flex gap={5}>
@@ -31,7 +31,7 @@ const MessageFunctions = ({
         </Tooltip>
       )}
     </Flex>
-  );
-};
+  )
+}
 
-export default MessageFunctions;
+export default MessageFunctions

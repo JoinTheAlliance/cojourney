@@ -1,4 +1,4 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/core"
 
 const useLoadingOverlayStyles = createStyles((theme) => ({
   backdrop: {
@@ -10,7 +10,7 @@ const useLoadingOverlayStyles = createStyles((theme) => ({
     opacity: 0.7,
     zIndex: 9998,
     backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.white,
+      theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.white
   },
   container: {
     height: "100vh",
@@ -22,8 +22,8 @@ const useLoadingOverlayStyles = createStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    backdropFilter: "blur(5px)",
-  },
-}));
+    backdropFilter: "blur(5px)"
+  }
+}))
 
-export default useLoadingOverlayStyles;
+export default useLoadingOverlayStyles

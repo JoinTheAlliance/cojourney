@@ -1,131 +1,130 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useState } from "react";
-import { showNotification } from "@mantine/notifications";
-import { Database } from "../../../types/database.types";
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useState } from "react"
+import { showNotification } from "@mantine/notifications"
+import { type Database } from "../../../types/database.types"
 import useGlobalStore, {
-  IDatabaseUser,
-  IFriend,
-} from "../../store/useGlobalStore";
+  type IDatabaseUser,
+  type IFriend
+} from "../../store/useGlobalStore"
 
 interface IAcceptFriendRequest {
-  friendData: IDatabaseUser;
-  friendship: IFriend;
+  friendData: IDatabaseUser
+  friendship: IFriend
 }
 
 interface IRejectFriendRequest {
-  friendship: IFriend;
+  friendship: IFriend
 }
 
 interface ISendFriendRequest {
-  friendEmail: string;
-  friendId: string;
+  friendEmail: string
+  friendId: string
 }
 
 const useHandleFriendsRequests = () => {
-  const supabase = useSupabaseClient<Database>();
-  const { user } = useGlobalStore();
+  const supabase = useSupabaseClient<Database>()
+  const { user } = useGlobalStore()
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSendFriendRequest = async ({
-    friendId,
-    friendEmail,
+    friendId
   }: ISendFriendRequest): Promise<void> => {
-    setIsLoading(true);
+    setIsLoading(true)
 
-    if (!user) return;
-    if (!user.uid) return;
+    if (!user) return
+    if (!user.uid) return
 
     const { error } = await supabase.from("relationships").insert({
       status: "PENDING",
       user_a: user.uid,
       user_b: friendId,
-      user_id: user.uid,
-    });
+      user_id: user.uid
+    })
 
     if (error) {
-      setIsLoading(false);
+      setIsLoading(false)
       showNotification({
         title: "Error",
         message: error.message,
-        color: "red",
-      });
+        color: "red"
+      })
 
-      return;
+      return
     }
 
     showNotification({
       title: "Friend request sent successfully",
-      message: "Now, its time to wait for them to accept it.",
-    });
+      message: "Now, its time to wait for them to accept it."
+    })
 
-    setIsLoading(false);
-  };
+    setIsLoading(false)
+  }
 
   const handleAcceptFriendRequest = async ({
-    friendship,
+    friendship
   }: IAcceptFriendRequest): Promise<void> => {
-    setIsLoading(true);
+    setIsLoading(true)
 
-    if (!user) return;
-    if (!user.uid) return;
+    if (!user) return
+    if (!user.uid) return
 
     const { error } = await supabase
       .from("relationships")
       .update({
         status: "FRIENDS",
         user_id: user.uid,
-        id: friendship.id,
+        id: friendship.id
       })
-      .eq("id", friendship.id);
+      .eq("id", friendship.id)
 
     if (error) {
-      setIsLoading(false);
+      setIsLoading(false)
       showNotification({
         title: "Error",
         message: error.message,
-        color: "red",
-      });
+        color: "red"
+      })
 
-      return;
+      return
     }
 
-    setIsLoading(false);
-  };
+    setIsLoading(false)
+  }
 
   const handleDeleteFriendship = async ({
-    friendship,
+    friendship
   }: IRejectFriendRequest): Promise<void> => {
-    setIsLoading(true);
+    setIsLoading(true)
 
-    if (!user) return;
-    if (!user.uid) return;
+    if (!user) return
+    if (!user.uid) return
 
     const { error } = await supabase
       .from("relationships")
       .delete()
-      .eq("id", friendship.id);
+      .eq("id", friendship.id)
 
     if (error) {
-      setIsLoading(false);
+      setIsLoading(false)
       showNotification({
         title: "Error",
         message: error.message,
-        color: "red",
-      });
+        color: "red"
+      })
 
-      return;
+      return
     }
 
-    setIsLoading(false);
-  };
+    setIsLoading(false)
+  }
 
   return {
     isLoading,
     handleAcceptFriendRequest,
     handleDeleteFriendship,
-    handleSendFriendRequest,
-  };
-};
+    handleSendFriendRequest
+  }
+}
 
-export default useHandleFriendsRequests;
+export default useHandleFriendsRequests

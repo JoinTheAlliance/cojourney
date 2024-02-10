@@ -1,71 +1,67 @@
 import {
-  Session,
+  type Session,
   useSession,
-  useSupabaseClient,
-} from "@supabase/auth-helpers-react";
-import { useCallback, useEffect } from "react";
+  useSupabaseClient
+} from "@supabase/auth-helpers-react"
+import { useCallback, useEffect } from "react"
 import useGlobalStore, {
-  IDatabaseRoom,
-  IFriend,
-} from "../store/useGlobalStore";
-import { Database } from "../../types/database.types";
-import useHandleSignout from "./useHandleSignout";
+  type IDatabaseRoom,
+  type IFriend
+} from "../store/useGlobalStore"
+import { type Database } from "../../types/database.types"
+import useHandleSignout from "./useHandleSignout"
 
 const useLoadUserData = () => {
-  const supabase = useSupabaseClient<Database>();
-  const { handleSignout } = useHandleSignout();
-  const s = useSession();
+  const supabase = useSupabaseClient<Database>()
+  const { handleSignout } = useHandleSignout()
+  const s = useSession()
 
   const { setUser, setApp, setRooms, setFriendships, setDms } =
-    useGlobalStore();
+    useGlobalStore()
 
   const getUserSession = useCallback(async () => {
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { user }
+    } = await supabase.auth.getUser()
 
-    if (!user) return handleSignout();
+    if (!user) { await handleSignout(); return }
 
-    return null;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return null
+  }, [])
 
   const getUserData = useCallback(async (session: Session): Promise<void> => {
-    if (!session) return;
+    if (!session) return
 
     const { data, error } = await supabase
       .from("accounts")
       .select("*")
       .eq("id", session?.user.id)
-      .single();
+      .single()
 
     if (error || !data) {
       setUser({
         registerComplete: false,
-        uid: null,
-      });
+        uid: null
+      })
 
-      return;
+      return
     }
 
     setUser({
       name: data?.name,
       email: data?.email,
-      imageUrl: data?.image_url,
+      imageUrl: data?.avatar_url,
       registerComplete: data?.register_complete,
-      uid: data?.id,
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      uid: data?.id
+    })
+  }, [])
 
   const getUserRoomData = useCallback(
     async (session: Session): Promise<void> => {
-      if (!session) return;
+      if (!session) return
 
-      setRooms([]);
-      setApp({ isLoadingRooms: true });
+      setRooms([])
+      setApp({ isLoadingRooms: true })
 
       const { data, error } = await supabase
         .from("rooms")
@@ -89,50 +85,49 @@ const useLoadUserData = () => {
             *
           )
         )
-        `,
+        `
         )
-        .filter("participants.user_id", "eq", session.user.id);
+        .filter("participants.user_id", "eq", session.user.id)
 
       if (error || !data) {
-        setApp({ isLoadingRooms: false });
-        return;
+        setApp({ isLoadingRooms: false })
+        return
       }
 
-      const newDms: IDatabaseRoom[] = [];
-      const newRooms: IDatabaseRoom[] = [];
+      const newDms: IDatabaseRoom[] = []
+      const newRooms: IDatabaseRoom[] = []
 
       data.forEach((room) => {
-        // @ts-ignore
-        if (room.relationships && room.relationships[0]) {
-          newDms.push(room);
-          return;
+        if (room?.relationships[0]) {
+          newDms.push(room)
+          return
         }
 
-        newRooms.push(room);
-      });
+        newRooms.push(room)
+      })
 
-      // @ts-ignore
-      setRooms(newRooms);
-      // @ts-ignore
-      setDms(newDms);
+      // @ts-expect-error
+      setRooms(newRooms)
+      // @ts-expect-error
+      setDms(newDms)
 
       setTimeout(() => {
-        setApp({ isLoadingRooms: false });
-      }, 2000);
+        setApp({ isLoadingRooms: false })
+      }, 2000)
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+
+    []
+  )
 
   const getUserFriends = useCallback(
     async (session: Session): Promise<void> => {
-      if (!session) return;
+      if (!session) return
 
       setFriendships({
         friends: [],
         requests: [],
-        pending: [],
-      });
+        pending: []
+      })
 
       const { data, error } = await supabase.from("relationships").select(
         `*,
@@ -145,60 +140,59 @@ const useLoadUserData = () => {
         actionUserData:accounts!relationships_user_id_fkey(
           *
         )
-      `,
-      );
+      `
+      )
 
-      const requests: IFriend[] = [];
-      const friends: IFriend[] = [];
-      const pending: IFriend[] = [];
+      const requests: IFriend[] = []
+      const friends: IFriend[] = []
+      const pending: IFriend[] = []
 
       if (error || !data) {
-        return;
+        return
       }
 
       data.forEach((friendship) => {
         if (friendship.status === "PENDING") {
           if (friendship.user_id === session.user.id) {
-            pending.push(friendship);
+            pending.push(friendship)
           } else {
-            requests.push(friendship);
+            requests.push(friendship)
           }
         } else if (friendship.status === "FRIENDS") {
-          return friends.push(friendship);
+          return friends.push(friendship)
         }
 
-        return null;
-      });
+        return null
+      })
 
       setFriendships({
         friends,
         pending,
-        requests,
-      });
+        requests
+      })
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+
+    []
+  )
 
   useEffect(() => {
-    if (!s) return;
+    if (!s) return
 
     setApp({
-      isLoading: true,
-    });
+      isLoading: true
+    })
 
     Promise.all([
       getUserData(s),
       getUserRoomData(s),
       getUserSession(),
-      getUserFriends(s),
+      getUserFriends(s)
     ]).finally(() => {
-      setApp({ isLoading: false });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s, supabase]);
+      setApp({ isLoading: false })
+    })
+  }, [s, supabase])
 
-  return { getUserData, getUserRoomData, getUserSession, getUserFriends };
-};
+  return { getUserData, getUserRoomData, getUserSession, getUserFriends }
+}
 
-export default useLoadUserData;
+export default useLoadUserData

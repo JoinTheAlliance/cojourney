@@ -1,102 +1,101 @@
-import { Avatar, Button, Divider, Flex, Grid, TextInput } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { closeAllModals, openModal } from "@mantine/modals";
-import { showNotification } from "@mantine/notifications";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useState } from "react";
-import { Save, User } from "react-feather";
-import { useForm } from "react-hook-form";
-import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage";
-import { Database } from "../../../../types/database.types";
-import constants from "../../../constants/constants";
-import useGlobalStore from "../../../store/useGlobalStore";
+import { Avatar, Button, Divider, Flex, Grid, TextInput } from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import { closeAllModals, openModal } from "@mantine/modals"
+import { showNotification } from "@mantine/notifications"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useState } from "react"
+import { Save, User } from "react-feather"
+import { useForm } from "react-hook-form"
+import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
+import { type Database } from "../../../../types/database.types"
+import constants from "../../../constants/constants"
+import useGlobalStore from "../../../store/useGlobalStore"
 
 interface IFormValues {
-  name: string;
+  name: string
 }
 
 const UserPreferences = (): JSX.Element => {
-  const { user, setUser } = useGlobalStore();
-  const session = useSession();
-  const supabase = useSupabaseClient<Database>();
+  const { user, setUser } = useGlobalStore()
+  const session = useSession()
+  const supabase = useSupabaseClient<Database>()
 
-  const [image, setImage] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(user.imageUrl);
-  const [isSavingChanges, setIsSavingChanges] = useState(false);
+  const [image, setImage] = useState<File | null>(null)
+  const [imageUrl, setImageUrl] = useState<string | null>(user.imageUrl)
+  const [isSavingChanges, setIsSavingChanges] = useState(false)
 
-  const isMobile = useMediaQuery("(max-width: 900px)");
+  const isMobile = useMediaQuery("(max-width: 900px)")
 
-  const COL_SPAN = isMobile ? 12 : 6;
+  const COL_SPAN = isMobile ? 12 : 6
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<IFormValues>({
     defaultValues: {
-      name: user.name || "",
-    },
-  });
+      name: user.name ?? ""
+    }
+  })
 
   const onSubmit = handleSubmit(async (data): Promise<void> => {
-    setIsSavingChanges(true);
+    setIsSavingChanges(true)
 
     if (!session?.user.id) {
-      setIsSavingChanges(false);
-      return showNotification({
+      setIsSavingChanges(false)
+      showNotification({
         title: "Error, unable to save information.",
         message:
-          "Please reload the page, if the error persists try logging out and back in.",
-      });
+          "Please reload the page, if the error persists try logging out and back in."
+      }); return
     }
 
-    let IMAGE_URL = imageUrl;
+    let IMAGE_URL = imageUrl
 
     if (image) {
       const { data: imageUploadData, error } = await supabase.storage
         .from("profile-images")
         .upload(`${session.user.id}/profile.png`, image, {
           cacheControl: "0",
-          upsert: true,
-        });
+          upsert: true
+        })
 
       if (error) {
-        return showNotification({
+        showNotification({
           title: "Error.",
-          message: error.message,
-        });
+          message: error.message
+        }); return
       }
 
-      const { data: imageUrlData } = await supabase.storage
+      const { data: imageUrlData } = supabase.storage
         .from("profile-images")
-        .getPublicUrl(imageUploadData.path);
+        .getPublicUrl(imageUploadData.path)
 
       if (!imageUrlData) {
-        return showNotification({
+        showNotification({
           title: "Error.",
-          message: "Unable to get image URL",
-        });
+          message: "Unable to get image URL"
+        }); return
       }
 
-      IMAGE_URL = imageUrlData.publicUrl;
+      IMAGE_URL = imageUrlData.publicUrl
     }
 
     const { error } = await supabase
       .from("accounts")
       .update({
         name: data.name,
-        id: session?.user.id,
-        image_url: IMAGE_URL,
+        avatar_url: IMAGE_URL
       })
-      .eq("id", session.user.id);
+      .eq("id", session.user.id)
 
     if (error) {
-      setIsSavingChanges(false);
+      setIsSavingChanges(false)
 
-      return openModal({
+      openModal({
         title: "Could not complete setup",
         overlayProps: {
-          blur: 5,
+          blur: 5
         },
         children: (
           <div>
@@ -113,24 +112,24 @@ const UserPreferences = (): JSX.Element => {
             >
               <Button
                 onClick={(): void => {
-                  closeAllModals();
+                  closeAllModals()
                 }}
               >
                 Close
               </Button>
             </Flex>
           </div>
-        ),
-      });
+        )
+      }); return
     }
 
-    setIsSavingChanges(false);
+    setIsSavingChanges(false)
 
-    return setUser({
+    setUser({
       imageUrl: IMAGE_URL,
-      name: data.name,
-    });
-  });
+      name: data.name
+    })
+  })
 
   return (
     <div>
@@ -148,7 +147,7 @@ const UserPreferences = (): JSX.Element => {
         <Avatar
           mr={20}
           size={150}
-          src={user.imageUrl || constants.avatarPlaceholder(user.email || "")}
+          src={user.imageUrl ?? constants.avatarPlaceholder(user.email ?? "")}
         />
         <div>
           <h1>{user.name}</h1>
@@ -156,62 +155,62 @@ const UserPreferences = (): JSX.Element => {
         </div>
       </Flex>
       <form onSubmit={onSubmit}>
-      <Divider mb={20} />
-      <Grid>
-        <Grid.Col span={COL_SPAN}>
-          <UploadProfileImage
-            image={image}
-            imageUrl={imageUrl}
-            setImage={setImage}
-            setImageUrl={setImageUrl}
-          />
-        </Grid.Col>
-        <Grid.Col span={COL_SPAN}>
-          <TextInput
-            {...register("name", {
-              required: "Your name is required",
-              minLength: {
-                value: 5,
-                message: "At least 5 letters",
-              },
-            })}
-            description="This is your publicly shown name"
-            error={errors.name?.message}
-            label="Your Name"
-            placeholder="Stephen Smith"
-            withAsterisk
-          />
-        </Grid.Col>
-      </Grid>
-      <Divider
-        mb={10}
-        mt={20}
-      />
-      <Flex justify="flex-end">
-      <Button
-        mr={'auto'}
-        leftIcon={<User />}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          // log out with supabase
-          supabase.auth.signOut();
-        }}
-        variant="white"
-      >
-        Logout
-      </Button>
-        <Button
-          leftIcon={<Save size={16} />}
-          loading={isSavingChanges}
-          type="submit"
-        >
-          Save Changes
-        </Button>
-      </Flex>
-    </form>
+        <Divider mb={20} />
+        <Grid>
+          <Grid.Col span={COL_SPAN}>
+            <UploadProfileImage
+              image={image}
+              imageUrl={imageUrl}
+              setImage={setImage}
+              setImageUrl={setImageUrl}
+            />
+          </Grid.Col>
+          <Grid.Col span={COL_SPAN}>
+            <TextInput
+              {...register("name", {
+                required: "Your name is required",
+                minLength: {
+                  value: 5,
+                  message: "At least 5 letters"
+                }
+              })}
+              description="This is your publicly shown name"
+              error={errors.name?.message}
+              label="Your Name"
+              placeholder="Stephen Smith"
+              withAsterisk
+            />
+          </Grid.Col>
+        </Grid>
+        <Divider
+          mb={10}
+          mt={20}
+        />
+        <Flex justify="flex-end">
+          <Button
+            mr="auto"
+            leftIcon={<User />}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              // log out with supabase
+              supabase.auth.signOut()
+            }}
+            variant="white"
+          >
+            Logout
+          </Button>
+          <Button
+            leftIcon={<Save size={16} />}
+            loading={isSavingChanges}
+            type="submit"
+          >
+            Save Changes
+          </Button>
+        </Flex>
+      </form>
     </div>
-  );
-};
+  )
+}
 
-export default UserPreferences;
+export default UserPreferences

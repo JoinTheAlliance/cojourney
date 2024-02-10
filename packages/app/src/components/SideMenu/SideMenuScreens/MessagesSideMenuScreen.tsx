@@ -1,22 +1,21 @@
-import { Accordion, Badge, Collapse, Flex, Loader, Text } from "@mantine/core";
-import React, { useEffect, useState } from "react";
-import DMs from "../DMs/DMs";
-import useGlobalStore from "../../../store/useGlobalStore";
-import getUnreadMessagesInDms from "../../../helpers/getUnreadMessagesInDms";
-import getUnreadMessagesInRooms from "../../../helpers/getUnreadMessagesInRooms";
+import { Badge, Collapse, Flex, Loader, Text } from "@mantine/core"
+import React, { useEffect, useState } from "react"
+import getUnreadMessagesInDms from "../../../helpers/getUnreadMessagesInDms"
+import useGlobalStore from "../../../store/useGlobalStore"
+import DMs from "../DMs/DMs"
 
 const MessagesSideMenuScreen = (): JSX.Element => {
-  const { app, setApp, unreadMessages, dms, rooms } = useGlobalStore();
+  const { app, unreadMessages, dms, rooms } = useGlobalStore()
 
-  const [unreadDms, setUnreadDms] = useState<number>(0);
-  const [unreadRooms, setUnreadRooms] = useState<number>(0);
+  const [unreadDms, setUnreadDms] = useState<number>(0)
+  // const [unreadRooms, setUnreadRooms] = useState<number>(0);
 
   useEffect(() => {
-    if (unreadMessages.length === 0) return;
+    if (unreadMessages.length === 0) return
 
-    setUnreadDms(getUnreadMessagesInDms({ unreadMessages, dms }));
-    setUnreadRooms(getUnreadMessagesInRooms({ rooms, unreadMessages }));
-  }, [unreadMessages, rooms, dms]);
+    setUnreadDms(getUnreadMessagesInDms({ unreadMessages, dms }))
+    // setUnreadRooms(getUnreadMessagesInRooms({ rooms, unreadMessages }));
+  }, [unreadMessages, rooms, dms])
 
   return (
     <>
@@ -34,13 +33,13 @@ const MessagesSideMenuScreen = (): JSX.Element => {
         </Flex>
       </Collapse>
       {unreadDms !== 0 && app.messageAccordionSelected !== "dms" && (
-                <Badge
-                  mr={8}
-                  color="red"
-                  variant="filled"
-                >
-                  {unreadDms}
-                </Badge>
+      <Badge
+        mr={8}
+        color="red"
+        variant="filled"
+      >
+        {unreadDms}
+      </Badge>
               )}
       <DMs />
       {/* <Accordion
@@ -113,7 +112,7 @@ const MessagesSideMenuScreen = (): JSX.Element => {
         </Accordion.Item>
       </Accordion> */}
     </>
-  );
-};
+  )
+}
 
-export default MessagesSideMenuScreen;
+export default MessagesSideMenuScreen

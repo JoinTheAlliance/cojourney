@@ -1,22 +1,20 @@
-import { ActionIcon, Avatar, Flex, Tooltip } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import React, { useState } from "react";
-import { Settings } from "react-feather";
-import UserAvatarWithIndicator from "../../../../components/UserAvatarWithIndicator/UserAvatarWithIndicator";
-import useGlobalStore from "../../../../store/useGlobalStore";
-import useRoomHeaderStyles from "./useRoomHeaderStyles";
+import { Avatar, Flex, Tooltip } from "@mantine/core"
+import React from "react"
+import { MoreHorizontal } from "react-feather"
+import { useNavigate } from "react-router-dom"
+import UserAvatarWithIndicator from "../../../../components/UserAvatarWithIndicator/UserAvatarWithIndicator"
+import useGlobalStore from "../../../../store/useGlobalStore"
+import useRoomHeaderStyles from "./useRoomHeaderStyles"
 
 const RoomHeader = (): JSX.Element => {
-  const { classes } = useRoomHeaderStyles();
+  const { classes } = useRoomHeaderStyles()
   const {
-    currentRoom: { roomData, roomParticipants },
-  } = useGlobalStore();
-  const isMobile = useMediaQuery("(max-width: 1200px)");
-
-  const [isRoomSettingsOpened, setIsRoomSettingsOpened] = useState(false);
+    currentRoom: { roomData, roomParticipants }
+  } = useGlobalStore()
+  const navigate = useNavigate()
 
   if (!roomData || !roomParticipants) {
-    return <p>Error</p>;
+    return <p>Error</p>
   }
 
   return (
@@ -26,26 +24,26 @@ const RoomHeader = (): JSX.Element => {
           <div className={classes.participants}>
             <Avatar.Group spacing="sm">
               {roomParticipants.slice(0, 3).map((participant) => {
-                if (!participant.userData) return null;
+                if (!participant.userData) return null
 
                 return (
                   <Tooltip
                     key={participant.id}
-                    // @ts-ignore
+                    // @ts-expect-error
                     label={participant.userData.name}
                     withArrow
                   >
                     <div>
                       <UserAvatarWithIndicator
-                        // @ts-ignore
-                        image={participant.userData.image_url}
+                        // @ts-expect-error
+                        image={participant.userData.avatar_url}
                         size={40}
-                        // @ts-ignore
+                        // @ts-expect-error
                         user_email={participant.userData.email}
                       />
                     </div>
                   </Tooltip>
-                );
+                )
               })}
               {roomParticipants.length > 3 && (
                 <Avatar radius="xl">{`+${roomParticipants.length - 3}`}</Avatar>
@@ -54,11 +52,22 @@ const RoomHeader = (): JSX.Element => {
           </div>
         </div>
         <Flex align="center">
-          {/* <Tooltip
+          <Tooltip
+            withArrow
+            label="CJ Profile"
+          >
+            <MoreHorizontal
+              style={{ cursor: "pointer", color: "#757474" }}
+              onClick={() => { navigate("/cjprofile") }}
+            />
+          </Tooltip>
+        </Flex>
+        {/* <Flex align="center">
+          <Tooltip
             withArrow
             label="Use AI tools to help you write your messages, or to be a menace to your friends."
-          > */}
-          {/* <Button
+          >
+            <Button
               onClick={() => {
                 setApp({
                   isTldrMenuOpen: true,
@@ -68,9 +77,9 @@ const RoomHeader = (): JSX.Element => {
               variant="light"
             >
               ChatGPT
-            </Button> */}
-          {/* </Tooltip> */}
-          {/* {isMobile && (
+            </Button>
+          </Tooltip>
+          {isMobile && (
             <Tooltip
               label="Room Settings"
               withArrow
@@ -83,11 +92,11 @@ const RoomHeader = (): JSX.Element => {
                 <Settings size={20} />
               </ActionIcon>
             </Tooltip>
-          )} */}
-        </Flex>
+          )}
+        </Flex> */}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RoomHeader;
+export default RoomHeader

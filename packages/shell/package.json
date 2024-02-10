@@ -1,0 +1,29 @@
+{
+  "name": "@cojourney/shell",
+  "version": "0.0.3",
+  "description": "An agent for every stage of your life",
+  "type": "module",
+  "main": "src/index.mjs",
+  "bin": {
+    "cj": "./src/index.mjs",
+    "cojourney": "./src/index.mjs"
+  },
+  "license": "MIT",
+  "scripts": {
+    "terminal": "node --no-warnings src/index.mjs --dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "@types/inquirer": "^9.0.7",
+    "@types/node-notifier": "^8.0.5",
+    "chalk": "^5.3.0",
+    "dotenv": "^16.4.1",
+    "inquirer": "^9.2.14",
+    "node-notifier": "^10.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.5"
+  }
+}

@@ -1,20 +1,20 @@
-import { IRoom, IUnreadMessages } from "./../store/useGlobalStore";
+import { type IRoom, type IUnreadMessages } from "./../store/useGlobalStore"
 
 interface Props {
-  rooms: IRoom[];
-  unreadMessages: IUnreadMessages[];
+  rooms: IRoom[]
+  unreadMessages: IUnreadMessages[]
 }
 
 const getUnreadMessagesInRooms = ({ unreadMessages, rooms }: Props) => {
-  let unread = 0;
+  let unread = 0
 
   unreadMessages.forEach((message) => {
     if (rooms.find((dm) => dm.id === message.room_id)) {
-      unread += message.message_count;
+      unread += message.message_count
     }
-  });
+  })
 
-  return unread;
-};
+  return unread
+}
 
-export default getUnreadMessagesInRooms;
+export default getUnreadMessagesInRooms

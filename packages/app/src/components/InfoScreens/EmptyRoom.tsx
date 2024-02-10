@@ -1,4 +1,5 @@
-import { Flex } from "@mantine/core";
+import React from "react"
+import { Flex } from "@mantine/core"
 
 const EmptyRoom = (): JSX.Element => {
   return (
@@ -10,7 +11,7 @@ const EmptyRoom = (): JSX.Element => {
     >
       <h1>No messages... yet</h1>
     </Flex>
-  );
-};
+  )
+}
 
-export default EmptyRoom;
+export default EmptyRoom

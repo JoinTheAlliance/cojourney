@@ -1,37 +1,35 @@
-import { Flex, Text, Title, useMantineTheme } from "@mantine/core";
-import React from "react";
-import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator";
-import getFriend from "../../../utils/getFriend";
-import UserPopup from "../../UserPopup/UserPopup";
+import { Flex, Text, Title, useMantineTheme } from "@mantine/core"
+import React from "react"
+import { type IFriend, type IUser } from "../../../store/useGlobalStore"
+import getFriend from "../../../utils/getFriend"
+import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator"
+import UserPopup from "../../UserPopup/UserPopup"
 
-// @ts-ignore
-const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element => {
-  const theme = useMantineTheme();
+const FriendsList = ({
+  friends,
+  user
+}: {
+  friends: IFriend[]
+  user: IUser
+}): JSX.Element => {
+  const theme = useMantineTheme()
 
   if (friends.length === 0) {
-    return (
-      <p>No friends yet!</p>
-    );
+    return <p>No friends yet!</p>
   }
 
   return (
     <div>
-      {friends.map((friendship: any) => {
+      {friends.map((friendship: IFriend) => {
         const { friendData } = getFriend({
           friendship,
-          userId: user.uid || "",
-        });
+          userId: user.uid || ""
+        })
 
-        if (!friendData) return null;
+        if (!friendData) return null
 
         return (
           <UserPopup
-            user={{
-              email: friendData.email || "",
-              imageUrl: friendData.image_url || "",
-              name: friendData.name || "",
-              id: friendData.id || "",
-            }}
             key={friendship.id}
           >
             <Flex
@@ -43,18 +41,18 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
                   backgroundColor:
                     theme.colorScheme === "dark"
                       ? theme.colors.dark[6]
-                      : theme.colors.gray[1],
-                },
+                      : theme.colors.gray[1]
+                }
               }}
               key={friendship.id}
               align="center"
               mt={10}
             >
               <UserAvatarWithIndicator
-                // @ts-ignore
-                image={friendData.image_url}
+                // @ts-expect-error
+                image={friendData.avatar_url}
                 size={40}
-                // @ts-ignore
+                // @ts-expect-error
                 user_email={friendData.email}
                 checkOnline
               />
@@ -66,7 +64,6 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
                     mr={10}
                     size={16}
                   >
-                    {/* @ts-ignore */}
                     {friendData.name}
                   </Title>
                 </Flex>
@@ -75,16 +72,15 @@ const FriendsList = ({ friends, user }: { friends: any, user: any}): JSX.Element
                   c="dimmed"
                   size={14}
                 >
-                  {/* @ts-ignore */}
                   {friendData.email}
                 </Text>
               </div>
             </Flex>
           </UserPopup>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default FriendsList;
+export default FriendsList

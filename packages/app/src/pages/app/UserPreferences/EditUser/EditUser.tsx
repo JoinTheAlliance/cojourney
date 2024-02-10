@@ -1,83 +1,83 @@
-import { Button, Divider, Flex, Grid, TextInput } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { closeAllModals, openModal } from "@mantine/modals";
-import { showNotification } from "@mantine/notifications";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import React, { useState } from "react";
-import { Save, Trash } from "react-feather";
-import { useForm } from "react-hook-form";
-import UploadProfileImage from "../../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage";
-import useGlobalStore from "../../../../store/useGlobalStore";
-import { Database } from "../../../../../types/database.types";
+import { Button, Divider, Flex, Grid, TextInput } from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import { closeAllModals, openModal } from "@mantine/modals"
+import { showNotification } from "@mantine/notifications"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useState } from "react"
+import { Save } from "react-feather"
+import { useForm } from "react-hook-form"
+import { type Database } from "../../../../../types/database.types"
+import UploadProfileImage from "../../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
+import useGlobalStore from "../../../../store/useGlobalStore"
 
 interface IFormValues {
-  name: string;
+  name: string
 }
 
 const EditUser = (): JSX.Element => {
-  const { user, setUser } = useGlobalStore();
-  const session = useSession();
-  const supabase = useSupabaseClient<Database>();
+  const { user, setUser } = useGlobalStore()
+  const session = useSession()
+  const supabase = useSupabaseClient<Database>()
 
-  const [image, setImage] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(user.imageUrl);
-  const [isSavingChanges, setIsSavingChanges] = useState(false);
+  const [image, setImage] = useState<File | null>(null)
+  const [imageUrl, setImageUrl] = useState<string | null>(user.imageUrl)
+  const [isSavingChanges, setIsSavingChanges] = useState(false)
 
-  const isMobile = useMediaQuery("(max-width: 900px)");
+  const isMobile = useMediaQuery("(max-width: 900px)")
 
-  const COL_SPAN = isMobile ? 12 : 6;
+  const COL_SPAN = isMobile ? 12 : 6
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<IFormValues>({
     defaultValues: {
-      name: user.name || "",
-    },
-  });
+      name: user.name ?? ""
+    }
+  })
 
   const onSubmit = handleSubmit(async (data): Promise<void> => {
-    setIsSavingChanges(true);
+    setIsSavingChanges(true)
 
     if (!session?.user.id) {
-      setIsSavingChanges(false);
-      return showNotification({
+      setIsSavingChanges(false)
+      showNotification({
         title: "Error, unable to save information.",
         message:
-          "Please reload the page, if the error persists try logging out and back in.",
-      });
+          "Please reload the page, if the error persists try logging out and back in."
+      }); return
     }
 
-    let IMAGE_URL = imageUrl;
+    let IMAGE_URL = imageUrl
 
     if (image) {
       const { data: imageUploadData, error } = await supabase.storage
         .from("profile-images")
         .upload(`${session.user.id}/profile.png`, image, {
           cacheControl: "0",
-          upsert: true,
-        });
+          upsert: true
+        })
 
       if (error) {
-        return showNotification({
+        showNotification({
           title: "Error.",
-          message: error.message,
-        });
+          message: error.message
+        }); return
       }
 
-      const { data: imageUrlData } = await supabase.storage
+      const { data: imageUrlData } = supabase.storage
         .from("profile-images")
-        .getPublicUrl(imageUploadData.path);
+        .getPublicUrl(imageUploadData.path)
 
       if (!imageUrlData) {
-        return showNotification({
+        showNotification({
           title: "Error.",
-          message: "Unable to get image URL",
-        });
+          message: "Unable to get image URL"
+        }); return
       }
 
-      IMAGE_URL = imageUrlData.publicUrl;
+      IMAGE_URL = imageUrlData.publicUrl
     }
 
     const { error } = await supabase
@@ -85,17 +85,17 @@ const EditUser = (): JSX.Element => {
       .update({
         name: data.name,
         id: session?.user.id,
-        image_url: IMAGE_URL,
+        avatar_url: IMAGE_URL
       })
-      .eq("id", session.user.id);
+      .eq("id", session.user.id)
 
     if (error) {
-      setIsSavingChanges(false);
+      setIsSavingChanges(false)
 
-      return openModal({
+      openModal({
         title: "Could not complete setup",
         overlayProps: {
-          blur: 5,
+          blur: 5
         },
         children: (
           <div>
@@ -112,24 +112,24 @@ const EditUser = (): JSX.Element => {
             >
               <Button
                 onClick={(): void => {
-                  closeAllModals();
+                  closeAllModals()
                 }}
               >
                 Close
               </Button>
             </Flex>
           </div>
-        ),
-      });
+        )
+      }); return
     }
 
-    setIsSavingChanges(false);
+    setIsSavingChanges(false)
 
-    return setUser({
+    setUser({
       imageUrl: IMAGE_URL,
-      name: data.name,
-    });
-  });
+      name: data.name
+    })
+  })
 
   return (
     <form onSubmit={onSubmit}>
@@ -149,8 +149,8 @@ const EditUser = (): JSX.Element => {
               required: "Your name is required",
               minLength: {
                 value: 5,
-                message: "At least 5 letters",
-              },
+                message: "At least 5 letters"
+              }
             })}
             description="This is your publicly shown name"
             error={errors.name?.message}
@@ -174,7 +174,7 @@ const EditUser = (): JSX.Element => {
         </Button>
       </Flex>
     </form>
-  );
-};
+  )
+}
 
-export default EditUser;
+export default EditUser

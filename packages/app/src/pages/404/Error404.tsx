@@ -1,17 +1,17 @@
-import React from "react";
+import React from "react"
 import {
   Button,
   Container,
   Flex,
   ScrollArea,
   Text,
-  Title,
-} from "@mantine/core";
-import { Link } from "react-router-dom";
-import useError404Styles from "./useError404Styles";
+  Title
+} from "@mantine/core"
+import { Link } from "react-router-dom"
+import useError404Styles from "./useError404Styles"
 
 const Error404 = (): JSX.Element => {
-  const { classes } = useError404Styles();
+  const { classes } = useError404Styles()
 
   return (
     <ScrollArea
@@ -61,7 +61,7 @@ const Error404 = (): JSX.Element => {
         </Flex>
       </Container>
     </ScrollArea>
-  );
-};
+  )
+}
 
-export default Error404;
+export default Error404

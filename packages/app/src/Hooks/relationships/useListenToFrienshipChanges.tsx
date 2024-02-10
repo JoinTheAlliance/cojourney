@@ -1,44 +1,50 @@
 import {
-  Session,
+  type Session,
   useSession,
-  useSupabaseClient,
-} from "@supabase/auth-helpers-react";
-import { useEffect } from "react";
-import { showNotification } from "@mantine/notifications";
-import { Database } from "../../../types/database.types";
-import useGlobalStore from "../../store/useGlobalStore";
+  useSupabaseClient
+} from "@supabase/auth-helpers-react"
+import { useEffect } from "react"
+import { showNotification } from "@mantine/notifications"
+import { type Database } from "../../../types/database.types"
+import useGlobalStore from "../../store/useGlobalStore"
 
 interface Props {
-  getUserFriends: (session: Session) => Promise<void>;
-  getUserRoomData: (session: Session) => Promise<void>;
+  getUserFriends: (session: Session) => Promise<void>
+  getUserRoomData: (session: Session) => Promise<void>
 }
 
 const useListenToFriendshipChanges = ({
   getUserFriends,
-  getUserRoomData,
+  getUserRoomData
 }: Props) => {
-  const supabase = useSupabaseClient<Database>();
-  const session = useSession();
+  const supabase = useSupabaseClient<Database>()
+  const session = useSession()
 
   const {
-    user: { uid },
-  } = useGlobalStore();
+    user: { uid }
+  } = useGlobalStore()
 
   useEffect(() => {
-    if (!session) return;
+    if (!session) return
 
     const channel = supabase
       .channel("relationships-changes")
       .on(
+        // @ts-expect-error
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "relationships",
+          table: "relationships"
         },
-        (payload: any) => {
-          getUserFriends(session);
-          getUserRoomData(session);
+        (payload: {
+          new: {
+            status: string
+            user_id: string
+          }
+        }) => {
+          getUserFriends(session)
+          getUserRoomData(session)
 
           if (
             payload.new.status === "PENDING" &&
@@ -46,8 +52,8 @@ const useListenToFriendshipChanges = ({
           ) {
             showNotification({
               title: "Yoo",
-              message: "You just got a friend request",
-            });
+              message: "You just got a friend request"
+            })
           } else if (
             payload.new.status === "FRIENDS" &&
             payload.new.user_id !== uid
@@ -55,19 +61,18 @@ const useListenToFriendshipChanges = ({
             showNotification({
               title: "You got a new friend!",
               message:
-                "Someone just accepted your friend request, go check out who it is",
-            });
+                "Someone just accepted your friend request, go check out who it is"
+            })
           }
-        },
+        }
       )
-      .subscribe();
+      .subscribe()
 
     // eslint-disable-next-line consistent-return
     return () => {
-      channel.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]);
-};
+      channel.unsubscribe()
+    }
+  }, [session])
+}
 
-export default useListenToFriendshipChanges;
+export default useListenToFriendshipChanges

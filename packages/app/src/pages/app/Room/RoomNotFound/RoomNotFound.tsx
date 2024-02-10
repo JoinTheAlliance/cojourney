@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 const RoomNotFound = (): JSX.Element => {
   return (
@@ -9,7 +9,7 @@ const RoomNotFound = (): JSX.Element => {
         deleted.
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default RoomNotFound;
+export default RoomNotFound

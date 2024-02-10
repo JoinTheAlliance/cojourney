@@ -6,95 +6,95 @@ import {
   Flex,
   Text,
   Title,
-  useMantineTheme,
-} from "@mantine/core";
-import { closeAllModals, openModal } from "@mantine/modals";
-import { showNotification } from "@mantine/notifications";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import React, { useState } from "react";
-import { ArrowLeft, Flag } from "react-feather";
-import { Database } from "../../../../types/database.types";
-import useGlobalStore from "../../../store/useGlobalStore";
-import { IStepProps } from "../RegisterUser";
-import UploadProfileImage from "../helpers/UploadProfileImage.tsx/UploadProfileImage";
-import constants from "../../../constants/constants";
+  useMantineTheme
+} from "@mantine/core"
+import { closeAllModals, openModal } from "@mantine/modals"
+import { showNotification } from "@mantine/notifications"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useState } from "react"
+import { ArrowLeft, Flag } from "react-feather"
+import { type Database } from "../../../../types/database.types"
+import useGlobalStore from "../../../store/useGlobalStore"
+import { type IStepProps } from "../RegisterUser"
+import UploadProfileImage from "../helpers/UploadProfileImage.tsx/UploadProfileImage"
+import constants from "../../../constants/constants"
 
 const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
-  const session = useSession();
-  const supabase = useSupabaseClient<Database>();
-  const theme = useMantineTheme();
+  const session = useSession()
+  const supabase = useSupabaseClient<Database>()
+  const theme = useMantineTheme()
 
-  const { user, setUser } = useGlobalStore();
+  const { user, setUser } = useGlobalStore()
 
-  const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [isLoadingSavingData, setIsLoadingSavingData] = useState(false);
+  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [isLoadingSavingData, setIsLoadingSavingData] = useState(false)
 
   const handleSubmit = async (): Promise<void> => {
-    setIsLoadingSavingData(true);
+    setIsLoadingSavingData(true)
 
     if (!session?.user.id) {
-      setIsLoadingSavingData(false);
-      return showNotification({
+      setIsLoadingSavingData(false)
+      showNotification({
         title: "Error, unable to save information.",
         message:
-          "Please reload the page, if the error persists try logging out and back in.",
-      });
+          "Please reload the page, if the error persists try logging out and back in."
+      }); return
     }
 
-    let IMAGE_URL = null;
+    let IMAGE_URL = ""
 
     if (profileImage) {
       const { data: imageUploadData, error } = await supabase.storage
         .from("profile-images")
         .upload(`${session.user.id}/profile.png`, profileImage, {
           cacheControl: "0",
-          upsert: true,
-        });
+          upsert: true
+        })
       if (error) {
-        return showNotification({
+        showNotification({
           title: "Error.",
-          message: error.message,
-        });
+          message: error.message
+        }); return
       }
 
-      const { data: imageUrlData } = await supabase.storage
+      const { data: imageUrlData } = supabase.storage
         .from("profile-images")
-        .getPublicUrl(imageUploadData.path);
+        .getPublicUrl(imageUploadData.path)
 
       if (!imageUrlData) {
-        return showNotification({
+        showNotification({
           title: "Error.",
-          message: "Unable to get image URL",
-        });
+          message: "Unable to get image URL"
+        }); return
       }
 
-      IMAGE_URL = imageUrlData.publicUrl;
+      IMAGE_URL = imageUrlData.publicUrl
     }
 
     if (!user.name || !session.user.email) {
-      setIsLoadingSavingData(false);
+      setIsLoadingSavingData(false)
 
-      return showNotification({
+      showNotification({
         title: "Error",
-        message: "Unexpected error",
-      });
+        message: "Unexpected error"
+      }); return
     }
 
     const { error } = await supabase.from("accounts").insert({
       name: user.name,
       register_complete: true,
       email: session.user.email,
-      image_url: IMAGE_URL,
-      id: session?.user.id,
-    });
+      avatar_url: IMAGE_URL,
+      id: session?.user.id
+    })
 
     if (error) {
-      setIsLoadingSavingData(false);
+      setIsLoadingSavingData(false)
 
-      return openModal({
+      openModal({
         title: "Could not complete setup",
         overlayProps: {
-          blur: 5,
+          blur: 5
         },
         children: (
           <div>
@@ -111,24 +111,24 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
             >
               <Button
                 onClick={(): void => {
-                  closeAllModals();
+                  closeAllModals()
                 }}
               >
                 Close
               </Button>
             </Flex>
           </div>
-        ),
-      });
+        )
+      }); return
     }
 
-    return setUser({
+    setUser({
       uid: session.user.id,
       email: session.user.email,
       imageUrl: IMAGE_URL,
-      registerComplete: true,
-    });
-  };
+      registerComplete: true
+    })
+  }
 
   return (
     <div>
@@ -168,7 +168,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       <Flex justify="space-between">
         <Button
           leftIcon={<ArrowLeft size={16} />}
-          onClick={(): void => prevStep()}
+          onClick={(): void => { prevStep() }}
           variant="outline"
         >
           Back
@@ -177,7 +177,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
         <Button
           loading={isLoadingSavingData}
           onClick={(): void => {
-            handleSubmit();
+            handleSubmit()
           }}
           rightIcon={<Flag size={16} />}
         >
@@ -185,7 +185,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
         </Button>
       </Flex>
     </div>
-  );
-};
+  )
+}
 
-export default Step2;
+export default Step2

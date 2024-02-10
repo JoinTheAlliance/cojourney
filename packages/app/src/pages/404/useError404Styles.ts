@@ -1,15 +1,15 @@
-import { createStyles, rem } from "@mantine/core";
+import { createStyles, rem } from "@mantine/core"
 
 const useError404Styles = createStyles((theme) => ({
   root: {
     backgroundColor: theme.fn.variant({
       variant: "filled",
-      color: theme.primaryColor,
+      color: theme.primaryColor
     }).background,
     height: "100vh",
     paddingTop: rem(120),
     paddingBottom: rem(120),
-    minHeight: "100vh",
+    minHeight: "100vh"
   },
 
   label: {
@@ -21,8 +21,8 @@ const useError404Styles = createStyles((theme) => ({
     color: theme.colors[theme.primaryColor][3],
 
     [theme.fn.smallerThan("sm")]: {
-      fontSize: rem(120),
-    },
+      fontSize: rem(120)
+    }
   },
 
   title: {
@@ -33,8 +33,8 @@ const useError404Styles = createStyles((theme) => ({
     color: theme.white,
 
     [theme.fn.smallerThan("sm")]: {
-      fontSize: rem(32),
-    },
+      fontSize: rem(32)
+    }
   },
 
   description: {
@@ -42,8 +42,8 @@ const useError404Styles = createStyles((theme) => ({
     margin: "auto",
     marginTop: theme.spacing.xl,
     marginBottom: `calc(${theme.spacing.xl} * 1.5)`,
-    color: theme.colors[theme.primaryColor][1],
-  },
-}));
+    color: theme.colors[theme.primaryColor][1]
+  }
+}))
 
-export default useError404Styles;
+export default useError404Styles

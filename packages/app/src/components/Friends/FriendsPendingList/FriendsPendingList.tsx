@@ -5,30 +5,30 @@ import {
   Loader,
   Text,
   Title,
-  Tooltip,
-} from "@mantine/core";
-import React, { useState } from "react";
-import { X } from "react-feather";
-import useGlobalStore from "../../../store/useGlobalStore";
-import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator";
-import getFriend from "../../../utils/getFriend";
-import UserPopup from "../../UserPopup/UserPopup";
-import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests";
+  Tooltip
+} from "@mantine/core"
+import React, { useState } from "react"
+import { X } from "react-feather"
+import useGlobalStore from "../../../store/useGlobalStore"
+import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator"
+import getFriend from "../../../utils/getFriend"
+import UserPopup from "../../UserPopup/UserPopup"
+import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests"
 
 const FriendsPendingList = (): JSX.Element => {
   const {
     relationships: { pending },
-    user,
-  } = useGlobalStore();
+    user
+  } = useGlobalStore()
 
-  const { isLoading, handleDeleteFriendship } = useHandleFriendsRequests();
+  const { isLoading, handleDeleteFriendship } = useHandleFriendsRequests()
 
-  const [loadingElement, setLoadingElement] = useState<number | null>(null);
+  const [loadingElement, setLoadingElement] = useState<number | null>(null)
 
   if (pending.length === 0) {
     return (
-        <p>No pending connections</p>
-    );
+      <p>No pending connections</p>
+    )
   }
 
   return (
@@ -41,17 +41,17 @@ const FriendsPendingList = (): JSX.Element => {
       {pending.map((friendship) => {
         const { friendData } = getFriend({
           friendship,
-          userId: user.uid || "",
-        });
+          userId: user.uid || ""
+        })
 
-        if (!friendData) return null;
+        if (!friendData) return null
 
         return (
           <Flex
             sx={{
               padding: 5,
               borderRadius: 5,
-              cursor: "pointer",
+              cursor: "pointer"
             }}
             key={friendship.id}
             align="center"
@@ -59,16 +59,9 @@ const FriendsPendingList = (): JSX.Element => {
             mt={10}
           >
             <Flex>
-              <UserPopup
-                user={{
-                  email: friendData.email || "",
-                  id: friendData.id || "",
-                  imageUrl: friendData.image_url || "",
-                  name: friendData.name || "",
-                }}
-              >
+              <UserPopup>
                 <UserAvatarWithIndicator
-                  image={friendData.image_url || ""}
+                  image={friendData.avatar_url || ""}
                   size={40}
                   user_email={friendData.email || ""}
                   checkOnline
@@ -103,28 +96,30 @@ const FriendsPendingList = (): JSX.Element => {
                 color="red"
                 variant="light"
                 onClick={() => {
-                  setLoadingElement(friendship.id);
+                  setLoadingElement(friendship.id)
 
                   handleDeleteFriendship({ friendship }).finally(() => {
-                    setLoadingElement(null);
-                  });
+                    setLoadingElement(null)
+                  })
                 }}
               >
-                {isLoading && loadingElement === friendship.id ? (
+                {isLoading && loadingElement === friendship.id
+? (
                   <Loader
                     color="red"
                     size={14}
                   />
-                ) : (
+                )
+: (
                   <X size={14} />
                 )}
               </Button>
             </Tooltip>
           </Flex>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export default FriendsPendingList;
+export default FriendsPendingList
