@@ -7,25 +7,16 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000';
 class Handler {
   method;
   regex;
-  hostRegex;
   fn;
-  isServerless;
-  serverLessEndpoint;
 
   constructor({
     method = '*',
     regex = /^/,
-    hostRegex = /^/,
     fn = async ({ req, env, match, userId, supabase }) => { },
-    isServerless = false,
-    serverLessEndpoint = ''
   } = {}) {
     this.method = method;
     this.regex = regex;
-    this.hostRegex = hostRegex;
     this.fn = fn;
-    this.isServerless = isServerless;
-    this.serverLessEndpoint = serverLessEndpoint;
   }
 }
 
@@ -39,7 +30,7 @@ class Server {
     this.handlers.push(handler);
   }
   async handleRequest(req, env) {
-    const { pathname, host } = new URL(req.url);
+    const { pathname } = new URL(req.url);
     let handlerFound = false;
 
     if (req.method === "OPTIONS") {
@@ -51,12 +42,11 @@ class Server {
     }
 
     for (let handler of this.handlers) {
-      const { method, hostRegex, regex, fn } = handler;
+      const { method, regex, fn } = handler;
       if (method === '*' || req.method === method) {
-        const matchHost = (host || '').match(hostRegex);
         const matchUrl = pathname.match(regex);
 
-        if (matchHost && matchUrl) {
+        if (matchUrl) {
           handlerFound = true;
           try {
             req.pathname = pathname;
@@ -82,7 +72,7 @@ class Server {
               console.log("Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.")
             }
 
-            return await fn({ req, env, match: matchUrl, host: matchHost, userId, supabase });
+            return await fn({ req, env, match: matchUrl, userId, supabase });
           } catch (err) {
             return new Response(err, { status: 500 });
           }
@@ -188,53 +178,53 @@ server.registerHandler({
 });
 
 // register a handler for /agents/update
-server.registerHandler({
-  regex: /^\/api\/agents\/start/,
-  async fn({ req, env, match, userId, supabase }) {
-    if (req.method === 'OPTIONS') {
-      return
-    }
+// server.registerHandler({
+//   regex: /^\/api\/agents\/start/,
+//   async fn({ req, env, match, userId, supabase }) {
+//     if (req.method === 'OPTIONS') {
+//       return
+//     }
 
-    // parse the body from the request
-    const body = await req.json();
+//     // parse the body from the request
+//     const body = await req.json();
 
-    const runtime = new AgentRuntime({
-      debugMode: false,
-      serverUrl: 'https://api.openai.com/v1',
-      supabase,
-      token: env.OPENAI_API_KEY,
-    });
+//     const runtime = new AgentRuntime({
+//       debugMode: false,
+//       serverUrl: 'https://api.openai.com/v1',
+//       supabase,
+//       token: env.OPENAI_API_KEY,
+//     });
 
-    // get the room_id where user_id is user_a and agent_id is user_b OR vice versa
-    const data = await getRelationship({
-      supabase,
-      userA: userId,
-      userB: agentId,
-    })
+//     // get the room_id where user_id is user_a and agent_id is user_b OR vice versa
+//     const data = await getRelationship({
+//       supabase,
+//       userA: userId,
+//       userB: agentId,
+//     })
 
-    // TODO, just get the room id from channel
-    const room_id = data?.room_id;
+//     // TODO, just get the room id from channel
+//     const room_id = data?.room_id;
 
-    const goals = await getGoals({
-      supabase: runtime.supabase,
-      userIds: [userId, agentId],
-    });
+//     const goals = await getGoals({
+//       supabase: runtime.supabase,
+//       userIds: [userId, agentId],
+//     });
 
-    if (goals.length === 0) {
-      await createGoal({
-        supabase: runtime.supabase,
-        userIds: [userId, agentId],
-        userId: agentId,
-        goal: defaultGoal,
-      });
-    }
+//     if (goals.length === 0) {
+//       await createGoal({
+//         supabase: runtime.supabase,
+//         userIds: [userId, agentId],
+//         userId: agentId,
+//         goal: defaultGoal,
+//       });
+//     }
 
-    agentActions.forEach((action) => {
-      // console.log('action', action)
-      runtime.registerAction(action);
-    });
-  }
-});
+//     agentActions.forEach((action) => {
+//       // console.log('action', action)
+//       runtime.registerAction(action);
+//     });
+//   }
+// });
 
 const defaultHeaders = [
   {
@@ -282,7 +272,7 @@ const proxyPipeApi = async ({ req, env, match, url, headers }) => {
     let o = {
       method: req.method,
       headers: headers || req.headers || {},
-    };
+    } as any;
     if (req.method !== 'GET') {
       o.headers['Content-Type'] = req.headers['content-type'] ?? 'application/json';
       o.body = requestBody;
@@ -294,7 +284,7 @@ const proxyPipeApi = async ({ req, env, match, url, headers }) => {
     if (proxyRes.ok) {
 
       let { readable, writable } = new TransformStream();
-      proxyRes.body.pipeTo(writable);
+      proxyRes.body?.pipeTo(writable);
       return new Response(readable, {
         status: proxyRes.status,
         headers: {
@@ -334,4 +324,18 @@ function _setHeaders(res) {
       res.headers.append(key, value);
   }
   return res;
+}
+
+function getRelationship(arg0: { supabase: any; userA: any; userB: any; }) {
+  throw new Error("Function not implemented.");
+}
+
+
+function getGoals(arg0: { supabase: import("@supabase/supabase-js").SupabaseClient<any, "public", any>; userIds: any[]; }) {
+  throw new Error("Function not implemented.");
+}
+
+
+function createGoal(arg0: { supabase: import("@supabase/supabase-js").SupabaseClient<any, "public", any>; userIds: any[]; userId: any; goal: any; }) {
+  throw new Error("Function not implemented.");
 }
