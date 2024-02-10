@@ -9,7 +9,7 @@ export const customActions = [
 export function addCustomActions(runtime: AgentRuntime) {
   customActions.forEach((action) => {
     if (!runtime.getActions().includes(action)) {
-      runtime.registerActionHandler(action)
+      runtime.registerAction(action)
     }
   });
 }

@@ -67,6 +67,7 @@ export type State = {
     actionNames?: string
     actions?: string
     messageExamples?: string
+    responseData?: any
 }
 
 // what onMessage etc receive

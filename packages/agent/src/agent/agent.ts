@@ -49,8 +49,8 @@ async function _main(runtime: AgentRuntime, message: Message, state: State, temp
       body: { message, context, response },
       user_id: senderId,
       room_id,
-      user_ids,
-      agent_id: agentId,
+      user_ids: user_ids as UUID[],
+      agent_id: agentId as UUID,
       type: 'main_completion'
     }).then(({error}) => {
       if (error) {
@@ -205,10 +205,10 @@ export const onUpdate = async (message: Message, runtime: AgentRuntime) => {
 
   const state = await composeState(runtime, message)
 
-  if (shouldSkipMessage(state, agentId as UUID)) return
+  if (shouldSkipMessage(state as State, agentId as UUID)) return
 
   const data = await _main(runtime, message, state as State, update_generation_template)
   await _processActions(runtime, message, state as State, data)
   await _storeAgentMemory(runtime, message, state as State, data)
-  await evaluate(runtime, message, { ...state, responseData: data })
+  await evaluate(runtime, message, { ...state, responseData: data } as State)
 }

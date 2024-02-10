@@ -38,8 +38,8 @@ export class AgentRuntime {
     runtime: this,
     tableName: 'reflections',
   })
-  actionHandlers: Action[] = []
-  evaluationHandlers: Evaluator[] = []
+  actions: Action[] = []
+  evaluators: Evaluator[] = []
 
   constructor(opts: AgentRuntimeOpts) {
     this.#recentMessageCount =
@@ -53,30 +53,28 @@ export class AgentRuntime {
 
     this.token = opts.token
 
-    defaultActions.forEach((action) => this.registerActionHandler(action))
-    defaultEvaluators.forEach((evaluator) =>
-      this.registerEvaluationHandler(evaluator)
-    )
+    defaultActions.forEach((action) => this.registerAction(action))
+    defaultEvaluators.forEach((evaluator) => this.registerEvaluator(evaluator))
   }
 
   getRecentMessageCount() {
     return this.#recentMessageCount
   }
 
-  registerActionHandler(handler: Handler) {
-    this.actionHandlers.push(handler)
+  registerAction(action: Action) {
+    this.actions.push(action)
   }
 
   getActions() {
-    return [...new Set(this.actionHandlers)]
+    return [...new Set(this.actions)]
   }
 
-  registerEvaluationHandler(handler: Handler) {
-    this.evaluationHandlers.push(handler)
+  registerEvaluator(evaluator: Evaluator) {
+    this.evaluators.push(evaluator)
   }
 
   getEvaluationHandlers() {
-    return [...new Set(this.evaluationHandlers)]
+    return [...new Set(this.evaluators)]
   }
 
   async completion({

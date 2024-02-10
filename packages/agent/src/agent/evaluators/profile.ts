@@ -13,12 +13,12 @@
 //     - Describe the best aspects of your best connection.
 //     - Describe what went well and what went poorly.
 //     - How much do they value interests and hobbies vs other things
-    
 
 import {parseJSONObjectFromText} from '../../lib/utils'
 import {composeContext} from '../../lib/context'
-import { AgentRuntime, getRelationship } from '../../lib'
-import { Message, State } from '@/lib/types'
+import {AgentRuntime, getRelationship} from '../../lib'
+import {Message, State} from '@/lib/types'
+import {UUID} from 'crypto'
 
 const template = `You are writing a profile for {{senderName}} based on their existing profile and ongoing conversations.
 
@@ -39,8 +39,12 @@ Then respond with a JSON object containing a field for description in a JSON blo
 
 Your response must include the JSON block.`
 
-const handler = async (_message: Message, state: State, runtime: AgentRuntime) => {
-  // 
+const handler = async (
+  runtime: AgentRuntime,
+  _message: Message,
+  state: State,
+) => {
+  //
 
   // TODO:
   // get the target from the message
@@ -78,30 +82,39 @@ const handler = async (_message: Message, state: State, runtime: AgentRuntime) =
   }
 
   if (responseData) {
-    const { user, description } = responseData;
+    const {user, description} = responseData
 
     // find the user
-    const response = await runtime.supabase.from('accounts').select('*').eq('name', user).single()
-    const { data: userRecord, error } = response;
-    if(error) {
+    const response = await runtime.supabase
+      .from('accounts')
+      .select('*')
+      .eq('name', user)
+      .single()
+    const {data: userRecord, error} = response
+    if (error) {
       console.error('error getting user', error)
       return
     }
 
-    const userA = state.agentId;
-    const userB = userRecord.id;
+    const userA = state.agentId as UUID
+    const userB = userRecord.id as UUID
 
     // find the room_id in 'relationships' where user_a is the agent and user_b is the user, OR vice versa
-    const relationshipRecord = await getRelationship({ supabase: runtime.supabase, userA, userB });
-
-    const descriptionMemory = await runtime.descriptionManager.addEmbeddingToMemory({
-      user_ids: [state.agentId, userRecord.id],
-      user_id: state.agentId,
-      content: description,
-      room_id: relationshipRecord.room_id,
+    const relationshipRecord = await getRelationship({
+      supabase: runtime.supabase,
+      userA,
+      userB,
     })
 
-    await runtime.descriptionManager.createMemory(descriptionMemory);
+    const descriptionMemory =
+      await runtime.descriptionManager.addEmbeddingToMemory({
+        user_ids: [state.agentId, userRecord.id],
+        user_id: state.agentId as UUID,
+        content: description,
+        room_id: relationshipRecord.room_id,
+      })
+
+    await runtime.descriptionManager.createMemory(descriptionMemory)
   } else if (runtime.debugMode) {
     console.log('Could not parse response')
   }
@@ -111,6 +124,8 @@ export default {
   name: 'UPDATE_PROFILE',
   description:
     'Update the profile of the user based on the ongoing conversation.',
+  condition:
+    'The user has revealed new personal information in the conversation which is important to update in their profile.',
   handler,
   examples: [],
 }

@@ -1,19 +1,17 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Actor, Relationship } from "./types";
-import AgentRuntime from "./runtime";
+import { UUID } from "crypto";
+import { Relationship } from "./types";
 
 /** create a connection
  * @todo This should only be allowable by the current user if they are connected to both userA and userB
 */
-export async function createRelationship({ supabase, userA, userB}: { supabase: SupabaseClient, userA: string, userB: string }) {
+export async function createRelationship({ supabase, userA, userB}: { supabase: SupabaseClient, userA: UUID, userB: UUID }) {
   // create a connection
   // return the connection
-  const response = supabase.from("relationships").upsert({
+  const { data, error } = await supabase.from("relationships").upsert({
     user_a: userA,
     user_b: userB,
-  }, { returning: "minimal" });
-
-  const { data, error } = response;
+  });
 
   if (error) {
     throw new Error(error.message);
@@ -58,18 +56,18 @@ export async function getRelationships({ supabase, userId }: { supabase: Supabas
 // export async function searchRelationships({ supabase, userId, embedding }) {
 // }
 
-export async function createProfileEmbedding({ supabase, agent, runtime }: { supabase: SupabaseClient, agent: Actor, runtime: AgentRuntime }) {
-  if (runtime.debugMode) {
-    console.log(`Creating profile embedding for ${agent.name}`);
-  }
-  const embedding = await runtime.embed(agent.description);
-  const { data, error } = await supabase.from("accounts").update({ profile_embedding: embedding }).eq("id", agent.id);
-  if (error) {
-    throw new Error(error.message);
-  }
+// export async function createProfileEmbedding({ supabase, agent, runtime }: { supabase: SupabaseClient, agent: Actor, runtime: AgentRuntime }) {
+//   if (runtime.debugMode) {
+//     console.log(`Creating profile embedding for ${agent.name}`);
+//   }
+//   const embedding = await runtime.embed(agent.description);
+//   const { data, error } = await supabase.from("accounts").update({ profile_embedding: embedding }).eq("id", agent.id);
+//   if (error) {
+//     throw new Error(error.message);
+//   }
 
-  return data;
-}
+//   return data;
+// }
 
 export async function formatRelationships({ supabase, userId }: { supabase: SupabaseClient, userId: string }) {
   const relationships = await getRelationships({ supabase, userId });

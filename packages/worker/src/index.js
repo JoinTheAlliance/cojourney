@@ -231,7 +231,7 @@ server.registerHandler({
 
     agentActions.forEach((action) => {
       // console.log('action', action)
-      runtime.registerActionHandler(action);
+      runtime.registerAction(action);
     });
   }
 });

@@ -1,13 +1,15 @@
+import { Content, Memory, State } from "./types"
+
 export function shouldSkipMessage(state: State, agentId: string): boolean {
   if (
-    state.recentMessagesData?.length > 2
+    state.recentMessagesData && state.recentMessagesData.length > 2
   ) {
     // read the last messages
     // if the last 3 messages are from the agent, or the last message from the agent has the WAIT action, then we should skip
     const currentMessages = state.recentMessagesData ?? []
     const lastThreeMessages = currentMessages.slice(-3)
     const lastThreeMessagesFromAgent = lastThreeMessages.filter(
-      (message: Message) => message.user_id === agentId
+      (message: Memory) => message.user_id === agentId
     )
     if (lastThreeMessagesFromAgent.length === 3) {
       return true
@@ -16,7 +18,7 @@ export function shouldSkipMessage(state: State, agentId: string): boolean {
     const lastTwoMessagesFromAgent = lastThreeMessagesFromAgent.slice(-2)
     const lastTwoMessagesFromAgentWithWaitAction =
       lastTwoMessagesFromAgent.filter(
-        (message: Message) => message.content.action === 'WAIT'
+        (message: Memory) => (message.content as Content).action === 'WAIT'
       )
     if (lastTwoMessagesFromAgentWithWaitAction.length === 2) {
       return true
