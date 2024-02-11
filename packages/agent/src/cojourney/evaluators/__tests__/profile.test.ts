@@ -1,19 +1,20 @@
 // test creating an agent runtime
-import dotenv from 'dotenv'
+import dotenv from 'dotenv-flow'
 
 import { type UUID } from 'crypto'
-import { getRelationship } from '../src/index'
-import { type Message } from '../src/lib/types'
-import { createRuntime } from './helpers/createRuntime'
+import { getRelationship } from '../../../lib/relationships'
+import { type Message } from '../../../lib/types'
+import { createRuntime } from '../../../test/createRuntime'
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
   GetTellMeAboutYourselfConversation3,
   jimProfileExample1,
   jimProfileExample2
-} from './helpers/data'
+} from '../../../test/data'
 
-import evaluator from '../src/agent/evaluators/profile'
+import evaluator from '../profile'
+
 dotenv.config()
 
 // create a UUID of 0s
@@ -21,7 +22,7 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
 describe('User Profile', () => {
   test('Get user profile', async () => {
-    const { user, runtime } = await createRuntime()
+    const { user, runtime } = await createRuntime(process.env as Record<string, string>)
 
     const data = await getRelationship({
       supabase: runtime.supabase,
@@ -74,9 +75,7 @@ describe('User Profile', () => {
 
       expect(result.includes('Jim')).toBe(true)
 
-      expect(result
-        .toLowerCase()
-        .includes('startup')).toBe(true)
+      expect(result.toLowerCase().includes('startup')).toBe(true)
 
       conversation = [
         ...GetTellMeAboutYourselfConversation2(user?.id as UUID),
@@ -95,20 +94,18 @@ describe('User Profile', () => {
         await runtime.messageManager.createMemory(bakedMemory)
       }
 
-      const previousDescriptions = [
-        jimProfileExample1,
-        jimProfileExample2
-      ]
+      const previousDescriptions = [jimProfileExample1, jimProfileExample2]
 
       // for each description in previousDescriptions, add it to the memory
       for (let i = 0; i < previousDescriptions.length; i++) {
         const c = previousDescriptions[i]
-        const bakedMemory = await runtime.descriptionManager.addEmbeddingToMemory({
-          user_id: user?.id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: c,
-          room_id
-        })
+        const bakedMemory =
+          await runtime.descriptionManager.addEmbeddingToMemory({
+            user_id: user?.id as UUID,
+            user_ids: [user?.id as UUID, zeroUuid],
+            content: c,
+            room_id
+          })
         await runtime.descriptionManager.createMemory(bakedMemory)
         // wait for .2 seconds
         await new Promise((resolve) => setTimeout(resolve, 250))
@@ -120,12 +117,9 @@ describe('User Profile', () => {
 
       expect(result.includes('Jim')).toBe(true)
 
-      expect(result
-        .toLowerCase().includes('francisco')).toBe(true)
+      expect(result.toLowerCase().includes('francisco')).toBe(true)
 
-      expect(result
-        .toLowerCase()
-        .includes('startup')).toBe(true)
+      expect(result.toLowerCase().includes('startup')).toBe(true)
     }
 
     // first, destroy all memories where the user_id is TestUser

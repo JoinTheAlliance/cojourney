@@ -992,3 +992,20 @@ At the helm of his own tech startup, he is driven by a passion for solving compl
 He seeks balance in his life, acknowledging the challenges of juggling his startup with personal time. He strives for meaningful connections, valuing loyalty and a shared sense of humor in his relationships.
 An avid outdoor enthusiast, He enjoys disconnecting through activities like hiking, appreciating the quiet and clarity it brings to his mind. Intrigued by the thrill of skydiving, his adventurous spirit is evident in his desire to face and conquer fears.
 He is looking for a partner who understands the ups and downs of startup life and shares his passion for outdoor adventures and exploring new ideas. Despite his busy lifestyle, he's open to making meaningful connections within his vicinity.`
+
+export const jimFacts = [
+  'Jim is 38 years old',
+  'Jim lives in San Francisco, CA',
+  'Jim is an entrepreneur who runs his own tech startup',
+  'Jim values loyalty and honesty in relationships',
+  'Jim enjoys outdoor activities, especially hiking',
+  'Jim is interested in skydiving',
+  'Jim values a good sense of humor',
+  'Jim seeks balance between his professional and personal life',
+  'Jim is open to making meaningful connections within his vicinity',
+  'Jim has a casual and laid-back style',
+  'Jim believes his eyes are blue',
+  'Jim is driven by the challenge of solving problems and creating something meaningful',
+  'Jim finds nature to be a peaceful retreat and enjoys the quiet it brings',
+  'Jim aspires to share his curiosity for exploring new ideas with a partner'
+]

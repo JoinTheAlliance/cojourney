@@ -58,6 +58,7 @@ export async function composeState (
 
   let relevantReflectionsData: Memory[] = []
 
+  // only try to get relevant reflections if there are already enough recent reflections
   if (recentReflectionsData.length > recentReflectionsCount - 1) {
     relevantReflectionsData =
       await runtime.reflectionManager.searchMemoriesByEmbedding(

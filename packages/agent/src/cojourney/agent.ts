@@ -3,12 +3,13 @@ import {
   embeddingZeroVector,
   type CojourneyRuntime
 } from '../lib'
+import { evaluate } from '../lib/evaluation'
 import logger from '../lib/logger'
 import { composeState } from '../lib/state'
 import { type Content, type Message, type State } from '../lib/types'
 import { parseJSONObjectFromText, shouldSkipMessage } from '../lib/utils'
 import { addCustomActions } from './actions'
-import { addCustomEvaluators, evaluate } from './evaluation'
+import { addCustomEvaluators } from './evaluators'
 import {
   response_generation_template,
   update_generation_template

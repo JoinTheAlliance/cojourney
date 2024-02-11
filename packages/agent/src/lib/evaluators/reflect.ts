@@ -120,10 +120,7 @@ INSTRUCTIONS: Extract any claims from the conversation in the scene that are not
  * Summarizes the last event into a list of JSON entries, utility for the Rolodex feature
  * @TODO - Rework moon's factual json reflection system (rolodex)
  */
-async function handler (
-  runtime: CojourneyRuntime,
-  message: Message
-) {
+async function handler (runtime: CojourneyRuntime, message: Message) {
   const state = (await composeState(runtime, message)) as State
 
   const { userIds, senderId, agentId, room_id } = state
@@ -160,12 +157,12 @@ async function handler (
   })
 
   if (runtime.debugMode) {
- logger.log(context, {
+    logger.log(context, {
       title: 'Reflection context',
       frame: true,
       color: 'cyan'
     })
-}
+  }
 
   let reflections = null
 
@@ -183,44 +180,48 @@ async function handler (
   }
 
   if (!reflections) {
-    if (runtime.debugMode) { logger.warn('No reflection generated', { color: 'yellow' }) }
-    return
+    if (runtime.debugMode) {
+      logger.warn('No reflection generated', { color: 'yellow' })
+    }
+    return []
   }
 
   if (runtime.debugMode) {
- logger.log(JSON.stringify(reflections), {
+    logger.log(JSON.stringify(reflections), {
       title: 'Reflection Output',
       frame: true,
       color: 'cyan'
     })
-}
+  }
+
+  const filteredReflections = reflections
+    .filter((reflection) => {
+      return (
+        !reflection.already_known &&
+        reflection.type === 'fact' &&
+        !reflection.in_bio &&
+        reflection.claim &&
+        reflection.claim.trim() !== ''
+      )
+    })
+    .map((reflection) => reflection.claim)
 
   // break up the reflection into multiple memories
-  for (const claim of reflections) {
-    // skip invalid claims
-    if (
-      !claim.claim ||
-      claim.in_bio ||
-      claim.already_known ||
-      claim.type !== 'fact'
-    ) {
-      continue
-    }
-    claim.claim = claim.claim.trim()
-    if (claim.claim.length > 0) {
-      const reflectionMemory =
-        await runtime.reflectionManager.addEmbeddingToMemory({
-          user_ids: userIds,
-          user_id: agentId!,
-          content: claim.claim,
-          room_id
-        })
+  for (const reflection of filteredReflections) {
+    const reflectionMemory =
+      await runtime.reflectionManager.addEmbeddingToMemory({
+        user_ids: userIds,
+        user_id: agentId!,
+        content: reflection,
+        room_id
+      })
 
-      await runtime.reflectionManager.createMemory(reflectionMemory)
-    } else if (runtime.debugMode) {
-      logger.warn('Empty reflection output, skipping', { color: 'yellow' })
-    }
+    await runtime.reflectionManager.createMemory(reflectionMemory)
+
+    // wait for .2 seconds
+    await new Promise((resolve) => setTimeout(resolve, 250))
   }
+  return filteredReflections
 }
 
 export default {

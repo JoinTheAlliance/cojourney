@@ -1,18 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
-import { CojourneyRuntime } from '../../src'
+import { CojourneyRuntime } from '../lib/runtime'
+import { TEST_EMAIL, TEST_PASSWORD, SUPABASE_URL, SUPABASE_ANON_KEY } from './constants'
 
-export async function createRuntime () {
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!
-  )
+export async function createRuntime (env: Record<string, string>) {
+  const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!)
 
   // login
   const {
     data: { user, session }
   } = await supabase.auth.signInWithPassword({
-    email: process.env.TEST_EMAIL!,
-    password: process.env.TEST_PASSWORD!
+    email: TEST_EMAIL!,
+    password: TEST_PASSWORD!
   })
 
   if (!session) {
@@ -23,7 +21,7 @@ export async function createRuntime () {
     debugMode: false,
     serverUrl: 'https://api.openai.com/v1',
     supabase,
-    token: process.env.OPENAI_API_KEY!
+    token: env.OPENAI_API_KEY!
   })
 
   return { user, session, runtime }

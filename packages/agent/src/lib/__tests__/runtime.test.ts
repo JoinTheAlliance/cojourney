@@ -1,9 +1,9 @@
 // test creating an agent runtime
-import dotenv from 'dotenv'
+import dotenv from 'dotenv-flow'
 
-import { createRuntime } from './helpers/createRuntime'
+import { createRuntime } from '../../test/createRuntime'
 import { type UUID } from 'crypto'
-import { getRelationship } from '../src/lib/relationships'
+import { getRelationship } from '../relationships'
 dotenv.config()
 
 // create a UUID of 0s
@@ -11,19 +11,19 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
 describe('Agent Runtime', () => {
   test('Create an agent runtime instance and use the basic functionality', async () => {
-    const { user, session, runtime } = await createRuntime()
+    const { user, session, runtime } = await createRuntime(process.env as Record<string, string>)
     expect(user).toBeDefined()
     expect(session).toBeDefined()
     expect(runtime).toBeDefined()
   })
   test('Create it a second time to demonstrate idempotency', async () => {
-    const { user, session, runtime } = await createRuntime()
+    const { user, session, runtime } = await createRuntime(process.env as Record<string, string>)
     expect(user).toBeDefined()
     expect(runtime).toBeDefined()
     expect(session).toBeDefined()
   })
   test('Create a memory, get it and destroy it', async () => {
-    const { user, runtime } = await createRuntime()
+    const { user, runtime } = await createRuntime(process.env as Record<string, string>)
 
     const data = await getRelationship({
       supabase: runtime.supabase,

@@ -196,7 +196,7 @@ async function handleRequest (
   }
 
   for (const { path, handler } of routes) {
-    const matchUrl = pathname.match(path)
+    const matchUrl = pathname.match(path as RegExp)
 
     if (matchUrl) {
       handlerFound = true
@@ -230,13 +230,15 @@ async function handleRequest (
           )
         }
 
-        return await handler({
+        const response = await handler({
           req,
           env,
           match: matchUrl,
           userId: userId as UUID,
           supabase
         })
+
+        return response
       } catch (err) {
         return new Response(err as string, { status: 500 })
       }

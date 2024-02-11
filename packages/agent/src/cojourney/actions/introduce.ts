@@ -1,4 +1,4 @@
-import { type CojourneyRuntime } from '../../lib'
+import { composeState, type CojourneyRuntime } from '../../lib'
 import { composeContext } from '../../lib/context'
 import { createRelationship } from '../../lib/relationships'
 import { type Message, type State } from '../../lib/types'
@@ -64,11 +64,11 @@ Brief explanation: Kyle mentioned his interest in heavy metal music and playing 
 `
 
 const handler = async (
-  message: Message,
-  state: State,
-  runtime: CojourneyRuntime
+  runtime: CojourneyRuntime,
+  message: Message
 ) => {
-  console.log('handle message', message)
+  const state = (await composeState(runtime, message)) as State
+
   const context = composeContext({
     state,
     template
@@ -111,10 +111,6 @@ export default {
   description:
     'Introduce the user to someone from the rolodex who they might like to chat with. Only use this if the user is expressing interest in meeting someone new. If the user has not expressed interest, DO NOT USE THIS ACTION.',
   handler,
-  examples: [
-    JSON.stringify({
-      userA: 'xxgokuinmexicancartel69',
-      userB: 'nahidwinlobotomykaisen1'
-    })
-  ]
+  condition: 'The agent wants to introduce the user to someone from the rolodex',
+  examples: []
 }

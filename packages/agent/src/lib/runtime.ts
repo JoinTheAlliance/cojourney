@@ -1,7 +1,7 @@
 import { type SupabaseClient } from '@supabase/supabase-js'
 import { MemoryManager } from './memory'
 import { defaultActions } from './actions'
-import { defaultEvaluators } from './evaluators'
+import { defaultEvaluators } from './evaluation'
 import { type Action, type Evaluator } from './types'
 
 export interface AgentRuntimeOpts {
@@ -21,7 +21,7 @@ export interface AgentRuntimeOpts {
  * @param {boolean} opts.debugMode - If true, will log debug messages
  */
 export class CojourneyRuntime {
-  readonly #recentMessageCount = 20 as number
+  readonly #recentMessageCount = 12 as number
   serverUrl = 'http://localhost:7998'
   token: string | null
   debugMode: boolean
@@ -145,6 +145,7 @@ export class CojourneyRuntime {
 
   async embed (input: string) {
     const embeddingModel = 'text-embedding-3-large'
+    console.log('embedding input', input)
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -161,6 +162,16 @@ export class CojourneyRuntime {
         `${this.serverUrl}/embeddings`,
         requestOptions
       )
+
+      // save the request and headers as a curl command
+      console.log(
+        `curl -X ${requestOptions.method} -H "Content-Type: application/json" -H "Authorization: Bearer ${this.token}" -d '${JSON.stringify(
+          JSON.parse(requestOptions.body),
+          null,
+          2
+        )}' ${this.serverUrl}/embeddings`
+      )
+
       if (!response.ok) {
         throw new Error(
           'OpenAI API Error: ' + response.status + ' ' + response.statusText

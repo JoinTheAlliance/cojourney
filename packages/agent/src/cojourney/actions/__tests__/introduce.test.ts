@@ -1,25 +1,27 @@
 // test creating an agent runtime
-import dotenv from 'dotenv'
+import dotenv from 'dotenv-flow'
 
 import { type UUID } from 'crypto'
-import { composeState, getRelationship } from '../src/index'
-import { type Message, type State } from '../src/lib/types'
-import { createRuntime } from './helpers/createRuntime'
+import { getRelationship } from '../../../lib/relationships'
+import { type Message } from '../../../lib/types'
+import { createRuntime } from '../../../test/createRuntime'
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
-  GetTellMeAboutYourselfConversation3
-} from './helpers/data'
+  GetTellMeAboutYourselfConversation3,
+  jimProfileExample1,
+  jimProfileExample2
+} from '../../../test/data'
 
-import evaluator from '../src/agent/evaluators/details'
+import evaluator from '../introduce'
 dotenv.config()
 
 // create a UUID of 0s
 const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
-describe('User Details', () => {
-  test('Get user details', async () => {
-    const { user, runtime } = await createRuntime()
+describe('Introduce Action', () => {
+  test('Introduce the user', async () => {
+    const { user, runtime } = await createRuntime(process.env as Record<string, string>)
 
     const data = await getRelationship({
       supabase: runtime.supabase,
@@ -46,7 +48,7 @@ describe('User Details', () => {
       ])
     }
 
-    async function _testGetDetails () {
+    async function _testCreateProfile () {
       // first, add all the memories for conversation
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
       for (let i = 0; i < conversation.length; i++) {
@@ -64,18 +66,18 @@ describe('User Details', () => {
         await new Promise((resolve) => setTimeout(resolve, 250))
       }
 
-      const state = (await composeState(runtime, message)) as State
-
       const handler = evaluator.handler!
 
-      let result = (await handler(runtime, message)) as {
-        name: string
-        age: string
-        gender: string
-        location: string
-      }
+      let result = (await handler(runtime, message)) as string
 
-      expect(result.name).toBe('Jim')
+      expect(result.includes('programmer')).toBe(true)
+
+      expect(result.includes('Jim')).toBe(true)
+
+      expect(result
+        .toLowerCase()
+        .includes('startup')).toBe(true)
+
       conversation = [
         ...GetTellMeAboutYourselfConversation2(user?.id as UUID),
         ...GetTellMeAboutYourselfConversation3(user?.id as UUID)
@@ -93,25 +95,43 @@ describe('User Details', () => {
         await runtime.messageManager.createMemory(bakedMemory)
       }
 
-      result = (await handler(runtime, message)) as {
-        name: string
-        age: string
-        gender: string
-        location: string
+      const previousDescriptions = [
+        jimProfileExample1,
+        jimProfileExample2
+      ]
+
+      // for each description in previousDescriptions, add it to the memory
+      for (let i = 0; i < previousDescriptions.length; i++) {
+        const c = previousDescriptions[i]
+        const bakedMemory = await runtime.descriptionManager.addEmbeddingToMemory({
+          user_id: user?.id as UUID,
+          user_ids: [user?.id as UUID, zeroUuid],
+          content: c,
+          room_id
+        })
+        await runtime.descriptionManager.createMemory(bakedMemory)
+        // wait for .2 seconds
+        await new Promise((resolve) => setTimeout(resolve, 250))
       }
 
-      expect(result.name).toBe('Jim')
-      expect(result.age).toBe(38)
-      const locationIncludesSanFrancisco = result.location
+      result = (await handler(runtime, message)) as string
+
+      expect(result.includes('38')).toBe(true)
+
+      expect(result.includes('Jim')).toBe(true)
+
+      expect(result
+        .toLowerCase().includes()).toBe(true)
+
+      expect(result
         .toLowerCase()
-        .includes('francisco')
-      expect(locationIncludesSanFrancisco).toBe(true)
+        .includes('startup')).toBe(true)
     }
 
     // first, destroy all memories where the user_id is TestUser
     await _cleanup()
 
-    await _testGetDetails()
+    await _testCreateProfile()
 
     // then destroy all memories again
     await _cleanup()
