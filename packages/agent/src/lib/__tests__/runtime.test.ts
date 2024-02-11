@@ -1,5 +1,5 @@
 // test creating an agent runtime
-import dotenv from 'dotenv-flow'
+import dotenv from 'dotenv'
 
 import { createRuntime } from '../../test/createRuntime'
 import { type UUID } from 'crypto'

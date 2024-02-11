@@ -163,15 +163,6 @@ export class CojourneyRuntime {
         requestOptions
       )
 
-      // save the request and headers as a curl command
-      console.log(
-        `curl -X ${requestOptions.method} -H "Content-Type: application/json" -H "Authorization: Bearer ${this.token}" -d '${JSON.stringify(
-          JSON.parse(requestOptions.body),
-          null,
-          2
-        )}' ${this.serverUrl}/embeddings`
-      )
-
       if (!response.ok) {
         throw new Error(
           'OpenAI API Error: ' + response.status + ' ' + response.statusText

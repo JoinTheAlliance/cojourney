@@ -5,7 +5,7 @@ import { type Memory } from './types'
 export const embeddingDimension = 3072
 export const embeddingZeroVector = Array(embeddingDimension).fill(0)
 
-const defaultMatchThreshold = 75
+const defaultMatchThreshold = 0.1
 const defaultMatchCount = 10
 
 interface SearchOptions {
@@ -28,7 +28,7 @@ export class MemoryManager {
     this.tableName = tableName
   }
 
-  async addEmbeddingToMemory (memory: Memory) {
+  async addEmbeddingToMemory (memory: Memory): Promise<Memory> {
     const getMemoryEmbeddingString = (memory: Memory) => {
       if (typeof memory.content === 'string') {
         return memory.content
@@ -53,7 +53,7 @@ export class MemoryManager {
   }: {
     userIds: UUID[]
     count: number
-  }) {
+  }): Promise<Memory[]> {
     const result = await this.runtime.supabase.rpc('get_memories', {
       query_table_name: this.tableName,
       query_user_ids: userIds,
@@ -72,7 +72,7 @@ export class MemoryManager {
     return result.data
   }
 
-  async searchMemoriesByEmbedding (embedding: number[], opts: SearchOptions) {
+  async searchMemoriesByEmbedding (embedding: number[], opts: SearchOptions): Promise<Memory[]> {
     const {
       match_threshold = defaultMatchThreshold,
       count = defaultMatchCount,
@@ -93,7 +93,7 @@ export class MemoryManager {
     return result.data
   }
 
-  async createMemory (memory: Memory) {
+  async createMemory (memory: Memory): Promise<void> {
     const result = await this.runtime.supabase
       .from(this.tableName)
       .upsert(memory)
@@ -103,7 +103,7 @@ export class MemoryManager {
     }
   }
 
-  async removeMemory (memoryId: UUID) {
+  async removeMemory (memoryId: UUID): Promise<void> {
     // remove item
     const result = await this.runtime.supabase
       .from(this.tableName)
@@ -115,7 +115,7 @@ export class MemoryManager {
     }
   }
 
-  async removeAllMemoriesByUserIds (userIds: UUID[]) {
+  async removeAllMemoriesByUserIds (userIds: UUID[]): Promise<void> {
     const result = await this.runtime.supabase.rpc('remove_memories', {
       query_table_name: this.tableName,
       query_user_ids: userIds
@@ -126,7 +126,7 @@ export class MemoryManager {
     }
   }
 
-  async removeAllMemoriesByUserId (userId: UUID) {
+  async removeAllMemoriesByUserId (userId: UUID): Promise<void> {
     const result = await this.runtime.supabase
       .from('memories')
       .delete()
@@ -136,7 +136,7 @@ export class MemoryManager {
     }
   }
 
-  async countMemoriesByUserIds (userIds: UUID[]) {
+  async countMemoriesByUserIds (userIds: UUID[]): Promise<number> {
     const result = await this.runtime.supabase.rpc('count_memories', {
       query_table_name: this.tableName,
       query_user_ids: userIds

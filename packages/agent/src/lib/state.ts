@@ -58,29 +58,40 @@ export async function composeState (
 
   let relevantReflectionsData: Memory[] = []
 
+  console.log('recentReflectionsData[0].embedding', recentReflectionsData[0].embedding)
+
   // only try to get relevant reflections if there are already enough recent reflections
-  if (recentReflectionsData.length > recentReflectionsCount - 1) {
+  // if (recentReflectionsData.length > recentReflectionsCount - 1) {
     relevantReflectionsData =
-      await runtime.reflectionManager.searchMemoriesByEmbedding(
+      (await runtime.reflectionManager.searchMemoriesByEmbedding(
         recentReflectionsData[0].embedding!,
         {
           userIds: userIds!,
           count: relevantReflectionsCount
         }
-      )
-    // filter out any entries in relevantReflectionsData that are also in recentReflectionsData
-    relevantReflectionsData = relevantReflectionsData.filter(
-      (reflection: Memory) => {
-        return !recentReflectionsData.find(
-          (recentReflection: Memory) => recentReflection.id === reflection.id
-        )
-      }
-    )
-  }
+      ))
+    //   .filter(
+    //   (reflection: Memory) => {
+    //     return !recentReflectionsData.find(
+    //       (recentReflection: Memory) => recentReflection.id === reflection.id
+    //     )
+    //   }
+    // )
+  // }
 
   const actors = formatMessageActors({ actors: actorsData ?? [] })
 
-  console.log('recentMessagesData', recentMessagesData)
+  console.log('recentReflectionsData', recentReflectionsData.map((memory: Memory) => {
+   const newMemory = { ...memory }
+   delete newMemory.embedding
+   return newMemory
+  }))
+
+  console.log('relevantReflectionsData', relevantReflectionsData.map((memory: Memory) => {
+    const newMemory = { ...memory }
+    delete newMemory.embedding
+    return newMemory
+   }))
 
   const recentMessages = formatMessages({
     actors: actorsData ?? [],

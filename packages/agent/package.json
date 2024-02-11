@@ -39,7 +39,6 @@
     "@supabase/supabase-js": "^2.39.3",
     "@tsndr/cloudflare-worker-jwt": "^2.2.1",
     "dotenv": "^16.4.1",
-    "dotenv-flow": "^4.1.0",
     "ts-node": "^10.9.2"
   }
 }

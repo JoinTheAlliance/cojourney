@@ -16,8 +16,6 @@ import {
 import evaluator from '../reflect'
 dotenv.config()
 
-console.log('process.env', process.env)
-
 // create a UUID of 0s
 const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
@@ -118,11 +116,6 @@ describe('User Profile', () => {
       // Then verify that no relevant reflections and recent reflections match
 
       const state = await composeState(runtime, message)
-
-
-      console.log('state is', state.relevantReflectionsData)
-
-      console.log('state is', state.recentReflectionsData)
 
       expect(state.recentReflectionsData.length).toBeGreaterThan(0)
 
