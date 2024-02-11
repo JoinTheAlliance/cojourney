@@ -178,7 +178,7 @@ const routes: Route[] = [
 
 async function handleRequest (
   req: Request,
-  env: { SUPABASE_URL: string, SUPABASE_SERVICE_API_KEY: string }
+  env: { SUPABASE_URL: string, SUPABASE_SERVICE_API_KEY: string, OPENAI_API_KEY: string }
 ) {
   const { pathname } = new URL(req.url)
   let handlerFound = false

@@ -36,6 +36,7 @@
         "react/react-in-jsx-scope": "off",
         "@typescript-eslint/triple-slash-reference": "off",
         "multiline-ternary": "off",
-        "@typescript-eslint/brace-style": "off"
+        "@typescript-eslint/brace-style": "off",
+        "@typescript-eslint/no-unnecessary-type-assertion": "off"
     }
 }

@@ -2,7 +2,7 @@ import { type UUID } from 'crypto'
 import type CojourneyRuntime from './runtime'
 import { type Memory } from './types'
 
-export const embeddingDimension = 768
+export const embeddingDimension = 3072
 export const embeddingZeroVector = Array(embeddingDimension).fill(0)
 
 const defaultMatchThreshold = 75

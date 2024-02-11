@@ -17,7 +17,7 @@ The response format should be this:
 """
 
 Recent conversation:
-{{recentConversation}}
+{{recentMessages}}
 
 Users in the current scene:
 {{actors}}

@@ -1,10 +1,12 @@
-import { type Evaluator, type Message, type State } from '@/lib/types'
+import { type UUID } from 'crypto'
+import { type Evaluator, type Message, type State } from '../lib/types'
+
 import { type CojourneyRuntime } from '../lib/runtime'
 // import goal from './evaluators/goal';
 // import introduce from './evaluators/introduce';
 // import objective from './evaluators/objective';
-import profile from './evaluators/profile'
 import description from './evaluators/details'
+import profile from './evaluators/profile'
 
 export const customEvaluators: Evaluator[] = [
   // goal,
@@ -16,7 +18,7 @@ export const customEvaluators: Evaluator[] = [
 
 export function addCustomEvaluators (runtime: CojourneyRuntime) {
   // if runtime.evaluators does not include any customEvaluators, add them
-  customEvaluators.forEach((evaluator) => {
+  customEvaluators.forEach((evaluator: Evaluator) => {
     if (!runtime.evaluators.includes(evaluator)) {
       runtime.evaluators.push(evaluator)
     }
@@ -31,7 +33,7 @@ export const evaluate = async (
 ) => {
   const { userIds } = state
   const totalMessages =
-    await runtime.messageManager.countMemoriesByUserIds(userIds)
+    await runtime.messageManager.countMemoriesByUserIds(userIds as UUID[])
 
   // TODO: does this evaluation interval make sense?
   const modulo = Math.round(runtime.getRecentMessageCount() - 2)
@@ -52,6 +54,6 @@ export const evaluate = async (
       return
     }
     console.log('calling handle', evaluator.name)
-    await evaluator.handler(runtime, message, state)
+    await evaluator.handler(runtime, message)
   })
 }

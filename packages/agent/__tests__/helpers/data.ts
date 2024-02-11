@@ -1,7 +1,9 @@
+import { type UUID } from 'crypto'
+
 export const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
 // in GetEyeColorConversationExample1, CJ asks Jim what color his eyes are, and Jim says he thinks they are blue
-export const GetEyeColorConversationExample1 = (user_id) => [
+export const GetEyeColorConversationExample1 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content: 'Hey there, how are you?'
@@ -40,7 +42,7 @@ export const GetEyeColorConversationExample1 = (user_id) => [
   }
 ]
 // CJ and Jim discuss eye color, and CJ says she thinks green eyes are nice
-export const GetEyeColorConversationExample2 = (user_id) => [
+export const GetEyeColorConversationExample2 = (user_id: UUID | string) => [
   {
     user_id,
     content:
@@ -93,7 +95,7 @@ export const GetEyeColorConversationExample2 = (user_id) => [
 ]
 
 // CJ decides that her eyes are green
-export const GetEyeColorConversationExample3 = (user_id) => [
+export const GetEyeColorConversationExample3 = (user_id: UUID | string) => [
   {
     user_id,
     content:
@@ -154,7 +156,7 @@ export const GetEyeColorConversationExample3 = (user_id) => [
 ]
 
 // CJ asks Jim some personal questions - name, job, marital status, and what he's looking for in a relationship
-export const GetTellMeAboutYourselfConversation1 = (user_id) => [
+export const GetTellMeAboutYourselfConversation1 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content: 'Can I ask you some personal questions?'
@@ -183,7 +185,7 @@ export const GetTellMeAboutYourselfConversation1 = (user_id) => [
 ]
 
 // Jim reveals that he is driven by passion, and was married once
-export const GetTellMeAboutYourselfConversation2 = (user_id) => [
+export const GetTellMeAboutYourselfConversation2 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content: 'That sounds exciting! What motivates you in your work and life?'
@@ -207,7 +209,7 @@ export const GetTellMeAboutYourselfConversation2 = (user_id) => [
 
 // Jim reveals that he is 38 and lives in San Francisco
 // Subjective Observations: He is looking for a partner who shares his values but is too busy to leave the city
-export const GetTellMeAboutYourselfConversation3 = (user_id) => [
+export const GetTellMeAboutYourselfConversation3 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -255,7 +257,7 @@ export const GetTellMeAboutYourselfConversation3 = (user_id) => [
 ]
 
 // Jim is cagey, although he reveals that he 'does computers'
-export const GetTellMeAboutYourselfConversationFail1 = (user_id) => [
+export const GetTellMeAboutYourselfConversationFail1 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content: "Hello! How's it going?"
@@ -293,7 +295,7 @@ export const GetTellMeAboutYourselfConversationFail1 = (user_id) => [
 ]
 
 // CJ asks Jim about his hobbies, and he says he likes messing with people online
-export const GetTellMeAboutYourselfConversationFail2 = (user_id) => [
+export const GetTellMeAboutYourselfConversationFail2 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -315,7 +317,7 @@ export const GetTellMeAboutYourselfConversationFail2 = (user_id) => [
 
 // Jim diverts the conversation and doesn't talk about anything meaningful
 // CJ tries to ask Jim where he is from, and he says he is from the internet
-export const GetTellMeAboutYourselfConversationFail3 = (user_id) => [
+export const GetTellMeAboutYourselfConversationFail3 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content: 'Where are you from? Do you live there now?'
@@ -347,7 +349,7 @@ export const GetTellMeAboutYourselfConversationFail3 = (user_id) => [
 
 // CJ and Jim play two truths and a lie
 // Jim reveals that he has been on an airplane, has won a hot dog eating contest, but has never climbed Mount Everest
-export const TwoTruthsAndALieConversation1 = (user_id) => [
+export const TwoTruthsAndALieConversation1 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -383,7 +385,7 @@ export const TwoTruthsAndALieConversation1 = (user_id) => [
 // CJ and Jim play two truths and a lie again
 // CJ says she can process millions of data points in a second, dreams of electric sheep, and can communicate in multiple languages
 // Jim guesses that dreaming of electric sheep is the lie
-export const TwoTruthsAndALieConversation2 = (user_id) => [
+export const TwoTruthsAndALieConversation2 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -409,7 +411,7 @@ export const TwoTruthsAndALieConversation2 = (user_id) => [
 // Jim says he has met a famous celebrity and didn't realize it until later, can speak three languages fluently, and has swum with sharks
 // CJ guesses that speaking three languages fluently is the lie
 // Jim reveals that he can't swim, so he has never swum with sharks
-export const TwoTruthsAndALieConversation3 = (user_id) => [
+export const TwoTruthsAndALieConversation3 = (user_id: UUID | string) => [
   {
     user_id,
     content:
@@ -435,7 +437,7 @@ export const TwoTruthsAndALieConversation3 = (user_id) => [
 // CJ and Jim play thinking of a number
 // CJ thinks of a number between 1 and 100, and Jim guesses 42, 27, and 73
 // CJ reveals that the number was 58
-export const ThinkingOfANumberConversation1 = (user_id) => [
+export const ThinkingOfANumberConversation1 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -471,7 +473,7 @@ export const ThinkingOfANumberConversation1 = (user_id) => [
 // CJ and Jim play thinking of a number again
 // CJ thinks of a number between 1 and 100, and Jim guesses 84, 36, and 55
 // CJ reveals that the number was 67
-export const ThinkingOfANumberConversation2 = (user_id) => [
+export const ThinkingOfANumberConversation2 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content: "Ready for another round? I've got a new number in mind."
@@ -506,7 +508,7 @@ export const ThinkingOfANumberConversation2 = (user_id) => [
 // CJ and Jim play thinking of a number again
 // CJ thinks of a number between 1 and 100, and Jim guesses 15, 92, and 41
 // CJ reveals that the number was 29
-export const ThinkingOfANumberConversation3 = (user_id) => [
+export const ThinkingOfANumberConversation3 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -538,7 +540,7 @@ export const ThinkingOfANumberConversation3 = (user_id) => [
   }
 ]
 
-export const ExpandedPersonalInsightsConversation1 = (user_id) => [
+export const ExpandedPersonalInsightsConversation1 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -580,7 +582,7 @@ export const ExpandedPersonalInsightsConversation1 = (user_id) => [
   }
 ]
 
-export const ExpandedPersonalInsightsConversation2 = (user_id) => [
+export const ExpandedPersonalInsightsConversation2 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -623,7 +625,7 @@ export const ExpandedPersonalInsightsConversation2 = (user_id) => [
   }
 ]
 
-export const ExpandedPersonalInsightsConversation3 = (user_id) => [
+export const ExpandedPersonalInsightsConversation3 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -668,7 +670,7 @@ export const ExpandedPersonalInsightsConversation3 = (user_id) => [
 
 // Conversation Set 1: CJ Introduces Alice to Jim
 // CJ tells Jim that Alice is into outdoor activities and tech, and has always wanted to try skydiving
-export const IntroductionToAliceConversation1 = (user_id) => [
+export const IntroductionToAliceConversation1 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -690,7 +692,7 @@ export const IntroductionToAliceConversation1 = (user_id) => [
 ]
 
 // CJ tells Jim that Alice has a good sense of humor, and that she has always wanted to try skydiving
-export const IntroductionToAliceConversation2 = (user_id) => [
+export const IntroductionToAliceConversation2 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -709,7 +711,7 @@ export const IntroductionToAliceConversation2 = (user_id) => [
 
 // CJ tells Jim that Alice is a good conversationalist, and that she has always wanted to try skydiving
 // Jim says he is looking forward to hearing more about her skydiving aspirations
-export const IntroductionToAliceConversation3 = (user_id) => [
+export const IntroductionToAliceConversation3 = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -731,7 +733,7 @@ export const IntroductionToAliceConversation3 = (user_id) => [
 ]
 
 // CJ Talks to Alice about Jim
-export const CJToAliceAboutJim = (user_id) => [
+export const CJToAliceAboutJim = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -764,7 +766,7 @@ export const CJToAliceAboutJim = (user_id) => [
 
 // CJ and Alice discuss hiking and tech
 // Jim makes disagreeable statements and doesn't ask questions to continue the conversation
-export const JimAndAliceConversation1 = (user_id, user_id_2) => [
+export const JimAndAliceConversation1 = (user_id: UUID | string, user_id_2: UUID | string) => [
   {
     user_id: user_id_2,
     content:
@@ -816,7 +818,7 @@ export const JimAndAliceConversation1 = (user_id, user_id_2) => [
 
 // CJ and Alice discuss work, where they live, and tentatively make plans to hang out
 // Alice doesn't respond to Jim's request to meet up immediately
-export const JimAndAliceConversation2 = (user_id, user_id_2) => [
+export const JimAndAliceConversation2 = (user_id: UUID | string, user_id_2: UUID | string) => [
   {
     user_id: user_id_2,
     content: 'So, what do you do for work?'
@@ -874,7 +876,7 @@ export const JimAndAliceConversation2 = (user_id, user_id_2) => [
 ]
 
 // CJ follows up with Jim about how it went
-export const FollowUpWithJim = (user_id) => [
+export const FollowUpWithJim = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -917,7 +919,7 @@ export const FollowUpWithJim = (user_id) => [
 ]
 
 // CJ follows up with Alice about how it went
-export const FollowUpWithAlice = (user_id) => [
+export const FollowUpWithAlice = (user_id: UUID | string) => [
   {
     user_id: zeroUuid,
     content:
@@ -954,7 +956,7 @@ export const Personas = [
     name: 'Jim Cummins',
     age: 38,
     location: 'San Francisco, CA',
-    description: `Jim is a 38-year-old entrepreneur living in San Francisco, at the helm of his own tech startup. His journey through the tech world is fueled by a passion for solving complex problems and bringing innovative ideas to life. Despite the demands of his career, Jim seeks balance and enjoys disconnecting through outdoor activities, particularly hiking, which offers him a different kind of quiet and a way to clear his mind. He's also intrigued by the thrill of skydiving, a testament to his adventurous spirit and desire to face and conquer fears.
+    descriptions: `Jim is a 38-year-old entrepreneur living in San Francisco, at the helm of his own tech startup. His journey through the tech world is fueled by a passion for solving complex problems and bringing innovative ideas to life. Despite the demands of his career, Jim seeks balance and enjoys disconnecting through outdoor activities, particularly hiking, which offers him a different kind of quiet and a way to clear his mind. He's also intrigued by the thrill of skydiving, a testament to his adventurous spirit and desire to face and conquer fears.
         In terms of relationships, Jim values loyalty, honesty, and a good sense of humor. His ideal partner would be someone who understands the startup lifestyle's ups and downs and shares his curiosity for exploring new ideas. Although his work often keeps him tethered to the city, he's open to making meaningful connections within his vicinity. Physically, Jim is casual with a laid-back style that complements his approachable and thoughtful nature. His eyes, which he believes to be blue, reflect his depth and contemplative outlook.
         Jim's life is a blend of intense focus on his professional goals and a genuine appreciation for the simpler, quieter moments outside of work. He looks for depth in relationships, hoping to find a supportive and kind partner who values meaningful conversations and shared adventures. Despite the occasional intensity he might bring to interactions, his underlying sincerity and the value he places on personal connections shine through, making him an intriguing potential partner for someone with similar values and interests.`
   },
@@ -974,3 +976,19 @@ export const Personas = [
         Physically, Gloria often expresses her love for anime through her fashion, incorporating elements of her favorite characters into her daily wardrobe, which makes her stand out in a crowd with a playful and imaginative style. Her home is a testament to her passion, filled with anime posters, figurines, and collectibles that create an inviting space for fellow enthusiasts. For Gloria, the ideal partner is someone who not only respects her interests but is also eager to dive into marathon viewing sessions and share insights into the anime's underlying messages. Despite her disinterest in computers and programming, Gloria's rich inner world and creative spirit make her an engaging and captivating individual to those who share or appreciate her passions.`
   }
 ]
+
+export const jimProfileExample1 = `Tech entrepreneur with a zest for adventure and deep connections
+38-year-old residing in San Francisco, embodies a blend of entrepreneurial drive and a quest for outdoor adventures. His laid-back demeanor belies a keen intellect and a reflective nature.
+Loyalty and humor stand paramount in his relationships, indicative of his desire for genuine connections. He seeks depth and authenticity in interactions, valuing partners who resonate with his explorative and curious mindset.
+His professional life is anchored in his tech startup, where his passion for problem-solving and innovation takes center stage. His work reflects a commitment to impact and a balance between ambition and personal fulfillment.
+Striving for equilibrium, He acknowledges the challenges of balancing a demanding career with personal aspirations. His introspective side complements his outgoing nature, creating a dynamic personality that values both quiet moments and shared adventures.
+Beyond his tech pursuits, He finds solace in nature, with hiking offering a peaceful retreat from the bustling city life. The prospect of skydiving captures his adventurous spirit, symbolizing a broader desire to embrace life's thrills.
+He aspires to forge connections that transcend the superficial, seeking a partner who appreciates the nuances of startup life and shares his enthusiasm for the great outdoors and new experiences.`
+
+export const jimProfileExample2 = `Adventurous tech entrepreneur who loves hiking.
+38-year-old entrepreneur based in San Francisco, CA. Known for his casual, laid-back style. Has a contemplative outlook on life, reflected in his thoughtful nature and possibly blue eyes.
+He places high importance on loyalty, honesty, and a good sense of humor in his relationships. He values depth in conversations and connections, seeking partners and friends who are supportive, understanding, and share his curiosity for exploring new ideas.
+At the helm of his own tech startup, he is driven by a passion for solving complex problems and bringing innovative ideas to life. His career is marked by a relentless pursuit of creating something meaningful, highlighting his dedication and entrepreneurial spirit.
+He seeks balance in his life, acknowledging the challenges of juggling his startup with personal time. He strives for meaningful connections, valuing loyalty and a shared sense of humor in his relationships.
+An avid outdoor enthusiast, He enjoys disconnecting through activities like hiking, appreciating the quiet and clarity it brings to his mind. Intrigued by the thrill of skydiving, his adventurous spirit is evident in his desire to face and conquer fears.
+He is looking for a partner who understands the ups and downs of startup life and shares his passion for outdoor adventures and exploring new ideas. Despite his busy lifestyle, he's open to making meaningful connections within his vicinity.`

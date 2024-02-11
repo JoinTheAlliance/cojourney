@@ -1,29 +1,12 @@
-// - Gather general information about the user
-
-// - Info we want:
-
-// Basics / Logistics
-//     - Name
-//     - Gender
-//     - Age
-//     - Location
-
-// Deeper
-//     - What is important to you in a connection?
-//     - Describe the best aspects of your best connection.
-//     - Describe what went well and what went poorly.
-//     - How much do they value interests and hobbies vs other things
-
-import { parseJSONObjectFromText } from '../../lib/utils'
+import { composeState, type CojourneyRuntime } from '../../lib'
 import { composeContext } from '../../lib/context'
-import { type CojourneyRuntime, getRelationship } from '../../lib'
 import { type Evaluator, type Message, type State } from '../../lib/types'
-import { type UUID } from 'crypto'
+import { parseJSONObjectFromText } from '../../lib/utils'
 
 const template = `You are collecting details about {{senderName}} based on their ongoing conversation with {{agentName}}.
 
 Recent conversation:
-{{recentConversation}}
+{{recentMessages}}
 
 Using the most recent conversation, get the details for the user's name, age, location and gender.
 Only include the values that can be extracted from the conversation.
@@ -36,17 +19,9 @@ Your response must include the JSON block.`
 
 const handler = async (
   runtime: CojourneyRuntime,
-  _message: Message,
-  state: State
+  message: Message
 ) => {
-  //
-  console.log('running details handler')
-  // TODO:
-  // get the target from the message
-
-  // then, search for the user in the actors
-
-  // then inject their profile
+  const state = (await composeState(runtime, message)) as State
 
   const context = composeContext({
     state,
@@ -67,7 +42,9 @@ const handler = async (
 
     if (parsedResponse) {
       responseData = parsedResponse
-      console.log('got response', responseData)
+      if (runtime.debugMode) {
+        console.log('got response', responseData)
+      }
       break
     }
 
@@ -76,42 +53,60 @@ const handler = async (
     }
   }
 
-  if (responseData) {
-    const { user, description } = responseData
-
-    // find the user
-    const response = await runtime.supabase
-      .from('accounts')
-      .select('*')
-      .eq('name', user)
-      .single()
-    const { data: userRecord, error } = response
-    if (error) {
-      console.error('error getting user', error)
-      return
+  if (!responseData) {
+    if (runtime.debugMode) {
+      console.log('Could not parse response')
     }
+    return
+  }
 
-    const userA = state.agentId!
-    const userB = userRecord.id as UUID
+  const { user, name, age, location, gender } = responseData
 
-    // find the room_id in 'relationships' where user_a is the agent and user_b is the user, OR vice versa
-    const relationshipRecord = await getRelationship({
-      supabase: runtime.supabase,
-      userA,
-      userB
-    })
+  // find the user
+  const response = await runtime.supabase
+    .from('accounts')
+    .select('*')
+    .eq('name', user)
+    .single()
+  const { data: userRecord, error } = response
+  if (error) {
+    console.error('error getting user', error)
+  }
 
-    const descriptionMemory =
-      await runtime.descriptionManager.addEmbeddingToMemory({
-        user_ids: [state.agentId, userRecord.id],
-        user_id: state.agentId!,
-        content: description,
-        room_id: relationshipRecord.room_id
-      })
+  const currentDetails = userRecord.details || {}
 
-    await runtime.descriptionManager.createMemory(descriptionMemory)
-  } else if (runtime.debugMode) {
-    console.log('Could not parse response')
+  // for name, age, location, gender -- if the value exists and doesn't exist in currentDetails, add it
+  if (name && !currentDetails.name) {
+    currentDetails.name = name
+  }
+
+  if (age && !currentDetails.age) {
+    currentDetails.age = age
+  }
+
+  if (location && !currentDetails.location) {
+    currentDetails.location = location
+  }
+
+  if (gender && !currentDetails.gender) {
+    currentDetails.gender = gender
+  }
+
+  // update the user with the new details
+  const { error: updateError } = await runtime.supabase
+    .from('accounts')
+    .update({ details: currentDetails })
+    .eq('id', userRecord.id)
+  if (updateError) {
+    console.error('error updating user', updateError)
+  }
+
+  // respond with the details
+  return {
+    name,
+    age,
+    location,
+    gender
   }
 }
 

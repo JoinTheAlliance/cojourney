@@ -21,7 +21,7 @@ export interface AgentRuntimeOpts {
  * @param {boolean} opts.debugMode - If true, will log debug messages
  */
 export class CojourneyRuntime {
-  readonly #recentMessageCount = 8 as number
+  readonly #recentMessageCount = 20 as number
   serverUrl = 'http://localhost:7998'
   token: string | null
   debugMode: boolean
@@ -130,6 +130,8 @@ export class CojourneyRuntime {
         choices: Array<{ message: { content: string } }>
       }
 
+      console.log('body', body)
+
       const content = (body as OpenAIResponse).choices?.[0]?.message?.content
       if (!content) {
         throw new Error('No content in response')
@@ -142,7 +144,7 @@ export class CojourneyRuntime {
   }
 
   async embed (input: string) {
-    const embeddingModel = 'text-embedding-3-small'
+    const embeddingModel = 'text-embedding-3-large'
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -151,8 +153,7 @@ export class CojourneyRuntime {
       },
       body: JSON.stringify({
         input,
-        model: embeddingModel,
-        dimensions: 768
+        model: embeddingModel
       })
     }
     try {

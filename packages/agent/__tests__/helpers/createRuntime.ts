@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { CojourneyRuntime } from '../src'
+import { CojourneyRuntime } from '../../src'
 
 export async function createRuntime () {
   const supabase = createClient(
@@ -21,9 +21,9 @@ export async function createRuntime () {
 
   const runtime = new CojourneyRuntime({
     debugMode: false,
-    serverUrl: process.env.SERVER_URL,
+    serverUrl: 'https://api.openai.com/v1',
     supabase,
-    token: session.access_token
+    token: process.env.OPENAI_API_KEY!
   })
 
   return { user, session, runtime }

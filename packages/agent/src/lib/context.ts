@@ -16,10 +16,10 @@ export const composeContext = ({
   template: string
 }) => {
   // replace all {{variables}} in contextTemplate with values from variables using the key names
-  const out = template.replace(/{{\w+}}/g, (match: string) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const out = template.replace(/{{\w+}}/g, (match) => {
     const key = match.replace(/{{|}}/g, '')
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     return state[key] ?? ''
   })
   return out

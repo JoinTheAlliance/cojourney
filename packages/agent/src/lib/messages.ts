@@ -98,7 +98,7 @@ export const formatMessages = ({
       const sender = actors.find(
         (actor: Actor) => actor.id === message.user_id
       )!
-      return `{ "user": "${sender.name}", "content": "${(message.content as Content).content}", "action": "${(message.content as Content).action}" }`
+      return `{ "user": "${sender.name}", "content": "${(message.content as Content).content}", ${(message.content as Content).action ? `"action": "${(message.content as Content).action}"` : ''} }`
     })
     .join('\n')
   return messageStrings
@@ -111,7 +111,7 @@ export const formatReflections = (reflections: Memory[]) => {
     .reverse()
     .map(
       (reflection: Memory) =>
-        `${(reflection.content as Content)?.content ?? reflection.content}`
+        `${(reflection.content as Content)?.content ?? (reflection.content as string)}`
     )
   const finalMessageStrings = messageStrings.join('\n')
   return finalMessageStrings

@@ -85,7 +85,6 @@ async function _main (
 async function _processActions (
   runtime: CojourneyRuntime,
   message: Message,
-  state: State,
   data: Content
 ) {
   if (!data.action) {
@@ -109,7 +108,7 @@ async function _processActions (
     return
   }
 
-  await action.handler(runtime, message, state)
+  await action.handler(runtime, message)
 }
 
 // stores either 1 or 2 memories, depending on whether the sender's content is empty or not
@@ -188,7 +187,7 @@ export const onMessage = async (
     state,
     response_generation_template
   )) as Content
-  await _processActions(runtime, message, state, data)
+  await _processActions(runtime, message, data)
   await _storeSenderMemory(runtime, message)
   await evaluate(runtime, message, { ...state, responseData: data })
   await _storeAgentMemory(runtime, message, state, data)
@@ -204,7 +203,7 @@ export const onUpdate = async (message: Message, runtime: CojourneyRuntime) => {
 
   const state = await composeState(runtime, message)
 
-  if (shouldSkipMessage(state as State, agentId!)) return
+  if (shouldSkipMessage(state, agentId!)) return
 
   const data = (await _main(
     runtime,
@@ -212,7 +211,7 @@ export const onUpdate = async (message: Message, runtime: CojourneyRuntime) => {
     state as State,
     update_generation_template
   )) as Content
-  await _processActions(runtime, message, state as State, data)
-  await _storeAgentMemory(runtime, message, state as State, data)
-  await evaluate(runtime, message, { ...state, responseData: data } as State)
+  await _processActions(runtime, message, data)
+  await _storeAgentMemory(runtime, message, state, data)
+  await evaluate(runtime, message, { ...state, responseData: data })
 }

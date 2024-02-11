@@ -16,51 +16,71 @@
 
 import { parseJSONObjectFromText } from '../../lib/utils'
 import { composeContext } from '../../lib/context'
-import { type CojourneyRuntime, getRelationship } from '../../lib'
-import { type Message, type State } from '../../lib/types'
+import { type CojourneyRuntime, getRelationship, composeState } from '../../lib'
+import { type Content, type Message, type State } from '../../lib/types'
 import { type UUID } from 'crypto'
 
-const template = `You are writing a profile for {{senderName}} based on their existing profile and ongoing conversations.
+const template = `TASK: Write a detailed personal and psychological profile for {{senderName}}.
 
-{{senderName}}'s current profile:
-{{profile}}
+Previous profiles written about {{senderName}}:
+{{profiles}}
+
+INSTRUCTIONS: You are writing a detailed and extensive new profile for {{senderName}} based on their existing profile and ongoing conversations. You should write the new profile based on the old profiles as well as any new information that has been revealed in the conversation.
 
 Recent conversation:
-{{recentConversation}}
+{{recentMessages}}
 
-Using the most recent conversation, update {{senderName}}'s profile.
-Include any information that you think is relevant to the user's profile.
-The response should be a combination of the details from the current profile and the new information from the conversation.
+TASK: Rewrite {{senderName}}'s profile.
 
-Then respond with a JSON object containing a field for description in a JSON block formatted for markdown with this structure:
+Instructions: Generate a detailed profile for {{senderName}} in the conversations and respond with a JSON object. Write from the perspective of a therapist taking personal notes on a client. The profile should be extremely detailed and specific, and include any relevant facts or details from the conversation that should be remembered.
+
+The profile should be broken up into basics, values, personal, career, hobbies, goals, family, history. Each should be a paragraph, at least 3 sentences in length.
+Tagline - A short, catchy tagline that describes {{senderName}} (DO NOT include any really personal info or what they are looking for in a partner. Just a catchy tagline that describes them.)
+Basics - Basic details about the person. Name, age, location, etc.
+Values - Things that {{senderName}} values or believes. Things that they think are important in a friend or partner.
+Career - Things about {{senderName}}'s work or career that might be important for a friend or partner to know.
+Personality - What kind of person is {{senderName}}? What are they like? What kinds of personalities would they get along with, and who would get alon with them?
+Hobbies - What {{senderName}} does for fun?
+Goals - What {{senderName}} wants in the future for their life, career, or relationships?
+
+Only include the sections that are relevant and have enough information from the source text to extract.
+
+Respond with a JSON object in a markdown JSON block, formatted like this:
 \`\`\`json
-{ user: string, description: string }
-\`\`\`
-
-Your response must include the JSON block.`
+{
+  "tagline": string,
+  "basics": string,
+  "values": string,
+  "career": string,
+  "personal": string,
+  "hobbies": string,
+  "goals": string
+}
+\`\`\``
 
 const handler = async (
   runtime: CojourneyRuntime,
-  _message: Message,
-  state: State
+  message: Message
 ) => {
+  const state = (await composeState(runtime, message)) as State
+
+  // read the description for the current user
+  const { senderId, agentId } = state
+  const descriptions = await runtime.descriptionManager.getMemoriesByIds({ userIds: [senderId, agentId] as UUID[], count: 5 })
+  const profiles = descriptions.map((d: Content) => '"""\n' + d.content + '\n"""').join('\n')
+  state.profiles = profiles
+
+  // join profiles with
   //
-  console.log('running profile handler')
-  // TODO:
-  // get the target from the message
-
-  // then, search for the user in the actors
-
-  // then inject their profile
-
   const context = composeContext({
     state,
     template
   })
 
-  let responseData = null
+  let responseData: Record<string, unknown> = {}
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+    console.log('*** context\n', context)
     // generate the response
     const response = await runtime.completion({
       context,
@@ -72,28 +92,27 @@ const handler = async (
 
     if (parsedResponse) {
       responseData = parsedResponse
-      console.log('got response', responseData)
       break
     }
 
     if (runtime.debugMode) {
-      console.log(`UPDATE_PROFILE response: ${response}`)
+      console.log(`UPDATE_PROFILE response:\n${response}`)
     }
   }
 
   if (responseData) {
-    const { user, description } = responseData
+    // join the values of all of the fields in the responseData object into a single string
+    const description = Object.values(responseData).join('\n')
 
     // find the user
     const response = await runtime.supabase
       .from('accounts')
       .select('*')
-      .eq('name', user)
+      .eq('name', state.senderName)
       .single()
     const { data: userRecord, error } = response
     if (error) {
       console.error('error getting user', error)
-      return
     }
 
     const userA = state.agentId!
@@ -115,9 +134,14 @@ const handler = async (
       })
 
     await runtime.descriptionManager.createMemory(descriptionMemory)
+
+      // get the user's account details
+      // set their details to the new details
+      return description
   } else if (runtime.debugMode) {
     console.log('Could not parse response')
   }
+  return ''
 }
 
 export default {
@@ -127,5 +151,10 @@ export default {
   condition:
     'The user has revealed new personal information in the conversation which is important to update in their profile.',
   handler,
-  examples: []
+  examples: [
+    `{
+
+    }`
+
+  ]
 }

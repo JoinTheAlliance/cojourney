@@ -1,7 +1,7 @@
 // test creating an agent runtime
 import dotenv from 'dotenv'
 
-import { createRuntime } from './createRuntime'
+import { createRuntime } from './helpers/createRuntime'
 import { type UUID } from 'crypto'
 import { getRelationship } from '../src/lib/relationships'
 dotenv.config()
@@ -30,6 +30,8 @@ describe('Agent Runtime', () => {
       userA: user?.id as UUID,
       userB: zeroUuid
     })
+
+    console.log('data', data)
 
     const room_id = data?.room_id
 

@@ -68,13 +68,14 @@ export interface State {
   actions?: string
   messageExamples?: string
   responseData?: Content
+  [key: string]: unknown
 }
 
 // what onMessage etc receive
 export interface Message {
-  agentId?: UUID
-  senderId?: UUID
-  userIds?: UUID[]
+  agentId: UUID
+  senderId: UUID
+  userIds: UUID[]
   content: Content | string
   room_id: UUID
 }
@@ -88,7 +89,6 @@ export interface MessageExample {
 export type Handler = (
   runtime: CojourneyRuntime,
   message: Message,
-  state: State,
 ) => Promise<unknown>
 
 export interface Action {
@@ -99,4 +99,10 @@ export interface Action {
   handler: Handler | undefined
 }
 
-export type Evaluator = Action
+export interface Evaluator {
+  name: string
+  description: string
+  condition: string
+  examples: string[]
+  handler: Handler | undefined
+}

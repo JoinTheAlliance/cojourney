@@ -24,6 +24,8 @@ export async function composeState (
 ) {
   const { senderId, agentId, userIds, room_id } = message
 
+  console.log('userIds', userIds)
+
   const { supabase } = runtime
   const recentMessageCount = runtime.getRecentMessageCount()
   const recentReflectionsCount = runtime.getRecentMessageCount() / 2
@@ -77,6 +79,8 @@ export async function composeState (
 
   const actors = formatMessageActors({ actors: actorsData ?? [] })
 
+  console.log('recentMessagesData', recentMessagesData)
+
   const recentMessages = formatMessages({
     actors: actorsData ?? [],
     messages: recentMessagesData.map((memory: Memory) => {
@@ -85,6 +89,8 @@ export async function composeState (
       return newMemory
     })
   })
+
+  console.log('recentMessages', recentMessages)
 
   const recentReflections = formatReflections(recentReflectionsData)
   const relevantReflections = formatReflections(relevantReflectionsData)

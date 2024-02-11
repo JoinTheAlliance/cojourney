@@ -2,6 +2,7 @@ import { composeContext } from '../context'
 import logger from '../logger'
 import { formatMessageActors, getMessageActors } from '../messages'
 import type CojourneyRuntime from '../runtime'
+import { composeState } from '../state'
 import { type Action, type Actor, type Message, type State } from '../types'
 import { parseJsonArrayFromText } from '../utils'
 
@@ -121,10 +122,9 @@ INSTRUCTIONS: Extract any claims from the conversation in the scene that are not
  */
 async function handler (
   runtime: CojourneyRuntime,
-  _message: Message,
-  state: State
+  message: Message
 ) {
-  console.log('running reflect handler')
+  const state = (await composeState(runtime, message)) as State
 
   const { userIds, senderId, agentId, room_id } = state
 
