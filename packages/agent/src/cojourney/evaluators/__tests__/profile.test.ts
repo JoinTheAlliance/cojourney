@@ -14,6 +14,7 @@ import {
 } from '../../../test/data'
 
 import evaluator from '../profile'
+import { getCachedEmbedding } from '../../../test/cache'
 
 dotenv.config()
 
@@ -60,7 +61,8 @@ describe('User Profile', () => {
           content: {
             content: c.content
           },
-          room_id
+          room_id,
+          embedding: getCachedEmbedding(c.content)
         })
         await runtime.messageManager.createMemory(bakedMemory)
         // wait for .2 seconds
@@ -89,7 +91,8 @@ describe('User Profile', () => {
           content: {
             content: c.content
           },
-          room_id
+          room_id,
+          embedding: getCachedEmbedding(c.content)
         })
         await runtime.messageManager.createMemory(bakedMemory)
       }
@@ -104,7 +107,8 @@ describe('User Profile', () => {
             user_id: user?.id as UUID,
             user_ids: [user?.id as UUID, zeroUuid],
             content: c,
-            room_id
+            room_id,
+            embedding: getCachedEmbedding(c)
           })
         await runtime.descriptionManager.createMemory(bakedMemory)
         // wait for .2 seconds

@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { createRuntime } from '../../test/createRuntime'
 import { type UUID } from 'crypto'
 import { getRelationship } from '../relationships'
+import { getCachedEmbedding } from '../../test/cache'
 dotenv.config()
 
 // create a UUID of 0s
@@ -49,7 +50,8 @@ describe('Agent Runtime', () => {
         content: {
           content: 'test memory from user'
         },
-        room_id
+        room_id,
+        embedding: getCachedEmbedding('test memory from user')
       })
       // create a memory
       await runtime.messageManager.createMemory(bakedMemory)
@@ -60,7 +62,8 @@ describe('Agent Runtime', () => {
         content: {
           content: 'test memory from agent'
         },
-        room_id
+        room_id,
+        embedding: getCachedEmbedding('test memory from agent')
       })
       // create a memory
       await runtime.messageManager.createMemory(bakedMemory2)

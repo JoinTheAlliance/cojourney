@@ -7,6 +7,7 @@ import { createRuntime } from '../../test/createRuntime'
 import { MemoryManager } from '../memory'
 import { getRelationship } from '../relationships'
 import { type Content, type Memory } from '../types'
+import { getCachedEmbedding } from '../../test/cache'
 
 dotenv.config()
 
@@ -47,17 +48,16 @@ describe('MemoryManager', () => {
 
   test('Memory lifecycle: create, search, count, and remove', async () => {
     // Create a test memory
-    const testMemory: Memory = {
-      user_id: user?.id as UUID,
-      content: { content: 'Test content for memory lifecycle' },
-      user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID
-    }
-
-    const memoryWithEmbedding = await memoryManager.addEmbeddingToMemory(
-      testMemory
+    const testMemory: Memory = await memoryManager.addEmbeddingToMemory(
+        {
+            user_id: user?.id as UUID,
+            content: { content: 'Test content for memory lifecycle' },
+            user_ids: [user?.id as UUID, zeroUuid],
+            room_id: room_id as UUID,
+            embedding: getCachedEmbedding('Test content for memory lifecycle')
+          }
     )
-    await memoryManager.createMemory(memoryWithEmbedding)
+    await memoryManager.createMemory(testMemory)
 
     const createdMemories = await memoryManager.getMemoriesByIds({
       userIds: [user?.id as UUID, zeroUuid],
@@ -73,7 +73,7 @@ describe('MemoryManager', () => {
 
     // Search memories by embedding
     const searchedMemories = await memoryManager.searchMemoriesByEmbedding(
-      memoryWithEmbedding.embedding!,
+        testMemory.embedding!,
       {
         userIds: [user?.id as UUID, zeroUuid],
         count: 5
@@ -151,7 +151,8 @@ describe('MemoryManager - Extended Tests', () => {
       user_id: user?.id as UUID,
       content: { content: similarMemoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID
+      room_id: room_id as UUID,
+      embedding: getCachedEmbedding(similarMemoryContent)
     })
     await memoryManager.createMemory(similarMemory)
 
@@ -159,7 +160,8 @@ describe('MemoryManager - Extended Tests', () => {
       user_id: user?.id as UUID,
       content: { content: dissimilarMemoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID
+      room_id: room_id as UUID,
+      embedding: getCachedEmbedding(dissimilarMemoryContent)
     })
     await memoryManager.createMemory(dissimilarMemory)
 
@@ -197,7 +199,8 @@ describe('MemoryManager - Extended Tests', () => {
       user_id: user?.id as UUID,
       content: { content: queryMemoryContent },
       user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID
+      room_id: room_id as UUID,
+      embedding: getCachedEmbedding(queryMemoryContent)
     })
     await memoryManager.createMemory(queryMemory)
 
@@ -206,7 +209,8 @@ describe('MemoryManager - Extended Tests', () => {
       user_id: user?.id as UUID,
       content: { content: highSimilarityContent },
       user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID
+      room_id: room_id as UUID,
+      embedding: getCachedEmbedding(highSimilarityContent)
     })
     await memoryManager.createMemory(highSimilarityMemory)
 
@@ -214,7 +218,8 @@ describe('MemoryManager - Extended Tests', () => {
       user_id: user?.id as UUID,
       content: { content: lowSimilarityContent },
       user_ids: [user?.id as UUID, zeroUuid],
-      room_id: room_id as UUID
+      room_id: room_id as UUID,
+      embedding: getCachedEmbedding(lowSimilarityContent)
     })
     await memoryManager.createMemory(lowSimilarityMemory)
 
@@ -227,8 +232,6 @@ describe('MemoryManager - Extended Tests', () => {
       }
     )
 
-    console.log('searchedMemories', searchedMemories)
-
     // Check that the high similarity memory ranks higher than the low similarity memory
     const highSimilarityIndex = searchedMemories.findIndex(
       (memory) => (memory.content as Content).content === highSimilarityContent
@@ -236,9 +239,6 @@ describe('MemoryManager - Extended Tests', () => {
     const lowSimilarityIndex = searchedMemories.findIndex(
       (memory) => (memory.content as Content).content === lowSimilarityContent
     )
-
-    console.log('highSimilarityIndex', highSimilarityIndex)
-    console.log('lowSimilarityIndex', lowSimilarityIndex)
 
     expect(highSimilarityIndex).toBeLessThan(lowSimilarityIndex)
   })

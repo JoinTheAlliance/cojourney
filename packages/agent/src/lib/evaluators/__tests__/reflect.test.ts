@@ -14,6 +14,7 @@ import {
 } from '../../../test/data'
 
 import evaluator from '../reflect'
+import { getCachedEmbedding } from '../../../test/cache'
 dotenv.config()
 
 // create a UUID of 0s
@@ -60,11 +61,12 @@ describe('User Profile', () => {
           content: {
             content: c.content
           },
-          room_id
+          room_id,
+          embedding: getCachedEmbedding(c.content)
         })
         await runtime.messageManager.createMemory(bakedMemory)
         // wait for .2 seconds
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        await new Promise((resolve) => setTimeout(resolve, 200))
       }
 
       const handler = evaluator.handler!
@@ -91,7 +93,8 @@ describe('User Profile', () => {
           content: {
             content: c.content
           },
-          room_id
+          room_id,
+          embedding: getCachedEmbedding(c.content)
         })
         await runtime.messageManager.createMemory(bakedMemory)
       }
@@ -104,11 +107,12 @@ describe('User Profile', () => {
             user_id: user?.id as UUID,
             user_ids: [user?.id as UUID, zeroUuid],
             content: c,
-            room_id
+            room_id,
+            embedding: getCachedEmbedding(c)
           })
         await runtime.reflectionManager.createMemory(bakedMemory)
         // wait for .2 seconds
-        await new Promise((resolve) => setTimeout(resolve, 500))
+        await new Promise((resolve) => setTimeout(resolve, 200))
       }
 
       // first just compose state and verify that relevant reflections are being returned

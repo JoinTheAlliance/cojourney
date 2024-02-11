@@ -29,6 +29,9 @@ export class MemoryManager {
   }
 
   async addEmbeddingToMemory (memory: Memory): Promise<Memory> {
+    if (memory.embedding) {
+      return memory
+    }
     const getMemoryEmbeddingString = (memory: Memory) => {
       if (typeof memory.content === 'string') {
         return memory.content
