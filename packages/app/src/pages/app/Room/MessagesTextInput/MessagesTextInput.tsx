@@ -134,20 +134,10 @@ const MessagesTextInput = ({
     setIsSendingMessage(false);
     setMessage("");
 
-    if(inputHandler && inputHandler.send) {
-      console.log('inputHandler', inputHandler)
+    if (inputHandler && inputHandler.send) {
+      console.log("inputHandler", inputHandler);
       await inputHandler.send(message);
     }
-  };
-
-  const sendButton = (): JSX.Element | null => {
-    if (message.length <= 0) return <Send size={16} />;
-
-    return (
-      <ActionIcon type="submit">
-        {isSendingMessage && <Loader size={16} />}
-      </ActionIcon>
-    );
   };
 
   return (
@@ -155,7 +145,11 @@ const MessagesTextInput = ({
       <TextInput
         onChange={(event): void => setMessage(event.target.value)}
         placeholder="Send message"
-        rightSection={sendButton()}
+        rightSection={
+          <ActionIcon type="submit">
+            {isSendingMessage ? <Loader size={16} /> : <Send size={16} />}
+          </ActionIcon>
+        }
         value={message}
         spellCheck="false"
         autoComplete="off"

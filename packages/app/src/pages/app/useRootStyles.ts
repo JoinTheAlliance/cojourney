@@ -25,6 +25,7 @@ const useRootStyles = createStyles((theme) => ({
     left: 0,
     width: "100vw",
     padding: 15,
+    zIndex: 9999,
     display: "flex",
     justifyContent: "space-between",
     backgroundColor:

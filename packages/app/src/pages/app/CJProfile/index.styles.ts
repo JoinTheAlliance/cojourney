@@ -4,7 +4,6 @@ const useProfileStyles = createStyles(() => ({
   container: {
     padding: 8,
     position: "relative",
-    overflow: "auto",
     width: "100%",
     height:
       "calc(100vh - var(--mantine-header-height, 0rem) - var(--mantine-footer-height, 0rem))",

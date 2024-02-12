@@ -10,6 +10,7 @@ const useRoomStyles = createStyles((theme) => ({
     paddingTop: 20,
     position: "relative",
     width: "100%",
+    marginBottom: "2rem",
 
     "@media (min-width: 901px)": {
       minHeight: "calc(100vh - 120px)",
@@ -25,6 +26,10 @@ const useRoomStyles = createStyles((theme) => ({
     backgroundColor:
       theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
     width: "100%",
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    padding: "0 0.5rem 0.5rem ",
   },
   desktopSideMenu: {
     position: "fixed",
