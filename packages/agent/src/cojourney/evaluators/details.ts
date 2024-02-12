@@ -114,6 +114,10 @@ const handler = async (
 
 export default {
   name: 'UPDATE_DETAILS',
+  validate: async (_runtime: CojourneyRuntime, _message: Message): Promise<boolean> => {
+    // immediatel resolve true
+    return await Promise.resolve(true)
+  },
   description:
     'Update the details of the user using information collected from the conversation.',
   condition:

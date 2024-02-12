@@ -18,7 +18,6 @@ export async function getMessageActors ({
     .from('accounts')
     .select('*')
     .in('id', userIds)
-
   if (response.error) {
     console.error(response.error)
     return []
@@ -28,10 +27,10 @@ export async function getMessageActors ({
 
   // join the data from the database with the data from the exampleNpcs
   const actors = data.map((actor: Actor) => {
-    const { name, description, id } = actor
+    const { name, details, id } = actor
     return {
       name,
-      description,
+      details,
       id
     }
   })
@@ -42,7 +41,7 @@ export async function getMessageActors ({
 export function formatMessageActors ({ actors }: { actors: Actor[] }) {
   // format actors as a string
   const actorStrings = actors.map((actor: Actor) => {
-    const header = `${actor.name}: ${actor.description ?? 'No description'}`
+    const header = `${actor.name}: ${actor.details.tagline}\n${actor.details.summary}`
     return header
   })
   const finalActorStrings = actorStrings.join('\n')
@@ -72,7 +71,7 @@ export const getRandomMessageExamples = (count: number) => {
   // exampe messages is an array of arrays of objects
   // format the examples so that each object is on one line
   const formattedExamples = examples.map((example) => {
-    return `\n\n${example
+    return `\n${example
       .map((message) => {
         return JSON.stringify(message)
       })
@@ -98,7 +97,7 @@ export const formatMessages = ({
       const sender = actors.find(
         (actor: Actor) => actor.id === message.user_id
       )!
-      return `{ "user": "${sender.name}", "content": "${(message.content as Content).content}", ${(message.content as Content).action ? `"action": "${(message.content as Content).action}"` : ''} }`
+      return `{ "user": "${sender.name}", "content": "${(message.content as Content).content || (message.content as string)}", ${(message.content as Content).action ? `"action": "${(message.content as Content).action}"` : ''} }`
     })
     .join('\n')
   return messageStrings

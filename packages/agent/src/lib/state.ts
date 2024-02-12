@@ -1,6 +1,7 @@
 // State can be passed around to different parts of the agent to provide context for decision making
 // State is also passed converted into a context object via template injection to generate a response with the LLM
 
+import { formatActionConditions, formatActionExamples, formatActionNames, formatActions, getActions } from './actions'
 import { formatGoalsAsString, getGoals } from './goals'
 import {
   formatMessageActors,
@@ -29,11 +30,12 @@ export async function composeState (
   const recentReflectionsCount = runtime.getRecentMessageCount() / 2
   const relevantReflectionsCount = runtime.getRecentMessageCount() / 2
 
-  const [actorsData, recentMessagesData, recentReflectionsData, goalsData]: [
+  const [actorsData, recentMessagesData, recentReflectionsData, goalsData, actionsData]: [
     Actor[],
     Memory[],
     Memory[],
     Goal[],
+    Action[],
   ] = await Promise.all([
     getMessageActors({ supabase, userIds: userIds! }),
     runtime.messageManager.getMemoriesByIds({
@@ -49,7 +51,8 @@ export async function composeState (
       count: 10,
       onlyInProgress: true,
       userIds: userIds!
-    })
+    }),
+    getActions(runtime, message)
   ])
 
   const goals = await formatGoalsAsString({ goals: goalsData })
@@ -126,17 +129,10 @@ export async function composeState (
     recentReflectionsData,
     relevantReflections,
     relevantReflectionsData,
-    actionNames: runtime
-      .getActions()
-      .map((a: Action) => a.name)
-      .join(', '),
-    actions: runtime
-      .getActions()
-      .map(
-        (a: Action) =>
-          `${a.name}: ${a.description}\nExamples:\n ${a.examples.join('\n')}`
-      )
-      .join('\n'),
+    actionNames: formatActionNames(actionsData),
+    actionConditions: formatActionConditions(actionsData),
+    actionExamples: formatActionExamples(actionsData),
+    actions: formatActions(actionsData),
     messageExamples: getRandomMessageExamples(5)
   }
 }

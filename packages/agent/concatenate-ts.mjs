@@ -47,8 +47,6 @@ const readDirectory = (dirPath) => {
         }
     })
 
-    concatenatedContent += '# END COJOURNEY CODEBASE\n\n' + instructions
-
     return concatenatedContent
 }
 
@@ -56,5 +54,5 @@ const readDirectory = (dirPath) => {
 const concatenatedContent = readDirectory(directoryPath)
 
 // Write the concatenated content to the output file
-fs.writeFileSync(outputFile, concatenatedContent)
+fs.writeFileSync(outputFile, concatenatedContent + '# END COJOURNEY CODEBASE\n\n' + instructions)
 console.log('TypeScript files have been concatenated into:', outputFile)

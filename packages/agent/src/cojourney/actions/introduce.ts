@@ -1,7 +1,7 @@
 import { composeState, type CojourneyRuntime } from '../../lib'
 import { composeContext } from '../../lib/context'
 import { createRelationship } from '../../lib/relationships'
-import { type Message, type State } from '../../lib/types'
+import { Action, type Message, type State } from '../../lib/types'
 import { parseJSONObjectFromText } from '../../lib/utils'
 
 const template = `You are taking the role of {{agentName}} in a scene. {{agentName}} might want to make a connection between a user in the current scene and one of the users in their rolodex.
@@ -108,9 +108,13 @@ const handler = async (
 
 export default {
   name: 'INTRODUCE',
+  validate: async (_runtime: CojourneyRuntime, _message: Message): Promise<boolean> => {
+    // immediatel resolve true
+    return await Promise.resolve(true)
+  },
   description:
     'Introduce the user to someone from the rolodex who they might like to chat with. Only use this if the user is expressing interest in meeting someone new. If the user has not expressed interest, DO NOT USE THIS ACTION.',
   handler,
   condition: 'The agent wants to introduce the user to someone from the rolodex',
   examples: []
-}
+} as Action

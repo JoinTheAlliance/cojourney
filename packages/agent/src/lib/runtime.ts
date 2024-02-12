@@ -21,7 +21,7 @@ export interface AgentRuntimeOpts {
  * @param {boolean} opts.debugMode - If true, will log debug messages
  */
 export class CojourneyRuntime {
-  readonly #recentMessageCount = 12 as number
+  readonly #recentMessageCount = 32 as number
   serverUrl = 'http://localhost:7998'
   token: string | null
   debugMode: boolean

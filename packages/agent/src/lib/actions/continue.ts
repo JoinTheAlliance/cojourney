@@ -1,9 +1,12 @@
 import type CojourneyRuntime from '../runtime'
-import { type Message } from '../types'
+import { type Action, type Message } from '../types'
 
 export default {
   name: 'CONTINUE',
   description: 'Continue the conversation with the user',
+  validate: async (_runtime: CojourneyRuntime, _message: Message) => {
+    return true
+  },
   handler: async (_runtime: CojourneyRuntime, message: Message) => {
     console.log('CONTINUE', message)
   },
@@ -17,4 +20,4 @@ export default {
       action: 'CONTINUE'
     })
   ]
-}
+} as Action

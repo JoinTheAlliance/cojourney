@@ -18,7 +18,7 @@ export interface Content {
 
 export interface Actor {
   name: string
-  description: string
+  details: { tagline: string, summary: string, quote: string }
   id: UUID
 }
 
@@ -91,18 +91,18 @@ export type Handler = (
   message: Message,
 ) => Promise<unknown>
 
+export type Validator = (
+  runtime: CojourneyRuntime,
+  message: Message,
+) => Promise<boolean>
+
 export interface Action {
   name: string
   description: string
   condition: string
   examples: string[]
+  validate: Validator
   handler: Handler | undefined
 }
 
-export interface Evaluator {
-  name: string
-  description: string
-  condition: string
-  examples: string[]
-  handler: Handler | undefined
-}
+export interface Evaluator extends Action {}

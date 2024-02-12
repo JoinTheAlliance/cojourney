@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { CojourneyRuntime } from '../lib/runtime'
 import { TEST_EMAIL, TEST_PASSWORD, SUPABASE_URL, SUPABASE_ANON_KEY } from './constants'
 
-export async function createRuntime (env: Record<string, string>, recentMessageCount = 12) {
+export async function createRuntime (env: Record<string, string>, recentMessageCount = 32) {
   const supabase = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!)
 
   // login

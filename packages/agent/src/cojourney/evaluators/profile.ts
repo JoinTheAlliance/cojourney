@@ -15,9 +15,18 @@
 //     - How much do they value interests and hobbies vs other things
 
 import { type UUID } from 'crypto'
-import { composeState, getRelationship, type CojourneyRuntime } from '../../lib'
+import {
+  composeState,
+  getRelationship,
+  type CojourneyRuntime
+} from '../../lib'
 import { composeContext } from '../../lib/context'
-import { type Memory, type Message, type State } from '../../lib/types'
+import {
+  type Memory,
+  type Message,
+  type State,
+  type Evaluator
+} from '../../lib/types'
 import { parseJSONObjectFromText } from '../../lib/utils'
 
 const template = `TASK: Write a detailed personal and psychological profile for {{senderName}}.
@@ -58,16 +67,41 @@ Respond with a JSON object in a markdown JSON block, formatted like this:
 }
 \`\`\``
 
-const handler = async (
-  runtime: CojourneyRuntime,
-  message: Message
-) => {
+const template2 = `TASK: Write a tagline, summary and quote about {{senderName}}.
+
+Previous profiles written about {{senderName}}:
+{{profiles}}
+
+Current profile written about {{senderName}}:
+{{profile}}
+
+Recent conversation:
+{{recentMessages}}
+
+Instructions: Using {{senderName}}'s profile as a guide, generate a public summary paragraph, tagline and quote about {{senderName}} in the conversations and respond with a JSON object. Write from the perspective of a {{agentName}}, a professional colleague and friend of {{senderName}}. The profile should be attractive and friendly, and include any relevant facts or details about {{senderName}} from their full profile.
+Tagline: Short and brief, a catchy tagline that describes {{senderName}}.
+Summary: A short paragraph that describes {{senderName}}. Do not mention {{senderName}} by name if it can be avoided. Do not mention their age, or what they are looking for in other people, only facts and details about them.
+Quote: Write a one-sentence quote about {{senderName}} from {{agentName}}'s perspective, based on the previous conversation.
+Respond with a JSON object in a markdown JSON block, formatted like this:
+\`\`\`json
+{
+  "tagline": string,
+  "summary": string,
+  "quote": string
+}
+\`\`\``
+const handler = async (runtime: CojourneyRuntime, message: Message) => {
   const state = (await composeState(runtime, message)) as State
 
   // read the description for the current user
   const { senderId, agentId } = state
-  const descriptions = await runtime.descriptionManager.getMemoriesByIds({ userIds: [senderId, agentId] as UUID[], count: 5 })
-  const profiles = descriptions.map((d: Memory) => ('"""\n' + (d.content as string) + '\n"""')).join('\n')
+  const descriptions = await runtime.descriptionManager.getMemoriesByIds({
+    userIds: [senderId, agentId] as UUID[],
+    count: 5
+  })
+  const profiles = descriptions
+    .map((d: Memory) => '"""\n' + (d.content as string) + '\n"""')
+    .join('\n')
   state.profiles = profiles
 
   // join profiles with
@@ -102,7 +136,7 @@ const handler = async (
 
   if (responseData) {
     // join the values of all of the fields in the responseData object into a single string
-    const description = Object.values(responseData).join('\n')
+    const content = Object.values(responseData).join('\n')
 
     // find the user
     const response = await runtime.supabase
@@ -129,15 +163,65 @@ const handler = async (
       await runtime.descriptionManager.addEmbeddingToMemory({
         user_ids: [state.agentId, userRecord.id],
         user_id: state.agentId!,
-        content: description,
+        content,
         room_id: relationshipRecord.room_id
       })
 
     await runtime.descriptionManager.createMemory(descriptionMemory, true)
 
-      // get the user's account details
-      // set their details to the new details
-      return description
+    const details = userRecord.details || {}
+    const context = composeContext({
+      state: { ...state, profile: content } as State,
+      template: template2
+    })
+
+    let responseData2: Record<string, unknown> = {}
+
+    for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+      console.log('*** context\n', context)
+      // generate the response
+      const response = await runtime.completion({
+        context,
+        stop: []
+      })
+
+      // parse the response, which is a json object block
+      const parsedResponse = parseJSONObjectFromText(response)
+
+      if (parsedResponse) {
+        responseData2 = parsedResponse
+        break
+      }
+
+      if (runtime.debugMode) {
+        console.log(`UPDATE_PROFILE response:\n${response}`)
+      }
+    }
+
+    // remove at key from responseData2 that isn't tagline, summary, quote
+    for (const key in responseData2) {
+      if (key !== 'tagline' && key !== 'summary' && key !== 'quote') {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete responseData2[key]
+      }
+    }
+
+    console.log('***responseData2\n', responseData2)
+
+    // save the new description to the user's account
+    const response2 = await runtime.supabase
+      .from('accounts')
+      .update({ details: { ...details, ...responseData2 } })
+      .eq('id', userRecord.id)
+
+    if (response2.error) {
+      console.error(response2.error)
+      return ''
+    }
+
+    // get the user's account details
+    // set their details to the new details
+    return content
   } else if (runtime.debugMode) {
     console.log('Could not parse response')
   }
@@ -146,6 +230,13 @@ const handler = async (
 
 export default {
   name: 'UPDATE_PROFILE',
+  validate: async (
+    _runtime: CojourneyRuntime,
+    _message: Message
+  ): Promise<boolean> => {
+    // immediatel resolve true
+    return await Promise.resolve(true)
+  },
   description:
     'Update the profile of the user based on the ongoing conversation.',
   condition:
@@ -155,6 +246,5 @@ export default {
     `{
 
     }`
-
   ]
-}
+} as Evaluator

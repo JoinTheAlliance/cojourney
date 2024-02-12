@@ -141,7 +141,10 @@ async function handler (runtime: CojourneyRuntime, message: Message) {
 
   const actions = runtime
     .getActions()
-    .map((a: Action) => `${a.name}: ${a.description}`)
+    .map(
+      (a: Action) =>
+        `${a.name}: ${a.description}`
+    )
     .join('\n')
 
   const context = composeContext({
@@ -226,6 +229,13 @@ async function handler (runtime: CojourneyRuntime, message: Message) {
 
 export default {
   name: 'REFLECT',
+  validate: async (
+    _runtime: CojourneyRuntime,
+    _message: Message
+  ): Promise<boolean> => {
+    // immediatel resolve true
+    return await Promise.resolve(true)
+  },
   description:
     'Extract factual information about the people in the conversation, the current events in the world, and anything else that might be important to remember.',
   condition:

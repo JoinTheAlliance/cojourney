@@ -132,6 +132,8 @@ describe('User Profile', () => {
 
       result = (await handler(runtime, message)) as string
 
+      console.log('result', result)
+
       expect(result.includes('38')).toBe(true)
 
       expect(result.includes('Jim')).toBe(true)
