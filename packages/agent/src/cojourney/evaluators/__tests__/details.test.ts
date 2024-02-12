@@ -12,7 +12,7 @@ import {
 } from '../../../test/data'
 
 import evaluator from '../details'
-import { getCachedEmbedding } from '../../../test/cache'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
 dotenv.config()
 
 // create a UUID of 0s
@@ -20,7 +20,7 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
 describe('User Details', () => {
   test('Get user details', async () => {
-    const { user, runtime } = await createRuntime(process.env as Record<string, string>)
+    const { user, runtime } = await createRuntime(process.env as Record<string, string>, 24)
 
     const data = await getRelationship({
       supabase: runtime.supabase,
@@ -52,6 +52,7 @@ describe('User Details', () => {
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
+        const embedding = getCachedEmbedding(c.content)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
@@ -59,11 +60,14 @@ describe('User Details', () => {
             content: c.content
           },
           room_id,
-          embedding: getCachedEmbedding(c.content)
+          embedding
         })
         await runtime.messageManager.createMemory(bakedMemory)
         // wait for .2 seconds
-        await new Promise((resolve) => setTimeout(resolve, 250))
+        if (!embedding) {
+          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
+          await new Promise((resolve) => setTimeout(resolve, 250))
+        }
       }
 
       const handler = evaluator.handler!
@@ -82,6 +86,7 @@ describe('User Details', () => {
       ]
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
+        const embedding = getCachedEmbedding(c.content)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
@@ -89,8 +94,11 @@ describe('User Details', () => {
             content: c.content
           },
           room_id,
-          embedding: getCachedEmbedding(c.content)
+          embedding
         })
+        if (!embedding) {
+          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
+        }
         await runtime.messageManager.createMemory(bakedMemory)
       }
 
@@ -100,6 +108,8 @@ describe('User Details', () => {
         gender: string
         location: string
       }
+
+      console.log('result', result)
 
       expect(result.name).toBe('Jim')
       expect(result.age).toBe(38)

@@ -14,7 +14,7 @@ import {
 } from '../../../test/data'
 
 import evaluator from '../introduce'
-import { getCachedEmbedding } from '@/test/cache'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
 dotenv.config()
 
 // create a UUID of 0s
@@ -54,6 +54,8 @@ describe('Introduce Action', () => {
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
+        const existingEmbedding = getCachedEmbedding(c.content)
+
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
@@ -61,16 +63,19 @@ describe('Introduce Action', () => {
             content: c.content
           },
           room_id,
-          embedding: getCachedEmbedding(c.content)
+          embedding: existingEmbedding
         })
         await runtime.messageManager.createMemory(bakedMemory)
-        // wait for .2 seconds
-        await new Promise((resolve) => setTimeout(resolve, 250))
+        if (!existingEmbedding) {
+          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
+          await new Promise((resolve) => setTimeout(resolve, 200))
+        }
       }
 
       const handler = evaluator.handler!
 
-      let result = (await handler(runtime, message)) as string
+      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+      let result = (await handler(runtime, message)) as unknown as string
 
       expect(result.includes('programmer')).toBe(true)
 
@@ -86,6 +91,7 @@ describe('Introduce Action', () => {
       ]
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
+        const existingEmbedding = getCachedEmbedding(c.content)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
@@ -93,9 +99,13 @@ describe('Introduce Action', () => {
             content: c.content
           },
           room_id,
-          embedding: getCachedEmbedding(c.content)
+          embedding: existingEmbedding
         })
         await runtime.messageManager.createMemory(bakedMemory)
+        if (!existingEmbedding) {
+          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
+          await new Promise((resolve) => setTimeout(resolve, 200))
+        }
       }
 
       const previousDescriptions = [
@@ -117,14 +127,16 @@ describe('Introduce Action', () => {
         await new Promise((resolve) => setTimeout(resolve, 250))
       }
 
-      result = (await handler(runtime, message)) as string
+      // TODO: fix this
+      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+      result = (await handler(runtime, message)) as unknown as string
 
       expect(result.includes('38')).toBe(true)
 
       expect(result.includes('Jim')).toBe(true)
 
       expect(result
-        .toLowerCase().includes()).toBe(true)
+        .toLowerCase().includes('francisco')).toBe(true)
 
       expect(result
         .toLowerCase()

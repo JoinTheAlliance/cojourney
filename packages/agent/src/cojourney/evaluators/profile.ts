@@ -14,11 +14,11 @@
 //     - Describe what went well and what went poorly.
 //     - How much do they value interests and hobbies vs other things
 
-import { parseJSONObjectFromText } from '../../lib/utils'
-import { composeContext } from '../../lib/context'
-import { type CojourneyRuntime, getRelationship, composeState } from '../../lib'
-import { type Content, type Message, type State } from '../../lib/types'
 import { type UUID } from 'crypto'
+import { composeState, getRelationship, type CojourneyRuntime } from '../../lib'
+import { composeContext } from '../../lib/context'
+import { type Memory, type Message, type State } from '../../lib/types'
+import { parseJSONObjectFromText } from '../../lib/utils'
 
 const template = `TASK: Write a detailed personal and psychological profile for {{senderName}}.
 
@@ -67,7 +67,7 @@ const handler = async (
   // read the description for the current user
   const { senderId, agentId } = state
   const descriptions = await runtime.descriptionManager.getMemoriesByIds({ userIds: [senderId, agentId] as UUID[], count: 5 })
-  const profiles = descriptions.map((d: Content) => '"""\n' + d.content + '\n"""').join('\n')
+  const profiles = descriptions.map((d: Memory) => ('"""\n' + (d.content as string) + '\n"""')).join('\n')
   state.profiles = profiles
 
   // join profiles with
@@ -133,7 +133,7 @@ const handler = async (
         room_id: relationshipRecord.room_id
       })
 
-    await runtime.descriptionManager.createMemory(descriptionMemory)
+    await runtime.descriptionManager.createMemory(descriptionMemory, true)
 
       // get the user's account details
       // set their details to the new details

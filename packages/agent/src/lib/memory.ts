@@ -12,6 +12,7 @@ interface SearchOptions {
   match_threshold?: number
   count?: number
   userIds: UUID[]
+  unique?: boolean
 }
 
 export class MemoryManager {
@@ -52,15 +53,18 @@ export class MemoryManager {
 
   async getMemoriesByIds ({
     userIds,
-    count
+    count,
+    unique = true
   }: {
     userIds: UUID[]
     count: number
+    unique?: boolean
   }): Promise<Memory[]> {
     const result = await this.runtime.supabase.rpc('get_memories', {
       query_table_name: this.tableName,
       query_user_ids: userIds,
-      query_count: count
+      query_count: count,
+      query_unique: !!unique
     })
     if (result.error) {
       throw new Error(JSON.stringify(result.error))
@@ -79,7 +83,8 @@ export class MemoryManager {
     const {
       match_threshold = defaultMatchThreshold,
       count = defaultMatchCount,
-      userIds = []
+      userIds = [],
+      unique
     } = opts
 
     const result = await this.runtime.supabase.rpc('search_memories', {
@@ -87,7 +92,8 @@ export class MemoryManager {
       query_user_ids: userIds,
       query_embedding: embedding, // Pass the embedding you want to compare
       query_match_threshold: match_threshold, // Choose an appropriate threshold for your data
-      query_match_count: count // Choose the number of matches
+      query_match_count: count, // Choose the number of matches
+      query_unique: !!unique
     })
     if (result.error) {
       throw new Error(JSON.stringify(result.error))
@@ -96,13 +102,31 @@ export class MemoryManager {
     return result.data
   }
 
-  async createMemory (memory: Memory): Promise<void> {
-    const result = await this.runtime.supabase
+  async createMemory (memory: Memory, unique = false): Promise<void> {
+    if (unique) {
+      const result = await this.runtime.supabase.rpc('check_similarity_and_insert', {
+        query_table_name: this.tableName,
+        query_user_id: memory.user_id,
+        query_user_ids: memory.user_ids,
+        query_content: memory.content,
+        query_room_id: memory.room_id,
+        query_embedding: memory.embedding,
+        similarity_threshold: 0.95
+      })
+
+      if (result.error) {
+        throw new Error(JSON.stringify(result.error))
+      }
+
+      console.log('createMemory result', result.data)
+    } else {
+      const result = await this.runtime.supabase
       .from(this.tableName)
-      .upsert(memory)
-    const { error } = result
-    if (error) {
-      throw new Error(JSON.stringify(error))
+      .insert(memory)
+      const { error } = result
+      if (error) {
+        throw new Error(JSON.stringify(error))
+      }
     }
   }
 
@@ -139,15 +163,19 @@ export class MemoryManager {
     }
   }
 
-  async countMemoriesByUserIds (userIds: UUID[]): Promise<number> {
-    const result = await this.runtime.supabase.rpc('count_memories', {
+  async countMemoriesByUserIds (userIds: UUID[], unique = true): Promise<number> {
+    const query = {
       query_table_name: this.tableName,
-      query_user_ids: userIds
-    })
+      query_user_ids: userIds,
+      query_unique: !!unique
+    }
+    const result = await this.runtime.supabase.rpc('count_memories', query)
 
     if (result.error) {
       throw new Error(JSON.stringify(result.error))
     }
+
+    console.log('result', result)
 
     return result.data
   }

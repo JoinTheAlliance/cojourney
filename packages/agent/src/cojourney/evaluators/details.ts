@@ -28,6 +28,8 @@ const handler = async (
     template
   })
 
+  console.log('*** context\n', context)
+
   let responseData = null
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {

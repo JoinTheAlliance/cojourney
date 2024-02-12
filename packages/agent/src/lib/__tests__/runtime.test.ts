@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import { createRuntime } from '../../test/createRuntime'
 import { type UUID } from 'crypto'
 import { getRelationship } from '../relationships'
-import { getCachedEmbedding } from '../../test/cache'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../test/cache'
 dotenv.config()
 
 // create a UUID of 0s
@@ -31,9 +31,6 @@ describe('Agent Runtime', () => {
       userA: user?.id as UUID,
       userB: zeroUuid
     })
-
-    console.log('data', data)
-
     const room_id = data?.room_id
 
     async function _clearMemories () {
@@ -44,6 +41,7 @@ describe('Agent Runtime', () => {
     }
 
     async function _createMemories () {
+      let embedding = getCachedEmbedding('test memory from user')
       const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
         user_id: user?.id as UUID,
         user_ids: [user?.id as UUID, zeroUuid],
@@ -51,11 +49,15 @@ describe('Agent Runtime', () => {
           content: 'test memory from user'
         },
         room_id,
-        embedding: getCachedEmbedding('test memory from user')
+        embedding
       })
+      if (!embedding) {
+        writeCachedEmbedding('test memory from user', bakedMemory.embedding as number[])
+      }
       // create a memory
       await runtime.messageManager.createMemory(bakedMemory)
 
+      embedding = getCachedEmbedding('test memory from agent')
       const bakedMemory2 = await runtime.messageManager.addEmbeddingToMemory({
         user_id: zeroUuid,
         user_ids: [user?.id as UUID, zeroUuid],
@@ -63,8 +65,11 @@ describe('Agent Runtime', () => {
           content: 'test memory from agent'
         },
         room_id,
-        embedding: getCachedEmbedding('test memory from agent')
+        embedding
       })
+      if (!embedding) {
+        writeCachedEmbedding('test memory from agent', bakedMemory2.embedding as number[])
+      }
       // create a memory
       await runtime.messageManager.createMemory(bakedMemory2)
     }

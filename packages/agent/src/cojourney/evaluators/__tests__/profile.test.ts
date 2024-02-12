@@ -14,7 +14,7 @@ import {
 } from '../../../test/data'
 
 import evaluator from '../profile'
-import { getCachedEmbedding } from '../../../test/cache'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
 
 dotenv.config()
 
@@ -23,7 +23,9 @@ const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
 describe('User Profile', () => {
   test('Get user profile', async () => {
-    const { user, runtime } = await createRuntime(process.env as Record<string, string>)
+    const { user, runtime } = await createRuntime(
+      process.env as Record<string, string>
+    )
 
     const data = await getRelationship({
       supabase: runtime.supabase,
@@ -55,6 +57,7 @@ describe('User Profile', () => {
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
+        const existingEmbedding = getCachedEmbedding(c.content)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
@@ -62,11 +65,14 @@ describe('User Profile', () => {
             content: c.content
           },
           room_id,
-          embedding: getCachedEmbedding(c.content)
+          embedding: existingEmbedding
         })
         await runtime.messageManager.createMemory(bakedMemory)
         // wait for .2 seconds
-        await new Promise((resolve) => setTimeout(resolve, 250))
+        if (!existingEmbedding) {
+          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
+          await new Promise((resolve) => setTimeout(resolve, 200))
+        }
       }
 
       const handler = evaluator.handler!
@@ -85,6 +91,7 @@ describe('User Profile', () => {
       ]
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
+        const existingEmbedding = getCachedEmbedding(c.content)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
@@ -92,9 +99,13 @@ describe('User Profile', () => {
             content: c.content
           },
           room_id,
-          embedding: getCachedEmbedding(c.content)
+          embedding: existingEmbedding
         })
         await runtime.messageManager.createMemory(bakedMemory)
+        if (!existingEmbedding) {
+          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
+          await new Promise((resolve) => setTimeout(resolve, 200))
+        }
       }
 
       const previousDescriptions = [jimProfileExample1, jimProfileExample2]
@@ -102,17 +113,21 @@ describe('User Profile', () => {
       // for each description in previousDescriptions, add it to the memory
       for (let i = 0; i < previousDescriptions.length; i++) {
         const c = previousDescriptions[i]
+        const existingEmbedding = getCachedEmbedding(c)
         const bakedMemory =
           await runtime.descriptionManager.addEmbeddingToMemory({
             user_id: user?.id as UUID,
             user_ids: [user?.id as UUID, zeroUuid],
             content: c,
             room_id,
-            embedding: getCachedEmbedding(c)
+            embedding: existingEmbedding
           })
         await runtime.descriptionManager.createMemory(bakedMemory)
         // wait for .2 seconds
-        await new Promise((resolve) => setTimeout(resolve, 250))
+        if (!existingEmbedding) {
+          writeCachedEmbedding(c, bakedMemory.embedding as number[])
+          await new Promise((resolve) => setTimeout(resolve, 200))
+        }
       }
 
       result = (await handler(runtime, message)) as string

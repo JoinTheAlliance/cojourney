@@ -58,6 +58,7 @@ export async function composeState (
 
   let relevantReflectionsData: Memory[] = []
 
+  if (recentReflectionsData.length > 0) {
   console.log('recentReflectionsData[0].embedding', recentReflectionsData[0].embedding)
 
   // only try to get relevant reflections if there are already enough recent reflections
@@ -78,6 +79,7 @@ export async function composeState (
     //   }
     // )
   // }
+  }
 
   const actors = formatMessageActors({ actors: actorsData ?? [] })
 

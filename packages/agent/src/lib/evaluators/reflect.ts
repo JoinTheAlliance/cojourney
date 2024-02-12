@@ -216,7 +216,7 @@ async function handler (runtime: CojourneyRuntime, message: Message) {
         room_id
       })
 
-    await runtime.reflectionManager.createMemory(reflectionMemory)
+    await runtime.reflectionManager.createMemory(reflectionMemory, true)
 
     // wait for .2 seconds
     await new Promise((resolve) => setTimeout(resolve, 250))

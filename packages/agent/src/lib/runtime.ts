@@ -158,6 +158,7 @@ export class CojourneyRuntime {
       })
     }
     try {
+      console.log('requestOptions', requestOptions)
       const response = await fetch(
         `${this.serverUrl}/embeddings`,
         requestOptions
