@@ -40,14 +40,14 @@ describe('User Details', () => {
 
     //
 
-    async function _cleanup () {
+    async function _cleanup() {
       await runtime.messageManager.removeAllMemoriesByUserIds([
         user?.id as UUID,
         zeroUuid
       ])
     }
 
-    async function _testGetDetails () {
+    async function _testGetDetails() {
       // first, add all the memories for conversation
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
       for (let i = 0; i < conversation.length; i++) {
