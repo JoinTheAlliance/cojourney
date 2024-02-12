@@ -130,8 +130,6 @@ export class CojourneyRuntime {
         choices: Array<{ message: { content: string } }>
       }
 
-      console.log('body', body)
-
       const content = (body as OpenAIResponse).choices?.[0]?.message?.content
       if (!content) {
         throw new Error('No content in response')
@@ -145,7 +143,6 @@ export class CojourneyRuntime {
 
   async embed (input: string) {
     const embeddingModel = 'text-embedding-3-large'
-    console.log('embedding input', input)
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -158,7 +155,6 @@ export class CojourneyRuntime {
       })
     }
     try {
-      console.log('requestOptions', requestOptions)
       const response = await fetch(
         `${this.serverUrl}/embeddings`,
         requestOptions

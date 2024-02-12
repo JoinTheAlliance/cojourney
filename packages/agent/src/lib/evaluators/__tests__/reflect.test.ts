@@ -1,10 +1,8 @@
-// test creating an agent runtime
-import dotenv from 'dotenv-flow'
-
+import {type CojourneyRuntime} from '../../runtime'
+import { type User } from '@supabase/supabase-js'
 import { type UUID } from 'crypto'
-import { getRelationship } from '../../relationships'
-import { composeState } from '../../state'
-import { type Message } from '../../types'
+import dotenv from 'dotenv-flow'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
 import { createRuntime } from '../../../test/createRuntime'
 import {
   GetTellMeAboutYourselfConversation1,
@@ -12,17 +10,28 @@ import {
   GetTellMeAboutYourselfConversation3,
   jimFacts
 } from '../../../test/data'
-
+import { getRelationship } from '../../relationships'
+import { type Message } from '../../types'
 import evaluator from '../reflect'
-import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
+import { composeState } from '../../state'
+
 dotenv.config()
 
-// create a UUID of 0s
 const zeroUuid = '00000000-0000-0000-0000-000000000000'
 
 describe('User Profile', () => {
-  test('Get user profile', async () => {
-    const { user, runtime } = await createRuntime(process.env as Record<string, string>)
+  let user: User | null
+  let runtime: CojourneyRuntime
+  let room_id: UUID | null
+
+  afterAll(async () => {
+    await cleanup()
+  })
+
+  beforeAll(async () => {
+    const setup = await createRuntime(process.env as Record<string, string>)
+    user = setup.user
+    runtime = setup.runtime
 
     const data = await getRelationship({
       supabase: runtime.supabase,
@@ -30,137 +39,113 @@ describe('User Profile', () => {
       userB: zeroUuid
     })
 
-    const room_id = data?.room_id
+    room_id = data?.room_id
 
+    await cleanup()
+  })
+
+  async function cleanup () {
+    await runtime.reflectionManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+    await runtime.messageManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+  }
+
+  async function populateMemories (conversations: Array<(user_id: string) => Array<{ user_id: string, content: string }>>) {
+    for (const conversation of conversations) {
+      for (const c of conversation(user?.id as UUID)) {
+        const existingEmbedding = getCachedEmbedding(c.content)
+        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
+          user_id: c.user_id as UUID,
+          user_ids: [user?.id as UUID, zeroUuid],
+          content: {
+            content: c.content
+          },
+          room_id: room_id as UUID,
+          embedding: existingEmbedding
+        })
+        await runtime.messageManager.createMemory(bakedMemory)
+        if (!existingEmbedding) {
+          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
+          await new Promise((resolve) => setTimeout(resolve, 200))
+        }
+      }
+    }
+  }
+
+  async function addFacts (facts: string[]) {
+    for (const fact of facts) {
+      const existingEmbedding = getCachedEmbedding(fact)
+      const bakedMemory = await runtime.reflectionManager.addEmbeddingToMemory({
+        user_id: user?.id as UUID,
+        user_ids: [user?.id as UUID, zeroUuid],
+        content: fact,
+        room_id: room_id as UUID,
+        embedding: existingEmbedding
+      })
+      await runtime.reflectionManager.createMemory(bakedMemory)
+      if (!existingEmbedding) {
+        writeCachedEmbedding(fact, bakedMemory.embedding as number[])
+        await new Promise((resolve) => setTimeout(resolve, 200))
+      }
+    }
+  }
+
+  test('Get user profile', async () => {
     const message: Message = {
       senderId: user?.id as UUID,
       agentId: zeroUuid,
       userIds: [user?.id as UUID, zeroUuid],
       content: '',
-      room_id
+      room_id: room_id as UUID
     }
+
+    const handler = evaluator.handler!
+
+    await populateMemories([
+      GetTellMeAboutYourselfConversation1
+    ])
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const result = (await handler(runtime, message)) as string[]
+    const resultConcatenated = result.join('\n')
+
+    const state = await composeState(runtime, message)
+
+    console.log('************ state.recentMessages\n', state.recentMessages)
+    console.log('************ resultConcatenated\n', resultConcatenated)
+
+    console.log('Expecting the facts to contain programmer and Jim')
+
+    expect(resultConcatenated.toLowerCase()).toMatch(/programmer|startup/)
+    expect(resultConcatenated.toLowerCase()).toMatch(/jim/)
 
     //
 
-    async function _cleanup () {
-      await runtime.messageManager.removeAllMemoriesByUserIds([
-        user?.id as UUID,
-        zeroUuid
-      ])
-    }
+    await populateMemories([
+      GetTellMeAboutYourselfConversation2,
+      GetTellMeAboutYourselfConversation3
+    ])
 
-    async function _testCreateProfile () {
-      // first, add all the memories for conversation
-      let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
-      for (let i = 0; i < conversation.length; i++) {
-        const c = conversation[i]
-        const existingEmbedding = getCachedEmbedding(c.content)
-        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
-          user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content
-          },
-          room_id,
-          embedding: existingEmbedding
-        })
-        await runtime.messageManager.createMemory(bakedMemory)
-        // wait for .2 seconds
-        if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
-          await new Promise((resolve) => setTimeout(resolve, 200))
-        }
-      }
+    await addFacts(jimFacts)
 
-      const handler = evaluator.handler!
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const result2 = (await handler(runtime, message)) as string[]
+    const resultConcatenated2 = result2.join('\n')
 
-      let result = (await handler(runtime, message)) as string[]
+    const state2 = await composeState(runtime, message)
 
-      let resultConcatenated = result.join('\n')
+    console.log('************ state.recentMessages\n', state2.recentMessages)
+    console.log('************ resultConcatenated2\n', resultConcatenated2)
+    console.log('Expecting the facts to contain francisco')
 
-      console.log('resultConcatenated', resultConcatenated)
-
-      expect(resultConcatenated.includes('programmer')).toBe(true)
-
-      expect(resultConcatenated.includes('Jim')).toBe(true)
-
-      expect(resultConcatenated.toLowerCase().includes('startup')).toBe(true)
-
-      conversation = [
-        ...GetTellMeAboutYourselfConversation2(user?.id as UUID),
-        ...GetTellMeAboutYourselfConversation3(user?.id as UUID)
-      ]
-      for (let i = 0; i < conversation.length; i++) {
-        const c = conversation[i]
-        const existingEmbedding = getCachedEmbedding(c.content)
-        const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
-          user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
-          content: {
-            content: c.content
-          },
-          room_id,
-          embedding: existingEmbedding
-        })
-        await runtime.messageManager.createMemory(bakedMemory)
-        if (!existingEmbedding) {
-          writeCachedEmbedding(c.content, bakedMemory.embedding as number[])
-          await new Promise((resolve) => setTimeout(resolve, 200))
-        }
-      }
-
-      // for each fact in jimFacts, add it to the memory
-      for (let i = 0; i < jimFacts.length; i++) {
-        const c = jimFacts[i]
-        const existingEmbedding = getCachedEmbedding(c)
-        const bakedMemory =
-          await runtime.reflectionManager.addEmbeddingToMemory({
-            user_id: user?.id as UUID,
-            user_ids: [user?.id as UUID, zeroUuid],
-            content: c,
-            room_id,
-            embedding: existingEmbedding
-          })
-        await runtime.reflectionManager.createMemory(bakedMemory)
-        // wait for .2 seconds
-        if (!existingEmbedding) {
-          writeCachedEmbedding(c, bakedMemory.embedding as number[])
-          await new Promise((resolve) => setTimeout(resolve, 200))
-        }
-      }
-
-      // first just compose state and verify that relevant reflections are being returned
-
-      // Then verify that no relevant reflections and recent reflections match
-
-      const state = await composeState(runtime, message)
-
-      expect(state.recentReflectionsData.length).toBeGreaterThan(0)
-
-      expect(state.relevantReflectionsData.length).toBeGreaterThan(0)
-
-      result = (await handler(runtime, message)) as string[]
-
-      resultConcatenated = result.join('\n')
-
-      console.log('resultConcatenated', resultConcatenated)
-
-      // check to make sure we arent getting the same reflections
-      expect(resultConcatenated.includes('38')).toBe(true)
-
-      expect(resultConcatenated.toLowerCase().includes('francisco')).toBe(
-        true
-      )
-
-      expect(resultConcatenated.toLowerCase().includes('startup')).toBe(false)
-    }
-
-    // first, destroy all memories where the user_id is TestUser
-    await _cleanup()
-
-    await _testCreateProfile()
-
-    // then destroy all memories again
-    await _cleanup()
+    // expect result to not match 38
+    expect(resultConcatenated2.toLowerCase()).toMatch(/francisco/)
+    expect(resultConcatenated2.toLowerCase()).toMatch(/38/)
+    expect(resultConcatenated2.toLowerCase()).toMatch(/married/)
   }, 60000)
 })

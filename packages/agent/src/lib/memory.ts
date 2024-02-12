@@ -44,7 +44,6 @@ export class MemoryManager {
     }
 
     const memoryText = getMemoryEmbeddingString(memory)
-    console.log('memoryText', memoryText)
     memory.embedding = memoryText
       ? await this.runtime.embed(memoryText)
       : embeddingZeroVector.slice()
@@ -117,8 +116,6 @@ export class MemoryManager {
       if (result.error) {
         throw new Error(JSON.stringify(result.error))
       }
-
-      console.log('createMemory result', result.data)
     } else {
       const result = await this.runtime.supabase
       .from(this.tableName)
@@ -148,16 +145,6 @@ export class MemoryManager {
       query_user_ids: userIds
     })
 
-    if (result.error) {
-      throw new Error(JSON.stringify(result.error))
-    }
-  }
-
-  async removeAllMemoriesByUserId (userId: UUID): Promise<void> {
-    const result = await this.runtime.supabase
-      .from('memories')
-      .delete()
-      .eq('user_id', userId)
     if (result.error) {
       throw new Error(JSON.stringify(result.error))
     }

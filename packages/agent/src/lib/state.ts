@@ -24,8 +24,6 @@ export async function composeState (
 ) {
   const { senderId, agentId, userIds, room_id } = message
 
-  console.log('userIds', userIds)
-
   const { supabase } = runtime
   const recentMessageCount = runtime.getRecentMessageCount()
   const recentReflectionsCount = runtime.getRecentMessageCount() / 2
@@ -59,8 +57,6 @@ export async function composeState (
   let relevantReflectionsData: Memory[] = []
 
   if (recentReflectionsData.length > 0) {
-  console.log('recentReflectionsData[0].embedding', recentReflectionsData[0].embedding)
-
   // only try to get relevant reflections if there are already enough recent reflections
   // if (recentReflectionsData.length > recentReflectionsCount - 1) {
     relevantReflectionsData =
@@ -83,17 +79,17 @@ export async function composeState (
 
   const actors = formatMessageActors({ actors: actorsData ?? [] })
 
-  console.log('recentReflectionsData', recentReflectionsData.map((memory: Memory) => {
-   const newMemory = { ...memory }
-   delete newMemory.embedding
-   return newMemory
-  }))
+  // console.log('recentReflectionsData', recentReflectionsData.map((memory: Memory) => {
+  //  const newMemory = { ...memory }
+  //  delete newMemory.embedding
+  //  return newMemory
+  // }))
 
-  console.log('relevantReflectionsData', relevantReflectionsData.map((memory: Memory) => {
-    const newMemory = { ...memory }
-    delete newMemory.embedding
-    return newMemory
-   }))
+  // console.log('relevantReflectionsData', relevantReflectionsData.map((memory: Memory) => {
+  //   const newMemory = { ...memory }
+  //   delete newMemory.embedding
+  //   return newMemory
+  //  }))
 
   const recentMessages = formatMessages({
     actors: actorsData ?? [],
@@ -103,8 +99,6 @@ export async function composeState (
       return newMemory
     })
   })
-
-  console.log('recentMessages', recentMessages)
 
   const recentReflections = formatReflections(recentReflectionsData)
   const relevantReflections = formatReflections(relevantReflectionsData)
