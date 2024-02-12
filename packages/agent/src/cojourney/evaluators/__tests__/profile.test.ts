@@ -15,13 +15,46 @@ import {
 
 import evaluator from '../profile'
 import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
+import { User } from '@supabase/supabase-js'
+import { CojourneyRuntime } from '@/lib'
 
 dotenv.config()
 
 // create a UUID of 0s
-const zeroUuid = '00000000-0000-0000-0000-000000000000'
+const zeroUuid: UUID = '00000000-0000-0000-0000-000000000000'
+let runtime: CojourneyRuntime;
+let user: User
 
 describe('User Profile', () => {
+  beforeAll(async () => {
+    const result = await createRuntime(process.env as Record<string, string>)
+    runtime = result.runtime
+    user = result.user as User
+  })
+
+
+  beforeEach(async () => {
+    await runtime.descriptionManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+    await runtime.messageManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+  })
+
+  afterAll(async () => {
+    await runtime.descriptionManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+    await runtime.messageManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+  })
+
   test('Get user profile', async () => {
     const { user, runtime } = await createRuntime(
       process.env as Record<string, string>
@@ -41,15 +74,6 @@ describe('User Profile', () => {
       userIds: [user?.id as UUID, zeroUuid],
       content: '',
       room_id
-    }
-
-    //
-
-    async function _cleanup () {
-      await runtime.messageManager.removeAllMemoriesByUserIds([
-        user?.id as UUID,
-        zeroUuid
-      ])
     }
 
     async function _testCreateProfile () {
@@ -143,12 +167,6 @@ describe('User Profile', () => {
       expect(result.toLowerCase().includes('startup')).toBe(true)
     }
 
-    // first, destroy all memories where the user_id is TestUser
-    await _cleanup()
-
     await _testCreateProfile()
-
-    // then destroy all memories again
-    await _cleanup()
   }, 60000)
 })
