@@ -7,19 +7,15 @@ import { useState } from "react";
 const links = [
   {
     label: "How it Works",
-    href: "/",
+    href: "/#cojourney",
   },
   {
     label: "Where to get it",
-    href: "/",
+    href: "/#footer",
   },
   {
     label: "Pricing",
     href: "/#pricing",
-  },
-  {
-    label: "Developers",
-    href: "/",
   },
 ];
 
@@ -57,11 +53,11 @@ const Navbar = () => {
 
   return (
     <div
-      className={`fixed top-0 w-full transition duration-500  py-4 px-16 ${
+      className={`fixed top-0 w-full  transition duration-500  py-4 px-16 ${
         scrolled ? "bg-blue-500 shadow-lg" : "bg-transparent"
       } z-10`}
     >
-      <div className="flex items-center justify-between w-4/5">
+      <div className="flex items-center justify-between ">
         <Link
           href="/"
           aria-label="Company"
@@ -87,26 +83,18 @@ const Navbar = () => {
           ))}
         </ul>
         <div className="items-center hidden gap-4 lg:flex">
-          {!user ? (
-            <>
-              <Link href="/sign-in">Login</Link>
-              <Link href="/">Sign Up Now</Link>
-            </>
-          ) : (
-            <>
-              <Link href="/dashboard">Dashboard</Link>
-              Logout
-            </>
-          )}
+          <button className="bg-[#0075FF] py-2 px-8 rounded-lg">
+            Open App
+          </button>
         </div>
         <div className="lg:hidden">
           <button
             aria-label="Open Menu"
             title="Open Menu"
-            className="p-2 -mr-1 transition duration-200 rounded focus:outline-none focus:shadow-outline hover:bg-deep-purple-50 focus:bg-deep-purple-50"
+            className="p-2 transition duration-200 rounded focus:outline-none focus:shadow-outline hover:bg-deep-purple-50 focus:bg-deep-purple-50"
             onClick={() => setIsMenuOpen(true)}
           >
-            <svg className="w-5 text-gray-600" viewBox="0 0 24 24">
+            <svg className="w-5 text-white" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
                 d="M23,13H1c-0.6,0-1-0.4-1-1s0.4-1,1-1h22c0.6,0,1,0.4,1,1S23.6,13,23,13z"
@@ -148,7 +136,7 @@ const Navbar = () => {
                         <rect x="14" y="11" width="7" height="12" />
                       </svg>
                       <span className="ml-2 text-xl font-bold tracking-wide text-gray-800 uppercase">
-                        Company
+                        Cojourney
                       </span>
                     </Link>
                   </div>
@@ -172,27 +160,27 @@ const Navbar = () => {
                   <ul className="space-y-4">
                     <li>
                       <Link
-                        href="/"
+                        href="/#cojourney"
                         aria-label="Our product"
                         title="Our product"
                         className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
                       >
-                        Product
+                        How it Works
                       </Link>
                     </li>
                     <li>
                       <Link
-                        href="/"
+                        href="/#footer"
                         aria-label="Our product"
                         title="Our product"
                         className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
                       >
-                        Features
+                        Where to get it
                       </Link>
                     </li>
                     <li>
                       <Link
-                        href="/"
+                        href="/#pricing"
                         aria-label="Product pricing"
                         title="Product pricing"
                         className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
@@ -200,17 +188,6 @@ const Navbar = () => {
                         Pricing
                       </Link>
                     </li>
-                    <li>
-                      <Link
-                        href="/"
-                        aria-label="About us"
-                        title="About us"
-                        className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
-                      >
-                        About us
-                      </Link>
-                    </li>
-                    <Link href="/">Sign up</Link>
                   </ul>
                 </nav>
               </div>

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const PricingCard: FC<Pricing> = (props) => {
   return (
-    <div className="bg-[#F3F5F7] p-6 rounded-lg flex flex-col items-center  gap-4 w-[350px]">
+    <div className="bg-[#F3F5F7] p-6 rounded-2xl flex flex-col items-center  gap-4 w-[300px]">
       <div className="flex flex-col justify-around h-60">
         <h1 className="self-center text-4xl font-bold">Basic</h1>
         <div className="flex self-center h-12">
