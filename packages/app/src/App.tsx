@@ -81,6 +81,15 @@ const App = (): JSX.Element => {
                 color: "blue"
               }
             }
+          },
+          fontSizes: {
+            "2xl": "2.25rem"
+          },
+          spacing: {
+            "2xl": "2rem",
+            "3xl": "3rem",
+            "4xl": "4rem",
+            "5xl": "5rem"
           }
         }}
         withGlobalStyles

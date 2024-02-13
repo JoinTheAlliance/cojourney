@@ -31,6 +31,7 @@
     "wrangler": "^3.28.1"
   },
   "dependencies": {
+    "@tabler/icons-react": "^2.47.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "eslint": "^8.56.0",
     "eslint-config-standard-with-typescript": "^43.0.1",
