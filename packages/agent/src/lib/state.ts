@@ -1,7 +1,7 @@
 // State can be passed around to different parts of the agent to provide context for decision making
 // State is also passed converted into a context object via template injection to generate a response with the LLM
 
-import { formatActionConditions, formatActionExamples, formatActionNames, formatActions, getActions } from './actions'
+import { formatActionConditions, formatActionExamples, formatActionNames, formatActions } from './actions'
 import { formatGoalsAsString, getGoals } from './goals'
 import {
   formatMessageActors,
@@ -10,7 +10,7 @@ import {
   getMessageActors,
   getRandomMessageExamples
 } from './messages'
-import type CojourneyRuntime from './runtime'
+import { type CojourneyRuntime } from './runtime'
 import {
   type Goal,
   type Action,
@@ -52,16 +52,15 @@ export async function composeState (
       onlyInProgress: true,
       userIds: userIds!
     }),
-    getActions(runtime, message)
+    runtime.getValidActions(message)
   ])
 
   const goals = await formatGoalsAsString({ goals: goalsData })
 
   let relevantReflectionsData: Memory[] = []
 
-  if (recentReflectionsData.length > 0) {
   // only try to get relevant reflections if there are already enough recent reflections
-  // if (recentReflectionsData.length > recentReflectionsCount - 1) {
+  if (recentReflectionsData.length > recentReflectionsCount) {
     relevantReflectionsData =
       (await runtime.reflectionManager.searchMemoriesByEmbedding(
         recentReflectionsData[0].embedding!,
@@ -70,14 +69,13 @@ export async function composeState (
           count: relevantReflectionsCount
         }
       ))
-    //   .filter(
-    //   (reflection: Memory) => {
-    //     return !recentReflectionsData.find(
-    //       (recentReflection: Memory) => recentReflection.id === reflection.id
-    //     )
-    //   }
-    // )
-  // }
+      .filter(
+      (reflection: Memory) => {
+        return !recentReflectionsData.find(
+          (recentReflection: Memory) => recentReflection.id === reflection.id
+        )
+      }
+    )
   }
 
   const actors = formatMessageActors({ actors: actorsData ?? [] })
@@ -123,6 +121,7 @@ export async function composeState (
     room_id,
     goals,
     goalsData,
+    flavor: runtime.flavor,
     recentMessages,
     recentMessagesData,
     recentReflections,

@@ -7,9 +7,10 @@ export default {
     return true
   },
   description:
-    'Do nothing and wait for another person to reply, or continue their message',
-    handler: async (_runtime: CojourneyRuntime, message: Message) => {
-      console.log('WAIT', message)
+    'Do nothing and wait for another person to reply to the last message, or to continue their thought',
+  handler: async (_runtime: CojourneyRuntime, message: Message): Promise<boolean> => {
+    console.log('Waiting after: ', message)
+    return true
   },
   condition: 'The agent wants to wait for the user to respond',
   examples: [JSON.stringify({ user: 'CJ', content: '', action: 'WAIT' })]

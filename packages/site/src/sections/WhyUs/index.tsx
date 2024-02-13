@@ -1,39 +1,38 @@
-import React from 'react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import Image from 'next/image'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Image from "next/image";
 
 const withFeatures = [
-  {
-    title:
-			'Analyze your business cost easily with group transaction thorugh tagging feature.'
-  },
-  {
-    title:
-			'Add more than one card for payment. Integrated with more than 50+ payment method and support bulk payment.'
-  },
-  {
-    title:
-			'Arrange your business expenses by date, name, etc., with just one click.'
-  }
-]
+	{
+		title:
+			"Analyze your business cost easily with group transaction thorugh tagging feature.",
+	},
+	{
+		title:
+			"Add more than one card for payment. Integrated with more than 50+ payment method and support bulk payment.",
+	},
+	{
+		title:
+			"Arrange your business expenses by date, name, etc., with just one click.",
+	},
+];
 
 const withoutFeatures = [
-  {
-    title:
-			'Complex recording process due to every administrative file in a different place.'
-  },
-  {
-    title:
-			'Need more effort to pay manually one by one invoice because there is no payment accommodation.'
-  },
-  {
-    title:
-			'Manual data arranging needs a long time because the different months/years are not in the same place.'
-  }
-]
+	{
+		title:
+			"Complex recording process due to every administrative file in a different place.",
+	},
+	{
+		title:
+			"Need more effort to pay manually one by one invoice because there is no payment accommodation.",
+	},
+	{
+		title:
+			"Manual data arranging needs a long time because the different months/years are not in the same place.",
+	},
+];
 
 const WhyUs: React.FC = () => {
-  return (
+	return (
 		<div className="flex flex-col items-start justify-start gap-8 min-h-[80vh] px-[50px] lg:px-[200px]">
 			<div className="flex flex-col items-start gap-2">
 				<p className="font-medium uppercase text-primary">
@@ -102,7 +101,7 @@ const WhyUs: React.FC = () => {
 				</TabsContent>
 			</Tabs>
 		</div>
-  )
-}
+	);
+};
 
-export default WhyUs
+export default WhyUs;

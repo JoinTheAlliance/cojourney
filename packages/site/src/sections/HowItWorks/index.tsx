@@ -1,22 +1,20 @@
-import React from 'react'
-
 const data = [
-  {
-    step: '01',
-    title: 'Create Account'
-  },
-  {
-    step: '02',
-    title: 'Add Bank Account'
-  },
-  {
-    step: '03',
-    title: 'Add Expenses'
-  }
-]
+	{
+		step: "01",
+		title: "Create Account",
+	},
+	{
+		step: "02",
+		title: "Add Bank Account",
+	},
+	{
+		step: "03",
+		title: "Add Expenses",
+	},
+];
 
 const HowItWorks: React.FC = ({}) => {
-  return (
+	return (
 		<div className="flex flex-col items-center justify-start gap-16 min-h-[70vh] text-center">
 			<div className="flex flex-col items-center justify-center gap-2">
 				<p className="font-semibold uppercase text-primary">How it works?</p>
@@ -46,7 +44,7 @@ const HowItWorks: React.FC = ({}) => {
 				<span>Try It Now</span>
 			</div>
 		</div>
-  )
-}
+	);
+};
 
-export default HowItWorks
+export default HowItWorks;

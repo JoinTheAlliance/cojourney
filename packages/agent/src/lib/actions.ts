@@ -1,8 +1,7 @@
+import continue_ from './actions/continue'
 import ignore from './actions/ignore'
 import wait from './actions/wait'
-import type CojourneyRuntime from './runtime'
-import { type Message, type Action } from './types'
-import continue_ from './actions/continue'
+import { type Action } from './types'
 
 /**
  * A list of tools/actions available to the agent
@@ -12,28 +11,6 @@ export const defaultActions: Action[] = [
   wait,
   ignore
 ]
-
-/**
- * @param {CojourneyRuntime} runtime
- */
-export async function getActions (runtime: CojourneyRuntime, message: Message) {
-  const actionPromises = runtime.getActions().map(async (action: Action) => {
-    if (!action.handler) {
-      console.log('no handler')
-      return
-    }
-
-    const result = await action.validate(runtime, message)
-    if (result) {
-      return action
-    }
-    return null
-  })
-
-  const resolvedActions = await Promise.all(actionPromises)
-  const actionsData = resolvedActions.filter(Boolean) as Action[]
-  return actionsData
-}
 
 export function getFormattedActions (actions: Action[]) {
   const formattedActions = actions.map((action) => {

@@ -2,26 +2,59 @@
 import dotenv from 'dotenv'
 
 import { type UUID } from 'crypto'
-import { getRelationship } from '../../../lib/relationships'
-import { type Message } from '../../../lib/types'
-import { createRuntime } from '../../../test/createRuntime'
+import { getRelationship } from '../../../../lib/relationships'
+import { type Message } from '../../../../lib/types'
+import { createRuntime } from '../../../../test/createRuntime'
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
   GetTellMeAboutYourselfConversation3,
   jimProfileExample1,
   jimProfileExample2
-} from '../../../test/data'
+} from '../../../../test/data'
 
+import { CojourneyRuntime } from '@/lib'
+import { User } from '@supabase/supabase-js'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../../../test/cache'
 import evaluator from '../profile'
-import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
 
 dotenv.config()
 
 // create a UUID of 0s
-const zeroUuid = '00000000-0000-0000-0000-000000000000'
+const zeroUuid: UUID = '00000000-0000-0000-0000-000000000000'
+let runtime: CojourneyRuntime;
+let user: User
 
 describe('User Profile', () => {
+  beforeAll(async () => {
+    const result = await createRuntime(process.env as Record<string, string>)
+    runtime = result.runtime
+    user = result.user as User
+  })
+
+
+  beforeEach(async () => {
+    await runtime.descriptionManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+    await runtime.messageManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+  })
+
+  afterAll(async () => {
+    await runtime.descriptionManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+    await runtime.messageManager.removeAllMemoriesByUserIds([
+      user?.id as UUID,
+      zeroUuid
+    ])
+  })
+
   test('Get user profile', async () => {
     const { user, runtime } = await createRuntime(
       process.env as Record<string, string>
@@ -41,15 +74,6 @@ describe('User Profile', () => {
       userIds: [user?.id as UUID, zeroUuid],
       content: '',
       room_id
-    }
-
-    //
-
-    async function _cleanup () {
-      await runtime.messageManager.removeAllMemoriesByUserIds([
-        user?.id as UUID,
-        zeroUuid
-      ])
     }
 
     async function _testCreateProfile () {
@@ -132,8 +156,6 @@ describe('User Profile', () => {
 
       result = (await handler(runtime, message)) as string
 
-      console.log('result', result)
-
       expect(result.includes('38')).toBe(true)
 
       expect(result.includes('Jim')).toBe(true)
@@ -141,14 +163,16 @@ describe('User Profile', () => {
       expect(result.toLowerCase().includes('francisco')).toBe(true)
 
       expect(result.toLowerCase().includes('startup')).toBe(true)
+
+      const descriptions = await runtime.descriptionManager.getMemoriesByIds({
+        userIds: [message.senderId, message.agentId] as UUID[],
+        count: 5
+      })
+
+      //count the number of descriptions
+      expect(descriptions.length).toBe(3)
     }
 
-    // first, destroy all memories where the user_id is TestUser
-    await _cleanup()
-
     await _testCreateProfile()
-
-    // then destroy all memories again
-    await _cleanup()
   }, 60000)
 })
