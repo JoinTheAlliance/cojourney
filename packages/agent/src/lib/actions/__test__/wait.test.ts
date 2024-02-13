@@ -1,8 +1,7 @@
-describe('Continue', () => {
-  test('should return "Hello World"', async () => {
-    // TODO: Write a test
+describe('Wait', () => {
 
-    const result = true
-    expect(result).toBe(true)
-  })
+  // 1. prepare test before all and after all
+  // 2. Load 3 conversations, 2 where the agent should continue, and 1 where the agent should not continue
+  // 3. Run tests
+
 })

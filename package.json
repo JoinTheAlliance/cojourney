@@ -15,7 +15,8 @@
   },
   "scripts": {
     "dev": "lerna run dev",
-    "cj": "cd packages/shell && npm run dev",
+    "cj": "lerna run shell",
+    "shell": "lerna run she:devll",
     "build": "lerna run build",
     "test": "lerna run test",
     "coverage": "lerna run coverage",

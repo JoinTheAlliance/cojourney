@@ -1,7 +1,7 @@
-import { composeState, type CojourneyRuntime } from '../../lib'
-import { composeContext } from '../../lib/context'
-import { type Evaluator, type Message, type State } from '../../lib/types'
-import { parseJSONObjectFromText } from '../../lib/utils'
+import { composeState, type CojourneyRuntime } from '../../../lib'
+import { composeContext } from '../../../lib/context'
+import { type Evaluator, type Message, type State } from '../../../lib/types'
+import { parseJSONObjectFromText } from '../../../lib/utils'
 
 const template = `You are collecting details about {{senderName}} based on their ongoing conversation with {{agentName}}.
 

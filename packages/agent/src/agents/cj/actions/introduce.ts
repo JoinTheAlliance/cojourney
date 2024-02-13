@@ -1,8 +1,8 @@
-import { composeState, type CojourneyRuntime } from '../../lib'
-import { composeContext } from '../../lib/context'
-import { createRelationship } from '../../lib/relationships'
-import { Action, type Message, type State } from '../../lib/types'
-import { parseJSONObjectFromText } from '../../lib/utils'
+import { composeState, type CojourneyRuntime } from '../../../lib'
+import { composeContext } from '../../../lib/context'
+import { createRelationship } from '../../../lib/relationships'
+import { Action, type Message, type State } from '../../../lib/types'
+import { parseJSONObjectFromText } from '../../../lib/utils'
 
 const template = `You are taking the role of {{agentName}} in a scene. {{agentName}} might want to make a connection between a user in the current scene and one of the users in their rolodex.
 Your goal is to evaluate if a connection should be made, and which users should be connected.

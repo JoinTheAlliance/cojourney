@@ -2,21 +2,21 @@
 import dotenv from 'dotenv'
 
 import { type UUID } from 'crypto'
-import { getRelationship } from '../../../lib/relationships'
-import { type Message } from '../../../lib/types'
-import { createRuntime } from '../../../test/createRuntime'
+import { getRelationship } from '../../../../lib/relationships'
+import { type Message } from '../../../../lib/types'
+import { createRuntime } from '../../../../test/createRuntime'
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
   GetTellMeAboutYourselfConversation3,
   jimProfileExample1,
   jimProfileExample2
-} from '../../../test/data'
+} from '../../../../test/data'
 
-import evaluator from '../profile'
-import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
-import { User } from '@supabase/supabase-js'
 import { CojourneyRuntime } from '@/lib'
+import { User } from '@supabase/supabase-js'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../../../test/cache'
+import evaluator from '../profile'
 
 dotenv.config()
 
@@ -156,8 +156,6 @@ describe('User Profile', () => {
 
       result = (await handler(runtime, message)) as string
 
-      console.log('result', result)
-
       expect(result.includes('38')).toBe(true)
 
       expect(result.includes('Jim')).toBe(true)
@@ -165,6 +163,14 @@ describe('User Profile', () => {
       expect(result.toLowerCase().includes('francisco')).toBe(true)
 
       expect(result.toLowerCase().includes('startup')).toBe(true)
+
+      const descriptions = await runtime.descriptionManager.getMemoriesByIds({
+        userIds: [message.senderId, message.agentId] as UUID[],
+        count: 5
+      })
+
+      //count the number of descriptions
+      expect(descriptions.length).toBe(3)
     }
 
     await _testCreateProfile()
