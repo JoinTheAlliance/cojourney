@@ -1,10 +1,10 @@
 import React from "react"
-import backgroundImage from "../../../public/images/background-potrait-alpha-50.svg"
+import backgroundImage from "../../../../../public/images/background-potrait-alpha-50.svg"
 import { Image, Button, Container, Group, Text, useMantineTheme, Flex } from "@mantine/core"
-import twitter from "../../../public/images/x.svg"
-import discord from "../../../public/images/discord.svg"
-import google from "../../../public/images/google.svg"
-import github from "../../../public/images/github.svg"
+import twitter from "../../../../../public/images/x.svg"
+import discord from "../../../../../public/images/discord.svg"
+import google from "../../../../../public/images/google.svg"
+import github from "../../../../../public/images/github.svg"
 
 const Welcome = (): JSX.Element => {
   const theme = useMantineTheme()

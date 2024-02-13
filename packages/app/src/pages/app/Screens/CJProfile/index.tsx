@@ -1,7 +1,7 @@
 import React from "react"
 import { Avatar, Text, Group, useMantineTheme, Header, Flex, rem, AppShell, Button, Switch } from "@mantine/core"
 import { IconDots, IconChevronLeft } from "@tabler/icons-react"
-import userIcon from "../../../public/images/user.svg"
+import userIcon from "../../../../../public/images/user.svg"
 
 const UserAvatar = ({ src, alt, online }: { src: string, alt: string, online: boolean }) => {
   return (

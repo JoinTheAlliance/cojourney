@@ -1,5 +1,5 @@
 import React from "react"
-import backgroundImage from "../../../public/images/background-potrait-alpha-10.svg"
+import backgroundImage from "../../../../../public/images/background-potrait-alpha-10.svg"
 import { Text, Container, Paper, useMantineTheme } from "@mantine/core"
 
 const Splash = (): JSX.Element => {

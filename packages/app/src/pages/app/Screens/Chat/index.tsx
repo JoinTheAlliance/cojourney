@@ -1,7 +1,7 @@
 import { AppShell, Header, Paper, TextInput, Text, Stack, useMantineTheme, Footer, Flex, rem, Avatar, Group } from "@mantine/core"
 import React, { useEffect, useRef, useState } from "react"
 import { IconSend2, IconDots, IconChevronLeft } from "@tabler/icons-react"
-import userIcon from "../../../public/images/user.svg"
+import userIcon from "../../../../../public/images/user.svg"
 
 // Message component to represent individual messages
 const Message = ({ text, isSender }: { text: string, isSender: boolean }) => {
@@ -11,7 +11,6 @@ const Message = ({ text, isSender }: { text: string, isSender: boolean }) => {
 
   return (
     <Paper
-      // shadow="xs"
       radius="lg"
       py="sm"
       px="md"
@@ -58,28 +57,8 @@ function Chat () {
     { text: "Welcome! I'm CJ! I'm your guide here. Alright if we get to know each other?", sender: false },
     { text: "Hey CJ, sure.", sender: true },
     { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
-    { text: "Test", sender: true },
     { text: "Welcome", sender: false },
-    { text: "Test", sender: true }
+    { text: "New Message", sender: true }
   ])
 
   const bottomRef = useRef<null | HTMLDivElement>(null)

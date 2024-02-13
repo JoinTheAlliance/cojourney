@@ -1,7 +1,7 @@
 import React from "react"
 import { Avatar, Text, Group, Stack, useMantineTheme, Header, Flex, rem, AppShell } from "@mantine/core"
 import { IconDots, IconChevronLeft } from "@tabler/icons-react"
-import userIcon from "../../../public/images/user.svg"
+import userIcon from "../../../../../public/images/user.svg"
 
 const connections = {
   cj: [
