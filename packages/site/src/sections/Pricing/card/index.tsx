@@ -1,61 +1,42 @@
-import React from 'react'
+import { FC } from "react";
+import Pricing from "..";
+import Image from "next/image";
 
-import Image from 'next/image'
-import { Badge } from '@/components/ui/badge'
-import { type PricingType } from '..'
+const PricingCard: FC<Pricing> = (props) => {
+  return (
+    <div className="bg-[#F3F5F7] p-6 rounded-2xl flex flex-col items-center  gap-4 w-[300px]">
+      <div className="flex flex-col justify-around h-60">
+        <h1 className="self-center text-4xl font-bold">Basic</h1>
+        <div className="flex self-center h-12">
+          <h4 className="self-center text-lg font-bold">{props.pricingUnit}</h4>
+          <h3 className="self-end text-4xl font-bold ">
+            {props.pricing}
+            <span className="text-base">/wk</span>
+          </h3>
+        </div>
+        <button
+          className={` ${props.popular ? "bg-[#0075FF]" : "bg-[#444]"} cursor-pointer shadow-md px-16 py-2 rounded-3xl capitalize text-white`}
+        >
+          {props.button}
+        </button>
+      </div>
+      <div className="flex flex-col gap-4 my-4">
+        {props.features.map((feature, index) => {
+          return (
+            <div className="flex items-center gap-2" key={index}>
+              <Image
+                src="/images/pricing/included.svg"
+                alt="included"
+                width={20}
+                height={20}
+              />
+              <p>{feature.name}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
-const PricingCard = (props: PricingType) => {
-	return (
-		<div className="bg-[#F3F5F7] p-6 rounded-lg flex flex-col gap-4 w-[350px]">
-			<div className="flex w-full items-center justify-between">
-				<div className="flex items-center gap-3">
-					<Image src={props.icon} alt={props.title} width={30} height={30} />
-					<h1 className="text-[24px] font-semibold">{props.title}</h1>
-				</div>
-				{props.popular && (
-					<Badge className="bg-[#0D121F] p-2 rounded-full px-4">Popular</Badge>
-				)}
-			</div>
-			<p>{props.subTitle}</p>
-			<div className="flex items-center gap-2">
-				<h1 className="text-[30px] font-semibold">
-					{props.pricingUnit}
-					{props.pricing}
-				</h1>
-				<p className="text-[16px] font-normal">
-					{props.type === 'monthly' ? '/month' : '/year'}
-				</p>
-			</div>
-			<p>{props.description}</p>
-			<div className="flex flex-col gap-4 my-4">
-				{props.features.map((feature, index) => {
-					return (
-						<div className="flex items-center gap-2" key={index}>
-							{feature.isIncluded
-								? (
-									<Image
-										src="/images/pricing/included.svg"
-										alt="included"
-										width={20}
-										height={20}
-									/>
-								)
-								: (
-									<Image
-										src="/images/pricing/not-included.svg"
-										alt="included"
-										width={20}
-										height={20}
-									/>
-								)}
-							<p>{feature.name}</p>
-						</div>
-					)
-				})}
-			</div>
-			<span className="w-[80%] mx-auto">{props.button}</span>
-		</div>
-	)
-}
-
-export default PricingCard
+export default PricingCard;
