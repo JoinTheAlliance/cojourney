@@ -26,10 +26,12 @@ const useRoomStyles = createStyles((theme) => ({
     backgroundColor:
       theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
     width: "100%",
-    position: "fixed",
-    bottom: 0,
-    left: 0,
     padding: "0 0.5rem 0.5rem ",
+    "@media (max-width: 670px)": {
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+    },
   },
   desktopSideMenu: {
     position: "fixed",
