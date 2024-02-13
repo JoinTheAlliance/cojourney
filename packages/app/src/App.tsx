@@ -39,11 +39,11 @@ const router = createBrowserRouter([
         element: <UserPreferences />
       },
       {
-        path: "profile",
+        path: "/profile",
         element: <UserProfile />
       },
       {
-        path: "cjprofile",
+        path: "/cjprofile",
         element: <CJProfile />
       }
     ]
