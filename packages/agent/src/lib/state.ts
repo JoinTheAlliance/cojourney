@@ -1,7 +1,7 @@
 // State can be passed around to different parts of the agent to provide context for decision making
 // State is also passed converted into a context object via template injection to generate a response with the LLM
 
-import { formatActionConditions, formatActionExamples, formatActionNames, formatActions, getValidActions } from './actions'
+import { formatActionConditions, formatActionExamples, formatActionNames, formatActions } from './actions'
 import { formatGoalsAsString, getGoals } from './goals'
 import {
   formatMessageActors,
@@ -52,7 +52,7 @@ export async function composeState (
       onlyInProgress: true,
       userIds: userIds!
     }),
-    getValidActions(runtime, message)
+    runtime.getValidActions(message)
   ])
 
   const goals = await formatGoalsAsString({ goals: goalsData })
