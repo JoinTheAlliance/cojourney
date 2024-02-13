@@ -16,6 +16,11 @@ import RoomLayout from "./pages/app/Room/index"
 import Root from "./pages/app/root"
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
 import UserProfile from "./pages/app/UserProfile"
+import Splash from "./pages/app/Screens/Splash"
+import Welcome from "./pages/app/Screens/Welcome"
+import Chat from "./pages/app/Screens/Chat"
+import ConnectionsScreen from "./pages/app/Screens/Connections"
+import CJProfileScreen from "./pages/app/Screens/CJProfile"
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -47,6 +52,36 @@ const router = createBrowserRouter([
         element: <CJProfile />
       }
     ]
+  },
+  {
+    path: "/splash",
+    element: (
+      <Splash />
+    )
+  },
+  {
+    path: "/welcome",
+    element: (
+      <Welcome />
+    )
+  },
+  {
+    path: "/chat",
+    element: (
+      <Chat />
+    )
+  },
+  {
+    path: "/connections",
+    element: (
+      <ConnectionsScreen />
+    )
+  },
+  {
+    path: "/cj-profile",
+    element: (
+      <CJProfileScreen />
+    )
   }
 ])
 
