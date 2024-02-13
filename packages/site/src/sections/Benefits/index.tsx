@@ -1,28 +1,26 @@
-import React from 'react'
-
 const data = [
-  {
-    image: '',
-    title: 'Automatic Invoice Payment',
-    description:
-			'No need to pay manually, we provide automatic invoice payment service! Set a payment schedule and you are done'
-  },
-  {
-    image: '',
-    title: 'Clear payment history',
-    description:
-			'No need to pay manually, we provide automatic invoice payment service! Set a payment schedule and you are done'
-  },
-  {
-    image: '',
-    title: 'Use of multi-card payments',
-    description:
-			'No need to pay manually, we provide automatic invoice payment service! Set a payment schedule and you are done'
-  }
-]
+	{
+		image: "",
+		title: "Automatic Invoice Payment",
+		description:
+			"No need to pay manually, we provide automatic invoice payment service! Set a payment schedule and you are done",
+	},
+	{
+		image: "",
+		title: "Clear payment history",
+		description:
+			"No need to pay manually, we provide automatic invoice payment service! Set a payment schedule and you are done",
+	},
+	{
+		image: "",
+		title: "Use of multi-card payments",
+		description:
+			"No need to pay manually, we provide automatic invoice payment service! Set a payment schedule and you are done",
+	},
+];
 
 const Benefits: React.FC = () => {
-  return (
+	return (
 		<div className="flex flex-col items-start justify-center gap-12 min-h-[100vh] text-left px-[50px] lg:px-[200px]">
 			<div className="flex flex-col items-start justify-start gap-2">
 				<p className="font-semibold uppercase text-primary">Why use SPEND.IN</p>
@@ -54,7 +52,7 @@ const Benefits: React.FC = () => {
 				))}
 			</div>
 		</div>
-  )
-}
+	);
+};
 
-export default Benefits
+export default Benefits;

@@ -1,2 +1,2 @@
-export * from './cojourney'
+export * from './agents'
 export * from './lib'

@@ -19,15 +19,15 @@ import {
   composeState,
   getRelationship,
   type CojourneyRuntime
-} from '../../lib'
-import { composeContext } from '../../lib/context'
+} from '../../../lib'
+import { composeContext } from '../../../lib/context'
 import {
   type Memory,
   type Message,
   type State,
   type Evaluator
-} from '../../lib/types'
-import { parseJSONObjectFromText } from '../../lib/utils'
+} from '../../../lib/types'
+import { parseJSONObjectFromText } from '../../../lib/utils'
 
 const template = `TASK: Write a detailed personal and psychological profile for {{senderName}}.
 
@@ -102,6 +102,9 @@ const handler = async (runtime: CojourneyRuntime, message: Message) => {
   const profiles = descriptions
     .map((d: Memory) => '"""\n' + (d.content as string) + '\n"""')
     .join('\n')
+
+  console.log('**** profiles', profiles)
+
   state.profiles = profiles
 
   // join profiles with

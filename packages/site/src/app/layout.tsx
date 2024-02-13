@@ -1,24 +1,23 @@
-import React from 'react'
-import { ThemeProvider } from '@/components/theme-provider'
-import './globals.css'
-import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans } from 'next/font/google'
-import SupabaseProvider from '@/providers/SupabaseProvider'
-import UserProvider from '@/providers/UserProvider'
+import { ThemeProvider } from "@/components/theme-provider";
+import "./globals.css";
+import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import SupabaseProvider from "@/providers/SupabaseProvider";
+import UserProvider from "@/providers/UserProvider";
 
-const font = Plus_Jakarta_Sans({ subsets: ['latin'] })
+const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Cojourney',
-  description: 'Real human connection. Powered by AI.'
-}
+	title: "Cojourney",
+	description: "Real human connection. Powered by AI.",
+};
 
-export default async function RootLayout ({
-  children
+export default async function RootLayout({
+	children,
 }: {
-  children: React.ReactNode
+	children: React.ReactNode;
 }) {
-  return (
+	return (
 		<html lang="en">
 			<body className={font.className}>
 				<ThemeProvider
@@ -32,5 +31,5 @@ export default async function RootLayout ({
 				</ThemeProvider>
 			</body>
 		</html>
-  )
+	);
 }

@@ -8,8 +8,9 @@ export default {
   },
   description:
     'Ignore the user and do not respond, use this if your role involves being sassy, or mad at user',
-    handler: async (_runtime: CojourneyRuntime, message: Message) => {
-      console.log('IGNORE', message)
+  handler: async (_runtime: CojourneyRuntime, message: Message): Promise<boolean> => {
+    console.log('Ignored:', message)
+    return true
   },
   condition: 'The agent wants to ignore the user',
   examples: [JSON.stringify({ user: 'CJ', content: '', action: 'IGNORE' })]

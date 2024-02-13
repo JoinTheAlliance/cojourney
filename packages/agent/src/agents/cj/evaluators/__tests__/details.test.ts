@@ -2,17 +2,17 @@
 import dotenv from 'dotenv'
 
 import { type UUID } from 'crypto'
-import { getRelationship } from '../../../lib/relationships'
-import { type Message } from '../../../lib/types'
-import { createRuntime } from '../../../test/createRuntime'
+import { getRelationship } from '../../../../lib/relationships'
+import { type Message } from '../../../../lib/types'
+import { createRuntime } from '../../../../test/createRuntime'
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
   GetTellMeAboutYourselfConversation3
-} from '../../../test/data'
+} from '../../../../test/data'
 
 import evaluator from '../details'
-import { getCachedEmbedding, writeCachedEmbedding } from '../../../test/cache'
+import { getCachedEmbedding, writeCachedEmbedding } from '../../../../test/cache'
 dotenv.config()
 
 // create a UUID of 0s

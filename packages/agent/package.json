@@ -4,15 +4,22 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .ts --ext .js . --fix",
+    "shell": "node --no-warnings scripts/shell.mjs",
+    "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
+    "concat": "node ./scripts/concat.ts",
     "dev": "wrangler dev",
     "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "test:dev": "jest --watchAll",
     "test:coverage": "jest --coverage",
     "dev:logs": "wrangler dev",
     "deploy": "wrangler deploy",
-    "dev:shell": "npm run dev",
     "start": "wrangler dev"
   },
+  "bin": {
+    "cj": "./src/index.mjs",
+    "cojourney": "./src/index.mjs"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230419.0",
     "@rollup/plugin-commonjs": "^25.0.7",

@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import { Auth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
 import {
 	useSessionContext,
-	useSupabaseClient
-} from '@supabase/auth-helpers-react'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+	useSupabaseClient,
+} from "@supabase/auth-helpers-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const SignIn = () => {
-	const supabaseClient = useSupabaseClient()
-	const { session } = useSessionContext()
+	const supabaseClient = useSupabaseClient();
+	const { session } = useSessionContext();
 
-	const router = useRouter()
+	const router = useRouter();
 
 	useEffect(() => {
 		if (session) {
-			router.push('/')
+			router.push("/");
 		}
-	}, [session, router])
+	}, [session, router]);
 
 	return (
 		<div className="grid grid-cols-2 items-center min-h-screen">
@@ -31,18 +31,18 @@ const SignIn = () => {
 					<div className="w-[350px]">
 						<Auth
 							supabaseClient={supabaseClient}
-							providers={['google', 'discord', 'twitter']}
+							providers={["google", "discord", "twitter"]}
 							magicLink={true}
 							appearance={{
 								theme: ThemeSupa,
 								variables: {
 									default: {
 										colors: {
-											brand: '#0D121F',
-											brandAccent: '#8057f0'
-										}
-									}
-								}
+											brand: "#0D121F",
+											brandAccent: "#8057f0",
+										},
+									},
+								},
 							}}
 							theme="light"
 						/>
@@ -50,7 +50,7 @@ const SignIn = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
-export default SignIn
+export default SignIn;
