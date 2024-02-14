@@ -1,8 +1,8 @@
 import { type FC } from 'react'
-import type Pricing from '..'
+import { type PricingType } from '..'
 import Image from 'next/image'
 
-const PricingCard: FC<Pricing> = (props) => {
+const PricingCard: FC<PricingType> = (props) => {
   return (
     <div className="bg-[#F3F5F7] p-6 rounded-2xl flex flex-col items-center  gap-4 w-[300px]">
       <div className="flex flex-col justify-around h-60">

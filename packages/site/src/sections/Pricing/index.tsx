@@ -1,7 +1,7 @@
 import PricingCard from './card'
 import data from './pricing.json'
 
-interface PricingType {
+export interface PricingType {
   type: string
   title: string
   pricing: string
