@@ -20,7 +20,7 @@ const Header = () => {
             ],
             autoStart: true,
             // @ts-expect-error
-            pauseFor: 2500,
+            pauseFor: 3000,
             loop: true,
             wrapperClassName:
               'text-3xl font-bold leading-snug md:text-7xl capitalize',
