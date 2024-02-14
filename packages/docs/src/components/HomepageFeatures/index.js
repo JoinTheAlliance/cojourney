@@ -32,9 +32,11 @@ const FeatureList = [
 function Feature ({ Svg, title, description }) {
   return (
     <div className={clsx('col col--4')}>
-      <div style={{
+      <div
+      /* white if the theme is light, black if the theme is dark */
+      style={{
       // white background, rounded corners
-      backgroundColor: 'white',
+      backgroundColor: '#888',
       borderRadius: '10px',
       padding: '10px',
       paddingTop: '20px'
