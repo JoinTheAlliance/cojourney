@@ -12,10 +12,10 @@ export default function Home () {
     <main>
       <div className="bg-[#0D121F] text-white relative">
         <Image
-          src="/images/background.png"
+          src="/images/NewBackground.png"
           alt="bg"
           fill
-          className="object-cover w-full"
+          className="absolute top-0 left-0 object-cover w-full h-full md:object-fill"
         />
         <Navbar />
         <Header />

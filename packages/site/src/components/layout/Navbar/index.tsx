@@ -3,20 +3,23 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-// const links = [
-//   {
-//     label: 'How it Works',
-//     href: '/#cojourney'
-//   },
-//   {
-//     label: 'Where to get it',
-//     href: '/#footer'
-//   },
-//   {
-//     label: 'Pricing',
-//     href: '/#pricing'
-//   }
-// ]
+const links = [
+  {
+    label: 'Mission',
+    href: '/#cojourney',
+    isNewTab: false
+  },
+  {
+    label: 'Get It Now',
+    href: 'https://web.cojourney.app',
+    isNewTab: true
+  },
+  {
+    label: 'Developers',
+    href: 'https://docs.cojourney.app',
+    isNewTab: true
+  }
+]
 
 const Navbar = () => {
   // const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -52,8 +55,9 @@ const Navbar = () => {
 
   return (
     <div
-      className={`fixed top-0 w-full  transition duration-500  py-4 px-16 ${scrolled ? 'bg-blue-500 shadow-lg' : 'bg-transparent'
-        } z-10`}
+      className={`fixed top-0 w-full  transition duration-500  py-4 px-16 ${
+        scrolled ? 'bg-blue-500 shadow-lg' : 'bg-transparent'
+      } z-10`}
     >
       <div className="flex items-center justify-between ">
         <Link
@@ -66,24 +70,31 @@ const Navbar = () => {
             Cojourney
           </span>
         </Link>
-        {/* <ul className="items-center hidden gap-12 lg:flex">
+        <ul className="items-center hidden gap-12 lg:flex">
           {links.map((link) => (
             <li key={link.label}>
               <Link
                 href={link.href}
                 aria-label={link.label}
                 title={link.label}
+                target={link.isNewTab ? '_blank' : '_self'}
+                rel={link.isNewTab ? 'noopener noreferrer' : ''}
                 className="tracking-wide transition-colors duration-200 hover:text-deep-purple-accent-400"
               >
                 {link.label}
               </Link>
             </li>
           ))}
-        </ul> */}
+        </ul>
         <div className="items-center hidden gap-4 lg:flex">
-          <button className="bg-[#0075FF] py-2 px-8 rounded-lg">
+          <a
+            href="https://web.cojourney.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#0075FF] py-2 px-8 rounded-lg"
+          >
             Open App
-          </button>
+          </a>
         </div>
         {/* <div className="lg:hidden">
           <button

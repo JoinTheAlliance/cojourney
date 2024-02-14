@@ -21,7 +21,7 @@ const Pricing = () => {
 
   return (
     <div
-      className="flex flex-col items-center justify-center gap-2 py-16 bg-[#1E293B]"
+      className="flex flex-col items-center justify-center gap-6 py-16 bg-[#1E293B]"
       id="pricing"
     >
       <h1 className="text-2xl font-semibold text-white md:text-3xl">
