@@ -1,8 +1,11 @@
-# Cojourney<a href="https://discord.gg/qetWd7J9De"><img style="margin-left: auto; float: right" src="https://dcbadge.vercel.app/api/server/qetWd7J9De" alt=""></a>
+# Cojourney
 
 <img src="packages/docs/static/img/banner.jpg" alt="Cojourney" width="100%">
 
 Cojourney is about making high quality connections with other people. It's a social network that's designed to help you find people who share your interests, and to help you build the right context.
+
+## Developing Live on Discord
+<a href="https://discord.gg/qetWd7J9De"><img src="https://dcbadge.vercel.app/api/server/qetWd7J9De" alt=""></a>
 
 # Strong connections start with friendship
 The current state of personal connection apps is not great. Making friends is strange and awkward, and it's hard to know who to trust. Dating apps are even worse, and they're not designed to help you make meaningful connections.
