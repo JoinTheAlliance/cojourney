@@ -67,7 +67,7 @@ const Navbar = () => {
             Cojourney
           </span>
         </Link>
-        <ul className="items-center hidden gap-12 lg:flex">
+        {/* <ul className="items-center hidden gap-12 lg:flex">
           {links.map((link) => (
             <li key={link.label}>
               <Link
@@ -80,13 +80,13 @@ const Navbar = () => {
               </Link>
             </li>
           ))}
-        </ul>
+        </ul> */}
         <div className="items-center hidden gap-4 lg:flex">
           <button className="bg-[#0075FF] py-2 px-8 rounded-lg">
             Open App
           </button>
         </div>
-        <div className="lg:hidden">
+        {/* <div className="lg:hidden">
           <button
             aria-label="Open Menu"
             title="Open Menu"
@@ -192,7 +192,7 @@ const Navbar = () => {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   )
