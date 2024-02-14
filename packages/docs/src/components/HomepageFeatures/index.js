@@ -36,7 +36,7 @@ function Feature ({ Svg, title, description }) {
       /* white if the theme is light, black if the theme is dark */
       style={{
       // white background, rounded corners
-      backgroundColor: '#888',
+      backgroundColor: '#999',
       borderRadius: '10px',
       padding: '10px',
       paddingTop: '20px'
