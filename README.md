@@ -43,5 +43,3 @@ npm run cj
 ## Contributing
 
 This project is in early pre-alpha and developed in the open. If you want to make it better, you can contribute. We're looking to connect with people who are passionate about using AI to help people have stronger human relationships. We build on Discord, here: https://discord.gg/N3XUfWSTTe
-
-<img src="packages/docs/static/img/cj3.jpg" alt="Cojourney" width="100%">
