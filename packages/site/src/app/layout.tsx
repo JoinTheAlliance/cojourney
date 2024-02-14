@@ -19,6 +19,7 @@ export default async function RootLayout ({
 }) {
   return (
     <html lang="en">
+      <link rel="icon" href="/favicon.svg" sizes="any" />
       <body className={font.className}>
         <ThemeProvider
           attribute="class"
