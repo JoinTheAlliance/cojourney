@@ -45,8 +45,9 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
     "@tabler/icons-react": "^2.47.0",
-    "dotenv": "^16.4.1",
     "chalk": "^5.3.0",
-    "inquirer": "^9.2.14"
+    "dotenv": "^16.4.1",
+    "inquirer": "^9.2.14",
+    "typewriter-effect": "^2.21.0"
   }
 }

@@ -1,25 +1,35 @@
-import TypeWriter from "typewriter-effect";
+import TypeWriter from 'typewriter-effect'
 
 const Header = () => {
   return (
     <div className="w-full h-[80vh] md:h-[93vh] flex items-center justify-center gap-4 flex-col text-center relative overflow-hidden bg-transparent">
-      <TypeWriter
-        options={{
-          strings: [
-            "Find your person!",
-            "find your tribe!",
-            "find your place!",
-          ],
-          autoStart: true,
-          loop: true,
-          wrapperClassName:
-            "text-3xl font-bold leading-snug md:text-7xl capitalize mb-4",
-          cursorClassName: "text-3xl font-bold leading-snug md:text-7xl",
-        }}
-        // className="text-3xl font-bold leading-snug md:text-7xl"
-      />
+      <div className="flex items-center justify-center align-middle">
+        <div className="text-3xl font-bold leading-snug md:text-7xl capitalize">
+          Find your&nbsp;
+        </div>
+        <TypeWriter
+          options={{
+            strings: [
+              'people',
+              'tribe',
+              'mission',
+              'place',
+              'person',
+              'community',
+              'mentor'
+            ],
+            autoStart: true,
+            // @ts-expect-error
+            pauseFor: 2500,
+            loop: true,
+            wrapperClassName: 'text-3xl font-bold leading-snug md:text-7xl capitalize',
+            cursorClassName: 'text-3xl font-bold leading-snug md:text-7xl'
+          }}
+          // className="text-3xl font-bold leading-snug md:text-7xl"
+        />
+      </div>
       <p className="mb-12 text-base leading-normal text-white">
-        Cojourney is an AI-powered network for building real,{" "}
+        Cojourney is an AI-powered network for building real,{' '}
         <br className="hidden md:inline-block" /> meaningful connections between
         humans
       </p>
@@ -41,7 +51,7 @@ const Header = () => {
 				height={852}
 			/> */}
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
