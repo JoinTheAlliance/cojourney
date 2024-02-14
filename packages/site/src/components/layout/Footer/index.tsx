@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
           </h1>
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-2">
-              <p className="font-thin text-white w-[350px] mt-[-2px]">
+              <p className="font-thin text-white w-[350px] mb-4 mt-[-2px]">
                 Cojourney is created by people like you. Interested in working
                 with us?{' '}
                 <span className="font-semibold cursor-pointer">
