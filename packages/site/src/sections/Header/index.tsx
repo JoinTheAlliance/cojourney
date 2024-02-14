@@ -29,10 +29,8 @@ const Header = () => {
             }}
           />
         </div>
-        <p className="mb-16 text-lg font-semibold leading-normal text-white text-shadow">
-          Cojourney is an AI-powered network for building real,{' '}
-          <br className="hidden md:inline-block" /> meaningful connections
-          between humans
+        <p className="mb-16 text-lg font-semibold leading-normal text-white text-shadow max-w-xl">
+        Cojourney is an AI-powered social network for meaningful connections between real people
         </p>
       </div>
       <div className="flex items-center justify-center gap-8">
