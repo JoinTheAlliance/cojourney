@@ -1,6 +1,6 @@
-import { FC } from "react";
-import Pricing from "..";
-import Image from "next/image";
+import { type FC } from 'react'
+import type Pricing from '..'
+import Image from 'next/image'
 
 const PricingCard: FC<Pricing> = (props) => {
   return (
@@ -15,7 +15,7 @@ const PricingCard: FC<Pricing> = (props) => {
           </h3>
         </div>
         <button
-          className={` ${props.popular ? "bg-[#0075FF]" : "bg-[#444]"} cursor-pointer shadow-md px-16 py-2 rounded-3xl capitalize text-white`}
+          className={` ${props.popular ? 'bg-[#0075FF]' : 'bg-[#444]'} cursor-pointer shadow-md px-16 py-2 rounded-3xl capitalize text-white`}
         >
           {props.button}
         </button>
@@ -32,11 +32,11 @@ const PricingCard: FC<Pricing> = (props) => {
               />
               <p>{feature.name}</p>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PricingCard;
+export default PricingCard

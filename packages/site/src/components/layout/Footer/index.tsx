@@ -1,11 +1,11 @@
-import Image from "next/image";
+import Image from 'next/image'
 const Footer: React.FC = () => {
   return (
     <footer
       id="footer"
       className="w-full flex flex-col items-center gap-8 bg-[#00182F] pt-[120px]"
     >
-      <div className={`flex justify-between max-w-7xl w-4/5`}>
+      <div className={'flex justify-between max-w-7xl w-4/5'}>
         <div className="flex flex-col items-start gap-6 mt-8">
           <h1 className="text-[24px] text-white font-semibold mb-8">
             We are going to make it. Together.
@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
             <div className="flex items-start gap-2">
               <p className="font-thin text-white w-[350px] mt-[-2px]">
                 Cojourney is created by people like you. Interested in working
-                with us?{" "}
+                with us?{' '}
                 <span className="font-semibold cursor-pointer">
                   Get in touch.
                 </span>
@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         <div>
-          <Image src={`/images/image 5.png`} height={400} width={400} alt="" />
+          <Image src={'/images/image 5.png'} height={400} width={400} alt="" />
         </div>
       </div>
       <div className="flex justify-between w-full p-8 bg-black">
@@ -62,7 +62,7 @@ const Footer: React.FC = () => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

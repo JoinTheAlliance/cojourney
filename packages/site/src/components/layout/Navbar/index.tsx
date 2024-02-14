@@ -1,60 +1,59 @@
-import React, { useEffect } from "react";
-import { useUser } from "@/hooks/useUser";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import Link from "next/link";
-import { useState } from "react";
+// import { useUser } from '@/hooks/useUser'
+// import { useSupabaseClient } from '@supabase/auth-helpers-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 const links = [
   {
-    label: "How it Works",
-    href: "/#cojourney",
+    label: 'How it Works',
+    href: '/#cojourney'
   },
   {
-    label: "Where to get it",
-    href: "/#footer",
+    label: 'Where to get it',
+    href: '/#footer'
   },
   {
-    label: "Pricing",
-    href: "/#pricing",
-  },
-];
+    label: 'Pricing',
+    href: '/#pricing'
+  }
+]
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const supabaseClient = useSupabaseClient();
+  // const supabaseClient = useSupabaseClient()
 
-  const { user } = useUser();
+  // const { user } = useUser()
 
-  const handleLogout = async () => {
-    const { error } = await supabaseClient.auth.signOut();
-    if (error) {
-      console.log(error);
-    }
-  };
+  // const handleLogout = async () => {
+  //   const { error } = await supabaseClient.auth.signOut()
+  //   if (error) {
+  //     console.log(error)
+  //   }
+  // }
 
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
-        setScrolled(true);
+        setScrolled(true)
       } else {
-        setScrolled(false);
+        setScrolled(false)
       }
-    };
+    }
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll)
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
 
   return (
     <div
       className={`fixed top-0 w-full  transition duration-500  py-4 px-16 ${
-        scrolled ? "bg-blue-500 shadow-lg" : "bg-transparent"
+        scrolled ? 'bg-blue-500 shadow-lg' : 'bg-transparent'
       } z-10`}
     >
       <div className="flex items-center justify-between ">
@@ -92,7 +91,7 @@ const Navbar = () => {
             aria-label="Open Menu"
             title="Open Menu"
             className="p-2 transition duration-200 rounded focus:outline-none focus:shadow-outline hover:bg-deep-purple-50 focus:bg-deep-purple-50"
-            onClick={() => setIsMenuOpen(true)}
+            onClick={() => { setIsMenuOpen(true) }}
           >
             <svg className="w-5 text-white" viewBox="0 0 24 24">
               <path
@@ -145,7 +144,7 @@ const Navbar = () => {
                       aria-label="Close Menu"
                       title="Close Menu"
                       className="p-2 -mt-2 -mr-2 transition duration-200 rounded hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
-                      onClick={() => setIsMenuOpen(false)}
+                      onClick={() => { setIsMenuOpen(false) }}
                     >
                       <svg className="w-5 text-gray-600" viewBox="0 0 24 24">
                         <path
@@ -196,7 +195,7 @@ const Navbar = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

@@ -1,27 +1,23 @@
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import Image from "next/image";
-import { useState } from "react";
-import data from "./pricing.json";
-import PricingCard from "./card";
+import PricingCard from './card'
+import data from './pricing.json'
 
-interface Pricing {
-  type: string;
-  title: string;
-  pricing: string;
-  pricingUnit: string;
-  popular?: boolean;
-  features: Feature[];
-  button: string;
+interface PricingType {
+  type: string
+  title: string
+  pricing: string
+  pricingUnit: string
+  popular?: boolean
+  features: Feature[]
+  button: string
 }
 
 interface Feature {
-  name: string;
-  isIncluded: boolean;
+  name: string
+  isIncluded: boolean
 }
 
 const Pricing = () => {
-  const [pricingData, setPricingData] = useState<Pricing[]>(data);
+  const pricingData = data as PricingType[]
 
   return (
     <div
@@ -32,15 +28,15 @@ const Pricing = () => {
         Open Source. Free forever.
       </h1>
       <p className=" text-base text-[#c4c4c4]">
-        Upgrade for more connections and better AI.{" "}
+        Upgrade for more connections and better AI.{' '}
       </p>
       <div className="flex flex-wrap items-start justify-center mt-8 gap-14">
-        {pricingData?.map((pricing, index) => {
-          return <PricingCard key={index} {...pricing} />;
+        {pricingData.map((pricing, index) => {
+          return <PricingCard key={index} {...pricing} />
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Pricing;
+export default Pricing

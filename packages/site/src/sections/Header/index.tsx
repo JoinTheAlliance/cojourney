@@ -22,7 +22,8 @@ const Header = () => {
             // @ts-expect-error
             pauseFor: 2500,
             loop: true,
-            wrapperClassName: 'text-3xl font-bold leading-snug md:text-7xl capitalize',
+            wrapperClassName:
+              'text-3xl font-bold leading-snug md:text-7xl capitalize',
             cursorClassName: 'text-3xl font-bold leading-snug md:text-7xl'
           }}
           // className="text-3xl font-bold leading-snug md:text-7xl"
