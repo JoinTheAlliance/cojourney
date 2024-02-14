@@ -1,11 +1,23 @@
-import Link from "next/link";
+import TypeWriter from "typewriter-effect";
 
 const Header = () => {
   return (
-    <div className="w-full h-[93vh] flex items-center justify-center gap-4 flex-col text-center relative overflow-hidden bg-transparent">
-      <h1 className="text-3xl font-bold leading-snug md:text-7xl">
-        Find your person|
-      </h1>
+    <div className="w-full h-[80vh] md:h-[93vh] flex items-center justify-center gap-4 flex-col text-center relative overflow-hidden bg-transparent">
+      <TypeWriter
+        options={{
+          strings: [
+            "Find your person!",
+            "find your tribe!",
+            "find your place!",
+          ],
+          autoStart: true,
+          loop: true,
+          wrapperClassName:
+            "text-3xl font-bold leading-snug md:text-7xl capitalize mb-4",
+          cursorClassName: "text-3xl font-bold leading-snug md:text-7xl",
+        }}
+        // className="text-3xl font-bold leading-snug md:text-7xl"
+      />
       <p className="mb-12 text-base leading-normal text-white">
         Cojourney is an AI-powered network for building real,{" "}
         <br className="hidden md:inline-block" /> meaningful connections between
