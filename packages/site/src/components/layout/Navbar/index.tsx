@@ -3,23 +3,23 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-const links = [
-  {
-    label: 'How it Works',
-    href: '/#cojourney'
-  },
-  {
-    label: 'Where to get it',
-    href: '/#footer'
-  },
-  {
-    label: 'Pricing',
-    href: '/#pricing'
-  }
-]
+// const links = [
+//   {
+//     label: 'How it Works',
+//     href: '/#cojourney'
+//   },
+//   {
+//     label: 'Where to get it',
+//     href: '/#footer'
+//   },
+//   {
+//     label: 'Pricing',
+//     href: '/#pricing'
+//   }
+// ]
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  // const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   // const supabaseClient = useSupabaseClient()
 
@@ -52,9 +52,8 @@ const Navbar = () => {
 
   return (
     <div
-      className={`fixed top-0 w-full  transition duration-500  py-4 px-16 ${
-        scrolled ? 'bg-blue-500 shadow-lg' : 'bg-transparent'
-      } z-10`}
+      className={`fixed top-0 w-full  transition duration-500  py-4 px-16 ${scrolled ? 'bg-blue-500 shadow-lg' : 'bg-transparent'
+        } z-10`}
     >
       <div className="flex items-center justify-between ">
         <Link
