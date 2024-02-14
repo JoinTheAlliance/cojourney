@@ -4,13 +4,13 @@
 // There are various equivalent ways to declare your Docusaurus config.
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
-import {themes as prismThemes} from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer'
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Cojourney Dev Docs',
+  title: 'We can build it together.',
   tagline: 'Developer documentation for the Cojourney project',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   // Set the production url of your site here
   url: 'https://docs.cojourney.app',
@@ -31,7 +31,7 @@ const config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en']
   },
 
   presets: [
@@ -44,13 +44,13 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/CoJourneyAI/Cojourney/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/CojourneyAI/Cojourney/tree/main/packages/create-docusaurus/templates/shared/'
         },
         theme: {
-          customCss: './src/css/custom.css',
-        },
-      }),
-    ],
+          customCss: './src/css/custom.css'
+        }
+      })
+    ]
   ],
 
   themeConfig:
@@ -60,23 +60,19 @@ const config = {
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
         title: 'Cojourney',
-        logo: {
-          alt: 'Cojourney Logo',
-          src: 'img/logo.svg',
-        },
         items: [
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Getting Started',
+            label: 'Getting Started'
           },
           {
-            href: 'https://github.com/CoJourneyAI/Cojourney',
+            href: 'https://github.com/CojourneyAI/Cojourney',
             label: 'GitHub',
-            position: 'right',
-          },
-        ],
+            position: 'right'
+          }
+        ]
       },
       footer: {
         style: 'dark',
@@ -86,40 +82,40 @@ const config = {
             items: [
               {
                 label: 'Getting Started',
-                to: '/docs/intro',
-              },
-            ],
+                to: '/docs/intro'
+              }
+            ]
           },
           {
             title: 'Community',
             items: [
               {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/cojourney',
+                href: 'https://discordapp.com/invite/cojourney'
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/cojourneyai',
-              },
-            ],
+                href: 'https://twitter.com/cojourneyai'
+              }
+            ]
           },
           {
             title: 'More',
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/CoJourneyAI/Cojourney',
-              },
-            ],
-          },
+                href: 'https://github.com/CojourneyAI/Cojourney'
+              }
+            ]
+          }
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Cojourney, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Cojourney`
       },
       prism: {
         theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
-      },
-    }),
-};
+        darkTheme: prismThemes.dracula
+      }
+    })
+}
 
-export default config;
+export default config
