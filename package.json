@@ -47,7 +47,6 @@
     "@tabler/icons-react": "^2.47.0",
     "chalk": "^5.3.0",
     "dotenv": "^16.4.1",
-    "inquirer": "^9.2.14",
-    "typewriter-effect": "^2.21.0"
+    "inquirer": "^9.2.14"
   }
 }
