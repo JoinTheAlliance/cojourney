@@ -5,7 +5,6 @@ import Navbar from '@/components/layout/Navbar'
 import AboutCojourney from '@/sections/AboutCojourney'
 import Header from '@/sections/Header'
 import Pricing from '@/sections/Pricing'
-import Image from 'next/image'
 
 export default function Home () {
   return (

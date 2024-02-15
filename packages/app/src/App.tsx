@@ -9,12 +9,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import "./App.css"
 import LoadingOverlay from "./components/LoadingOverlay/LoadingOverlay"
 import constants from "./constants/constants"
-import Error404 from "./pages/404/Error404"
-import CJProfile from "./pages/app/CJProfile"
-import RoomLayout from "./pages/app/Room/index"
-import Root from "./pages/app/root"
-import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
-import UserProfile from "./pages/app/UserProfile"
+// import Error404 from "./pages/404/Error404"
+// import CJProfile from "./pages/app/CJProfile"
+// import RoomLayout from "./pages/app/Room/index"
+// import Root from "./pages/app/root"
+// import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
+// import UserProfile from "./pages/app/UserProfile"
 import Splash from "./pages/app/Screens/Splash"
 import Welcome from "./pages/app/Screens/Welcome"
 import Chat from "./pages/app/Screens/Chat"
@@ -29,31 +29,31 @@ const supabase = createClient(
 )
 
 const router = createBrowserRouter([
+  // {
+  //   path: "/",
+  //   element: <Root />,
+  //   errorElement: <Error404 />,
+  //   children: [
+  //     {
+  //       path: "/chat/:roomId",
+  //       element: <RoomLayout />
+  //     },
+  //     {
+  //       path: "/account",
+  //       element: <UserPreferences />
+  //     },
+  //     {
+  //       path: "/profile",
+  //       element: <UserProfile />
+  //     },
+  //     {
+  //       path: "/cjprofile",
+  //       element: <CJProfile />
+  //     }
+  //   ]
+  // },
   {
     path: "/",
-    element: <Root />,
-    errorElement: <Error404 />,
-    children: [
-      {
-        path: "/chat/:roomId",
-        element: <RoomLayout />
-      },
-      {
-        path: "/account",
-        element: <UserPreferences />
-      },
-      {
-        path: "/profile",
-        element: <UserProfile />
-      },
-      {
-        path: "/cjprofile",
-        element: <CJProfile />
-      }
-    ]
-  },
-  {
-    path: "/splash",
     element: <Splash />
   },
   {

@@ -2,17 +2,19 @@ import { Flex, Header, rem, useMantineTheme, Text } from "@mantine/core"
 import { IconChevronLeft, IconDots } from "@tabler/icons-react"
 import React from "react"
 import UserAvatar from "../UserAvatar"
+import { useNavigate } from "react-router-dom"
 
 const AppShellHeader = ({
   title,
   src = "",
-  online
+  online = true
 }: {
   title: string
   src?: string
   online?: boolean
 }) => {
   const theme = useMantineTheme()
+  const navigate = useNavigate()
   return (
     <Header
       display={"flex"}
@@ -37,6 +39,7 @@ const AppShellHeader = ({
             height: rem(32),
             color: theme.colors.gray[6]
           }}
+          onClick={() => { navigate(-1) }}
         />
         {src ? (
           <Flex
@@ -48,8 +51,9 @@ const AppShellHeader = ({
             }}
             justify="center"
             columnGap={"sm"}
+            onClick={() => { navigate("/cj-profile") }}
           >
-            <UserAvatar src={src} online={true} />
+            <UserAvatar src={src} online={online} />
             <div>
               <Text
                 color={theme.white}

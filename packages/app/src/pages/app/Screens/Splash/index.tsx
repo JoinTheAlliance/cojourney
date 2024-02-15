@@ -1,9 +1,17 @@
-import React from "react"
+import React, { useEffect } from "react"
 import backgroundImage from "../../../../../public/images/background-friends.svg"
 import { Text, Container, Paper, useMantineTheme } from "@mantine/core"
+import { useNavigate } from "react-router-dom"
 
 const Splash = (): JSX.Element => {
   const theme = useMantineTheme()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    setTimeout(() => {
+      navigate("/welcome")
+    }, 2000)
+  })
   return (
     <Container
       fluid

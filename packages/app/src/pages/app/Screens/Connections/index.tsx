@@ -14,6 +14,7 @@ import iconImgSrc from "../../../../../public/icons/account.svg"
 import userIcon from "../../../../../public/images/user.svg"
 import user from "../../../../../public/images/user-avatar-bot.svg"
 import UserAvatar from "../../../../components/UserAvatar"
+import { useNavigate } from "react-router"
 
 const connections = {
   cj: [{ name: "CJ", online: true, premium: false }],
@@ -29,6 +30,8 @@ const connections = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ConnectionList = ({ title, list }: { title: string, list: any[] }) => {
   const theme = useMantineTheme()
+  const navigate = useNavigate()
+
   return (
     <Accordion.Item value={title}>
       <Accordion.Control px={"xs"}>
@@ -48,6 +51,7 @@ const ConnectionList = ({ title, list }: { title: string, list: any[] }) => {
                 padding: theme.spacing.xs,
                 cursor: "pointer"
               }}
+              onClick={() => { navigate("/chat") }}
             >
               <Group noWrap>
                 <UserAvatar src={userIcon} online={item.online} />
@@ -82,6 +86,7 @@ const ConnectionList = ({ title, list }: { title: string, list: any[] }) => {
 
 const ConnectionsScreen = () => {
   const theme = useMantineTheme()
+  const navigate = useNavigate()
 
   return (
     <Container fluid p={"xxl"}>
@@ -118,6 +123,7 @@ const ConnectionsScreen = () => {
               paddingLeft: rem(20),
               color: "#757474"
             }}
+            onClick={() => { navigate("/my-account") }}
           >
             <Text mr={"md"}>My Account</Text>
             <img src={iconImgSrc} alt="Icon" width={"20px"} height={"20px"} />

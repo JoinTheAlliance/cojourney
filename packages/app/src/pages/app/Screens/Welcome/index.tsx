@@ -13,9 +13,15 @@ import twitter from "../../../../../public/images/x.svg"
 import discord from "../../../../../public/images/discord.svg"
 import google from "../../../../../public/images/google.svg"
 import github from "../../../../../public/images/github.svg"
+import { useNavigate } from "react-router-dom"
 
 const Welcome = (): JSX.Element => {
   const theme = useMantineTheme()
+  const navigate = useNavigate()
+
+  const handleLoginViaProvider = (_provider: string) => {
+    navigate("/connections")
+  }
 
   return (
     <Container
@@ -74,24 +80,28 @@ const Welcome = (): JSX.Element => {
                 style={{
                   cursor: "pointer"
                 }}
+                onClick={() => { handleLoginViaProvider("twitter") }}
               />
               <Image
                 src={discord}
                 style={{
                   cursor: "pointer"
                 }}
+                onClick={() => { handleLoginViaProvider("discord") }}
               />
               <Image
                 src={google}
                 style={{
                   cursor: "pointer"
                 }}
+                onClick={() => { handleLoginViaProvider("google") }}
               />
               <Image
                 src={github}
                 style={{
                   cursor: "pointer"
                 }}
+                onClick={() => { handleLoginViaProvider("github") }}
               />
             </Flex>
           </Group>

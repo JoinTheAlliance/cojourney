@@ -16,10 +16,11 @@ import {
 import userIcon from "../../../../../public/images/user-avatar-robot.svg"
 import UserAvatar from "../../../../components/UserAvatar"
 import AppShellHeader from "../../../../components/Header"
+import { useNavigate } from "react-router"
 
 const MyAccount = () => {
   const theme = useMantineTheme()
-
+  const navigate = useNavigate()
   return (
     <AppShell
       padding="md"
@@ -35,7 +36,8 @@ const MyAccount = () => {
             <Button fullWidth variant="transparent" size="md">
               <Text color={theme.white}>Subscription Settings</Text>
             </Button>
-            <Button fullWidth variant="transparent" size="md">
+            <Button fullWidth variant="transparent" size="md"
+            onClick={() => { navigate("/welcome") }}>
               <Text color={theme.colors.red[8]}>Logout</Text>
             </Button>
           </Group>
