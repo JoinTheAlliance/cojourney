@@ -55,6 +55,7 @@ const MessagesTextInput = ({
   }
 
   const onMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("onMessageSend called", e)
     e.preventDefault()
 
     setCurrentRoom({
@@ -109,27 +110,6 @@ const MessagesTextInput = ({
         userIds.push(relationship.user_b)
       }
     })
-    const { data, error } = await supabase
-      .from("messages")
-      .insert({
-        content: { content: message },
-        room_id: roomData.id,
-        is_edited: false,
-        user_id: session.user.id,
-        user_ids: userIds
-      })
-      .select()
-      .single()
-
-    if (!data || error) {
-      setIsSendingMessage(false)
-      showNotification({
-        title: "Error",
-        message: "Unable to send message."
-      })
-
-      return
-    }
 
     setIsSendingMessage(false)
     setMessage("")

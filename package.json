@@ -18,7 +18,8 @@
     "package-lock.json"
   ],
   "scripts": {
-    "dev": "lerna run dev",
+    "dev": "wrangler dev -- --dev & lerna run dev --ignore @cojourney/app-native --ignore @cojourney/docs",
+    "dev:all": "wrangler dev -- --dev & lerna run dev",
     "shell": "node --no-warnings shell/index.mjs",
     "shell:dev": "node --no-warnings shell/index.mjs --dev",
     "build": "lerna run build",
@@ -45,6 +46,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
     "@tabler/icons-react": "^2.47.0",
+    "bgent": "^0.0.7",
     "chalk": "^5.3.0",
     "dotenv": "^16.4.1",
     "inquirer": "^9.2.14"
