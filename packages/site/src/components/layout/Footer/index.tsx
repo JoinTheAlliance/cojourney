@@ -7,14 +7,13 @@ const Footer: React.FC = () => {
     >
       <div className={'flex justify-between  max-w-7xl w-4/5'}>
         <div className="flex flex-col items-start gap-8 mt-8">
-          <h1 className="text-[24px] text-white font-semibold mb-8">
+          <h1 className="text-[24px] text-white font-semibold">
             We are going to make it. Together.
           </h1>
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-2">
-              <p className="font-thin text-white w-[350px] mb-4 mt-[-2px]">
-                Cojourney is created by people like you. Interested in working
-                with us?{' '}
+              <p className="font-thin text-white w-[350px] mb-4">
+                Cojourney is created by people like you. Interested in working with us?{' '}
                 <span className="font-semibold cursor-pointer">
                   Get in touch.
                 </span>
