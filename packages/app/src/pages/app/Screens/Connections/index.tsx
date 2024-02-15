@@ -1,78 +1,82 @@
 import React from "react"
-import { Avatar, Text, Group, Stack, useMantineTheme, Header, Flex, rem, AppShell } from "@mantine/core"
-import { IconDots, IconChevronLeft } from "@tabler/icons-react"
+import {
+  Text,
+  Group,
+  Stack,
+  useMantineTheme,
+  Flex,
+  rem,
+  Button,
+  Accordion,
+  Container
+} from "@mantine/core"
+import iconImgSrc from "../../../../../public/icons/account.svg"
 import userIcon from "../../../../../public/images/user.svg"
+import user from "../../../../../public/images/user-avatar-bot.svg"
+import UserAvatar from "../../../../components/UserAvatar"
 
 const connections = {
-  cj: [
-    { name: "CJ", online: true }
+  cj: [{ name: "CJ", online: true, premium: false }],
+  guides: [
+    { name: "Avicii Ronaldo", online: true, premium: false },
+    { name: "Mike ", online: false, premium: false },
+    { name: "Oliver", online: true, premium: true }
   ],
-  new: [
-    { name: "Avicii Ronaldo", online: true }
-  ],
-  friends: [
-    { name: "Avicii Ronaldo", online: true }
-  ],
-  pending: [
-    { name: "Avicii Ronaldo", online: false }
-  ]
-}
-
-const UserAvatar = ({ src, alt, online }: { src: string, alt: string, online: boolean }) => {
-  return (
-    <Group position="center">
-      <div style={{ position: "relative" }}>
-        <Avatar src={src} alt={alt} size="md" radius="50%" />
-        <div style={{
-    width: "10px",
-    height: "10px",
-    borderRadius: "50%",
-    backgroundColor: online ? "green" : "gray",
-    position: "absolute",
-    right: "0",
-    bottom: "0",
-    border: "1px solid white",
-    transform: "translate(20%, 0%)"
-  }} />
-      </div>
-    </Group>
-  )
+  friends: [{ name: "Avicii Ronaldo", online: true, premium: false }],
+  pending: [{ name: "Avicii Ronaldo", online: false, premium: false }]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ConnectionList = ({ title, list }: { title?: string, list: any[] }) => {
+const ConnectionList = ({ title, list }: { title: string, list: any[] }) => {
   const theme = useMantineTheme()
-
   return (
-    <Stack spacing="xs" style={{ marginBottom: theme.spacing.md }}>
-      <Text weight={600} size={"sm"} style={{ color: theme.colors.gray[4] }}>
-        {title}
-      </Text>
-      {list.map((item, index) => (
-        <Group
-          key={index}
-          noWrap
-          position="apart"
-          style={{
-            backgroundColor: theme.colors.dark[6],
-            borderRadius: theme.radius.md,
-            padding: theme.spacing.sm,
-            cursor: "pointer"
-          }}
-        >
-          <Group noWrap>
-          <UserAvatar src={userIcon} alt="User avatar" online={item.online} />
-
-            <div>
-              <Text weight={500}>{item.name}</Text>
-              <Text size="xs" color="dimmed">
-                {item.online ? "Online" : "Offline"}
-              </Text>
-            </div>
-          </Group>
-        </Group>
-      ))}
-    </Stack>
+    <Accordion.Item value={title}>
+      <Accordion.Control px={"xs"}>
+        <Text weight={700} color={theme.white}>
+          {title}
+        </Text>
+      </Accordion.Control>
+      <Accordion.Panel>
+        <Stack spacing="xs">
+          {list.map((item, index) => (
+            <Group
+              key={index}
+              noWrap
+              position="apart"
+              style={{
+                borderRadius: theme.radius.md,
+                padding: theme.spacing.xs,
+                cursor: "pointer"
+              }}
+            >
+              <Group noWrap>
+                <UserAvatar src={userIcon} online={item.online} />
+                <Group display={"block"}>
+                  <Flex align={"baseline"}>
+                    <Text color={theme.white} weight={500}>
+                      {item.name}
+                    </Text>
+                    {item.premium && (
+                      <Text
+                        ml={"xs"}
+                        size={"xs"}
+                        color={theme.colors.grape[7]}
+                        weight={500}
+                      >
+                        PREMIUM
+                      </Text>
+                    )}
+                  </Flex>
+                  <Text size="xs" color="dimmed">
+                    {item.online ? "Online" : "Offline"}
+                  </Text>
+                </Group>
+              </Group>
+            </Group>
+          ))}
+        </Stack>
+      </Accordion.Panel>
+    </Accordion.Item>
   )
 }
 
@@ -80,72 +84,53 @@ const ConnectionsScreen = () => {
   const theme = useMantineTheme()
 
   return (
-    <AppShell
-    padding="md"
-    header={
-    <Header display={"flex"} height={60} bg={theme.colors.dark[8]} withBorder={false} px={"2xl"}>
+    <Container fluid p={"xxl"}>
+      <Flex
+        direction={"row"}
+        gap={"xl"}
+        align={"center"}
+        mb={"xl"}
+        justify="space-between"
+      >
+        <Group>
+          <UserAvatar src={user} online={true} />
+          <div>
+            <Text color={theme.white} weight={500}>
+              metadude (me)
+            </Text>
+            <Text size="xs" color="dimmed">
+              Online
+            </Text>
+          </div>
+        </Group>
+        <Group
+          style={{
+            textAlign: "center"
+          }}
+        >
+          <Button
+            size={"sm"}
+            bg={"#292929"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#292929",
+              paddingLeft: rem(20),
+              color: "#757474"
+            }}
+          >
+            <Text mr={"md"}>My Account</Text>
+            <img src={iconImgSrc} alt="Icon" width={"20px"} height={"20px"} />
+          </Button>
+        </Group>
+      </Flex>
 
-  <Flex
-    direction={"row"}
-    gap={"xl"}
-    align={"center"}
-    style={{
-      width: "100%"
-    }}
-    justify='space-between'
-  >
-  <IconChevronLeft
-  style={{
-    cursor: "pointer",
-    width: rem(32),
-    height: rem(32)
-  }}/>
-  <Flex
-    direction={"row"}
-    gap={"xl"}
-    align={"center"}
-    style={{
-      cursor: "pointer"
-    }}
-    justify='center'
-    columnGap={"sm"}
-  >
-    <div>
-    <Text size={"lg"} weight={"800"} style={{
-    }}>Connections</Text>
-    </div>
-
-  </Flex>
-
-  <IconDots
-  style={{
-    cursor: "pointer",
-    width: rem(32),
-    height: rem(32)
-  }}/>
-  </Flex>
-
-    </Header>}
-    styles={(theme) => ({
-      main: { backgroundColor: theme.colors.dark[8],
-      paddingBottom: "4rem" }
-    })}
-  >
-    <Stack
-      spacing="md"
-      style={{
-        backgroundColor: theme.colors.dark[8],
-        padding: theme.spacing.md
-      }}
-    >
-
-      <ConnectionList list={connections.cj} />
-      <ConnectionList title="New" list={connections.new} />
-      <ConnectionList title="Friends" list={connections.friends} />
-      <ConnectionList title="Pending" list={connections.pending} />
-    </Stack>
-  </AppShell>
-
+      <Accordion radius="xs" defaultValue="customization">
+        <ConnectionList title="Guides" list={connections.guides} />
+        <ConnectionList title="Friends" list={connections.friends} />
+        <ConnectionList title="Pending" list={connections.pending} />
+      </Accordion>
+    </Container>
   )
 }
 

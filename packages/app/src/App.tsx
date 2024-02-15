@@ -21,6 +21,8 @@ import Welcome from "./pages/app/Screens/Welcome"
 import Chat from "./pages/app/Screens/Chat"
 import ConnectionsScreen from "./pages/app/Screens/Connections"
 import CJProfileScreen from "./pages/app/Screens/CJProfile"
+import FriendProfile from "./pages/app/Screens/FriendProfile"
+import MyAccount from "./pages/app/Screens/MyAccount"
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -30,9 +32,7 @@ const supabase = createClient(
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <Root />
-    ),
+    element: <Root />,
     errorElement: <Error404 />,
     children: [
       {
@@ -55,33 +55,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/splash",
-    element: (
-      <Splash />
-    )
+    element: <Splash />
   },
   {
     path: "/welcome",
-    element: (
-      <Welcome />
-    )
+    element: <Welcome />
   },
   {
     path: "/chat",
-    element: (
-      <Chat />
-    )
+    element: <Chat />
   },
   {
     path: "/connections",
-    element: (
-      <ConnectionsScreen />
-    )
+    element: <ConnectionsScreen />
   },
   {
     path: "/cj-profile",
-    element: (
-      <CJProfileScreen />
-    )
+    element: <CJProfileScreen />
+  },
+  {
+    path: "/friend-profile",
+    element: <FriendProfile />
+  },
+  {
+    path: "/my-account",
+    element: <MyAccount />
   }
 ])
 
@@ -118,9 +116,11 @@ const App = (): JSX.Element => {
             }
           },
           fontSizes: {
+            xxl: "1.75rem",
             "2xl": "2.25rem"
           },
           spacing: {
+            xxl: "1.75rem",
             "2xl": "2rem",
             "3xl": "3rem",
             "4xl": "4rem",

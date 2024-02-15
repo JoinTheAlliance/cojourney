@@ -1,141 +1,71 @@
 import React from "react"
-import { Avatar, Text, Group, useMantineTheme, Header, Flex, rem, AppShell, Button, Switch } from "@mantine/core"
-import { IconDots, IconChevronLeft } from "@tabler/icons-react"
+import {
+  Text,
+  Group,
+  useMantineTheme,
+  AppShell,
+  Button,
+  Container,
+  Footer
+} from "@mantine/core"
 import userIcon from "../../../../../public/images/user.svg"
-
-const UserAvatar = ({ src, alt, online }: { src: string, alt: string, online: boolean }) => {
-  return (
-    <Group position="center">
-      <div style={{ position: "relative" }}>
-        <Avatar src={src} alt={alt} radius="50%"
-        style={{
-          width: "10rem",
-          height: "10rem"
-        }} />
-        <div style={{
-          width: "30px",
-          height: "30px",
-          borderRadius: "50%",
-          backgroundColor: online ? "green" : "gray",
-          position: "absolute",
-          right: "0",
-          bottom: "0",
-          border: "2px solid white", // Adjust the color based on your app's background
-          transform: "translate(-25%, -25%)" // Center the badge to the outer edge of the avatar
-        }} />
-      </div>
-    </Group>
-  )
-}
+import UserAvatar from "../../../../components/UserAvatar"
+import AppShellHeader from "../../../../components/Header"
 
 const CJProfile = () => {
   const theme = useMantineTheme()
 
   return (
     <AppShell
-    padding="md"
-    header={
-    <Header display={"flex"} height={60} bg={theme.colors.dark[8]} withBorder={false} px={"2xl"}>
+      padding="md"
+      header={<AppShellHeader title="CJ" />}
+      footer={
+        <Footer height={"auto"} p="xs" bg={"transparent"} withBorder={false}>
+          <Button mb={"lg"} fullWidth variant="transparent" size="md">
+            <Text color={theme.colors.red[8]}>Reset Memories</Text>
+          </Button>
+        </Footer>
+      }
+      styles={(theme) => ({
+        main: { backgroundColor: theme.colors.dark[8], paddingBottom: "4rem" }
+      })}
+    >
+      <Container maw={"100%"} p={"xxl"} style={{}}>
+        <UserAvatar src={userIcon} online={true} size={"lg"} />
 
-  <Flex
-    direction={"row"}
-    gap={"xl"}
-    align={"center"}
-    style={{
-      width: "100%"
-    }}
-    justify='space-between'
-  >
-  <IconChevronLeft
-  style={{
-    cursor: "pointer",
-    width: rem(32),
-    height: rem(32)
-  }}/>
-  <Flex
-    direction={"row"}
-    gap={"xl"}
-    align={"center"}
-    style={{
-      cursor: "pointer"
-    }}
-    justify='center'
-    columnGap={"sm"}
-  >
-    <div>
-    <Text size={"lg"} weight={"800"} style={{
-    }}>CJ</Text>
-    </div>
-
-  </Flex>
-
-  <IconDots
-  style={{
-    cursor: "pointer",
-    width: rem(32),
-    height: rem(32)
-  }}/>
-  </Flex>
-
-    </Header>}
-    styles={(theme) => ({
-      main: { backgroundColor: theme.colors.dark[8],
-      paddingBottom: "4rem" }
-    })}
-  >
-          <UserAvatar src={userIcon} alt="User avatar" online={true} />
-
-          <Text
+        <Text
           align="center"
           size="md"
           color={theme.colors.gray[4]}
           mt={"xl"}
+          weight={"600"}
         >
           Cojourney Guide
         </Text>
-        <Flex
-        my={"4xl"}
-        direction={"column"}
-        rowGap={"sm"}
-        justify={"center"}
-        align={"center"}>
-          <div>
-          <Switch
-              size="md"
-              mb={"sm"}
-      label="Friendship Connections"/>
-                  <Switch
-              size="md"
-
-      label="Partnership Connections"
-    />
-          </div>
-
-          </Flex>
-        <Flex
-        justify={"center"}>
-        <Button
-      size="lg"
-      mt={"lg"}
-      px={"3xl"}
-      radius={"lg"}
-      style={{
-        backgroundColor: theme.colors.red[9],
-        color: theme.colors.gray[4],
-        alignSelf: "center"
-      }}
-    >
+        <Group>
           <Text
-      align="center"
-      size="sm"
-      color={theme.colors.gray[3]}
-    >
-      Reset Memories
-    </Text>
-    </Button>
-        </Flex>
-  </AppShell>
-
+            size="sm"
+            color={theme.colors.gray[4]}
+            mt={"2xl"}
+            // mb={"sm"}
+            weight={"400"}
+            italic={true}
+          >
+            I&apos;m here for anything you need. No problem is too big or too
+            small!
+          </Text>
+          <Text
+            w={"100%"}
+            align="right"
+            size="sm"
+            color={theme.colors.gray[4]}
+            weight={"400"}
+          >
+            --CJ
+          </Text>
+        </Group>
+      </Container>
+    </AppShell>
   )
 }
 

@@ -1,17 +1,14 @@
 import React from "react"
-import backgroundImage from "../../../../../public/images/background-potrait-alpha-10.svg"
+import backgroundImage from "../../../../../public/images/background-friends.svg"
 import { Text, Container, Paper, useMantineTheme } from "@mantine/core"
 
 const Splash = (): JSX.Element => {
-const theme = useMantineTheme()
-
+  const theme = useMantineTheme()
   return (
     <Container
       fluid
+      p={"xxl"}
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         height: "100vh",
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",
@@ -19,23 +16,28 @@ const theme = useMantineTheme()
         backgroundColor: "#0e0e0e"
       }}
     >
-      <Paper
-      bg={"transparent"}
+      <Text
+        size={"xxl"}
+        weight={600}
+        mb={6}
+        color={theme.colors.gray[0]}
+        style={{
+          textShadow: "0 0 10px #00000045",
+          lineHeight: "initial"
+        }}
       >
-        <Text
-          align="center"
-          size={"2xl"}
-          weight={500}
-          mb={6}
-          color={theme.colors.gray[0]}
-        >
-          Cojourney
-        </Text>
-        <Text
-          align="center"
-          size="md"
-          color={theme.colors.gray[4]}
-        >
+        COJOURNEY
+      </Text>
+      <Paper
+        bg={"transparent"}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "80vh"
+        }}
+      >
+        <Text align="center" size="lg" color={theme.colors.gray[5]}>
           We&apos;re going to make it. Together.
         </Text>
       </Paper>
