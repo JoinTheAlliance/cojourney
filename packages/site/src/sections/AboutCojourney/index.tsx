@@ -41,7 +41,9 @@ export default function AboutCojourney () {
           />
           <div className="flex flex-col justify-around">
             <h1 className="mb-4 text-4xl font-bold">CJ</h1>
-            <p className="text-xl">Life is short. Let’s try to make the most of it!</p>
+            <p className="text-xl">
+              Life is short. Let’s try to make the most of it!
+            </p>
           </div>
         </div>
       </div>

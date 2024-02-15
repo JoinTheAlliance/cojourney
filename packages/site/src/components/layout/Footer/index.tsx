@@ -1,4 +1,23 @@
 import Image from 'next/image'
+
+const socials = [
+  {
+    name: 'x',
+    link: '/#'
+  },
+  {
+    name: 'discord',
+    link: '/#'
+  },
+  {
+    name: 'tiktok',
+    link: '/#'
+  },
+  {
+    name: 'github',
+    link: 'https://github.com/CojourneyAI/cojourney'
+  }
+]
 const Footer: React.FC = () => {
   return (
     <footer
@@ -13,10 +32,14 @@ const Footer: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-2">
               <p className="font-thin text-white w-[350px] mb-4">
-                Cojourney is created by people like you. Interested in working with us?{' '}
-                <span className="font-semibold cursor-pointer">
+                Cojourney is created by people like you. Interested in working
+                with us?{' '}
+                <a
+                  href="mailto:hello@cojourney.app"
+                  className="font-semibold cursor-pointer"
+                >
                   Get in touch.
-                </span>
+                </a>
               </p>
             </div>
           </div>
@@ -36,34 +59,22 @@ const Footer: React.FC = () => {
           Cojourney
         </h1>
         <div className="flex items-center justify-around w-32 md:w-96 ">
-          <Image
-            height={50}
-            width={50}
-            alt=""
-            src="/images/social/x.svg"
-            className="w-4 h-4 md:w-10 md:h-10"
-          />
-          <Image
-            height={50}
-            width={50}
-            alt=""
-            src="/images/social/discord.svg"
-            className="w-4 h-4 md:w-10 md:h-10"
-          />
-          <Image
-            height={50}
-            width={50}
-            alt=""
-            src="/images/social/tiktok.svg"
-            className="w-4 h-4 md:w-10 md:h-10"
-          />
-          <Image
-            height={50}
-            width={50}
-            alt=""
-            src="/images/social/gitHub.svg"
-            className="w-4 h-4 md:w-10 md:h-10"
-          />
+          {socials.map((social) => (
+            <a
+              key={social.name}
+              href={social.link}
+              target={`${social.link !== '/#' ? '_blank' : '_self'}`}
+              rel={` ${social.link !== '/#' ? 'noopener noreferrer' : ''}`}
+            >
+              <Image
+                height={50}
+                width={50}
+                alt=""
+                src={`/images/social/${social.name}.svg`}
+                className="w-4 h-4 transition duration-200 ease-in-out md:w-10 md:h-10 hover:scale-110"
+              />
+            </a>
+          ))}
         </div>
       </div>
     </footer>

@@ -5,16 +5,15 @@ import Navbar from '@/components/layout/Navbar'
 import AboutCojourney from '@/sections/AboutCojourney'
 import Header from '@/sections/Header'
 import Pricing from '@/sections/Pricing'
-import Image from 'next/image'
 
 export default function Home () {
   return (
     <main>
       <div className="bg-[#0D121F] text-white relative">
         <div
-          className="absolute top-0 left-0 w-full h-full bg-cover bg-no-repeat bg-center"
+          className="absolute top-0 left-0 w-full h-full bg-center bg-no-repeat bg-cover"
           style={{
-            backgroundImage: 'url(\'/images/NewBackground.jpg\')',
+            backgroundImage: "url('/images/NewBackground.jpg')",
             // always cover the whole div
             backgroundSize: 'cover'
           }}

@@ -11,10 +11,14 @@ const Privacy = () => {
       <section className="mb-6">
         <h2 className="text-xl font-semibold mb-4">Overview</h2>
         <p className="mb-4">
-          {'Clio Dynamics, Inc. ("we", "us", or "our") operates the Cojourney application and website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.'}
+          {
+            'Clio Dynamics, Inc. ("we", "us", or "our") operates the Cojourney application and website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.'
+          }
         </p>
         <p className="mb-4">
-          {'We prioritize your privacy and operate with transparency. We do not collect personal user data, including cookies, except for the essential data required for the Service\'s functionality.'}
+          {
+            "We prioritize your privacy and operate with transparency. We do not collect personal user data, including cookies, except for the essential data required for the Service's functionality."
+          }
         </p>
       </section>
 
@@ -52,7 +56,9 @@ const Privacy = () => {
           Changes to This Privacy Policy
         </h2>
         <p className="mb-4">
-          {'We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "effective date" at the top.'}
+          {
+            'We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "effective date" at the top.'
+          }
         </p>
         <p className="mb-4">
           You are advised to review this Privacy Policy periodically for any

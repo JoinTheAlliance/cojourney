@@ -29,15 +29,16 @@ const Header = () => {
           />
         </div>
       </div>
-      <p className="mb-16 text-lg font-semibold leading-normal text-white text-shadow max-w-xl">
-        Cojourney is an AI-powered social network for meaningful connections between real people
-        </p>
+      <p className="max-w-xl mb-16 text-lg font-semibold leading-normal text-white text-shadow">
+        Cojourney is an AI-powered social network for meaningful connections
+        between real people
+      </p>
       <div className="flex items-center justify-center gap-8">
         <a
           href="https://web.cojourney.app"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-[#0075FF] py-3 px-2 md:px-12 rounded-lg capitalize font-bold"
+          className="bg-[#0075FF] py-3 px-2 md:px-12 rounded-lg capitalize font-bold hover:scale-110 transition duration-200 ease-in-out"
         >
           Try it now free
         </a>

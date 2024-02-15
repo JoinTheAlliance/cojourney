@@ -1,10 +1,10 @@
 import { ActionIcon, Loader, Text, TextInput } from "@mantine/core"
 import { showNotification } from "@mantine/notifications"
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useSession } from "@supabase/auth-helpers-react"
 import React, { useEffect, useState } from "react"
 import { Send } from "react-feather"
 import { type RealtimeChannel } from "@supabase/supabase-js"
-import { type Database } from "../../../../../types/database.types"
+// import { type Database } from "../../../../../types/database.types"
 import useGlobalStore from "../../../../store/useGlobalStore"
 import useTypingBroadCast from "../../../../Hooks/rooms/useTypingBroadcast"
 
@@ -17,7 +17,7 @@ const MessagesTextInput = ({
   roomChannel,
   inputHandler
 }: Props): JSX.Element => {
-  const supabase = useSupabaseClient<Database>()
+  // const supabase = useSupabaseClient<Database>()
   const session = useSession()
 
   const {
