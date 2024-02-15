@@ -30,7 +30,7 @@ export default function AboutCojourney () {
       <h1 className={'my-16 text-2xl font-bold md:text-4xl text-white'}>
         Powered by AI. Made for Humanity.
       </h1>
-      <div className="bg-[#87888F] rounded-3xl p-8 max-w-7xl md:w-4/5 w-full mb-16">
+      <div className="bg-[#87888F] rounded-3xl p-8 max-w-4xl md:w-4/5 w-full mb-16">
         <div className="flex">
           <Image
             src="/images/profile.png"
@@ -41,7 +41,7 @@ export default function AboutCojourney () {
           />
           <div className="flex flex-col justify-around">
             <h1 className="mb-4 text-4xl font-bold">CJ</h1>
-            <p>I’m here to help you make the most of your time here.</p>
+            <p className="text-xl">Life is short. Let’s try to make the most of it!</p>
           </div>
         </div>
       </div>

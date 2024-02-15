@@ -11,20 +11,18 @@ export default function Home () {
   return (
     <main>
       <div className="bg-[#0D121F] text-white relative">
-        <Image
-          src="/images/NewBackground.png"
-          alt="bg"
-          fill
-          className="absolute top-0 left-0 object-cover w-full h-full md:object-fill"
+        <div
+          className="absolute top-0 left-0 w-full h-full bg-cover bg-no-repeat bg-center"
+          style={{
+            backgroundImage: 'url(\'/images/NewBackground.jpg\')',
+            // always cover the whole div
+            backgroundSize: 'cover'
+          }}
         />
         <Navbar />
         <Header />
       </div>
       <AboutCojourney />
-      {/* <Benefits /> */}
-      {/* <HowItWorks /> */}
-      {/* <WhyUs /> */}
-      {/* <Testimonials /> */}
       <Pricing />
       <Footer />
     </main>

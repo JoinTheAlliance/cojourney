@@ -22,7 +22,7 @@ const links = [
 ]
 
 const Navbar = () => {
-  // const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   // const supabaseClient = useSupabaseClient()
 
@@ -55,7 +55,7 @@ const Navbar = () => {
 
   return (
     <div
-      className={`fixed top-0 w-full  transition duration-500  py-4 px-16 ${
+      className={`fixed top-0 w-full  transition duration-500  py-4 px-8 ${
         scrolled ? 'bg-blue-500 shadow-lg' : 'bg-transparent'
       } z-10`}
     >
@@ -96,7 +96,7 @@ const Navbar = () => {
             Open App
           </a>
         </div>
-        {/* <div className="lg:hidden">
+        <div className="lg:hidden">
           <button
             aria-label="Open Menu"
             title="Open Menu"
@@ -129,21 +129,6 @@ const Navbar = () => {
                       title="Company"
                       className="inline-flex items-center"
                     >
-                      <svg
-                        className="w-8 text-deep-purple-accent-400"
-                        viewBox="0 0 24 24"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeMiterlimit="10"
-                        stroke="currentColor"
-                        fill="none"
-                      >
-                        <rect x="3" y="1" width="7" height="12" />
-                        <rect x="3" y="17" width="7" height="6" />
-                        <rect x="14" y="1" width="7" height="6" />
-                        <rect x="14" y="11" width="7" height="12" />
-                      </svg>
                       <span className="ml-2 text-xl font-bold tracking-wide text-gray-800 uppercase">
                         Cojourney
                       </span>
@@ -153,7 +138,7 @@ const Navbar = () => {
                     <button
                       aria-label="Close Menu"
                       title="Close Menu"
-                      className="p-2 -mt-2 -mr-2 transition duration-200 rounded hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                      className="p-2 transition duration-200 rounded hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
                       onClick={() => { setIsMenuOpen(false) }}
                     >
                       <svg className="w-5 text-gray-600" viewBox="0 0 24 24">
@@ -202,7 +187,7 @@ const Navbar = () => {
               </div>
             </div>
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   )
