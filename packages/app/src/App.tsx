@@ -1,5 +1,4 @@
 import { MantineProvider } from "@mantine/core"
-import { useColorScheme } from "@mantine/hooks"
 import { ModalsProvider } from "@mantine/modals"
 import { Notifications } from "@mantine/notifications"
 import { SessionContextProvider } from "@supabase/auth-helpers-react"
@@ -84,12 +83,11 @@ const router = createBrowserRouter([
 ])
 
 const App = (): JSX.Element => {
-  const colorScheme = useColorScheme()
   return (
     <SessionContextProvider supabaseClient={supabase}>
       <MantineProvider
         theme={{
-          colorScheme,
+          colorScheme: "dark",
           primaryColor: "blue",
           defaultRadius: "md",
           colors: {
