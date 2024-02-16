@@ -15,6 +15,7 @@ import SideMenu from "../../components/SideMenu/SideMenu"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import useRootStyles from "./useRootStyles"
+// import OAuthUser from "../../components/OAuthUser"
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -109,7 +110,7 @@ const Root = (): JSX.Element => {
 
   if (!session) {
     return <AuthUser />
-    // return <OAuthUser />;
+    // return <OAuthUser />
   }
 
   if (session && !user.registerComplete) {

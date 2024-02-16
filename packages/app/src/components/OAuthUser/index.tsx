@@ -1,30 +1,51 @@
 import React from "react"
 
 export default function OAuthUser () {
+  const loginProviders = [
+    {
+      name: "Twitter",
+      icon: "/icons/x.svg"
+    },
+    {
+      name: "Discord",
+      icon: "/icons/discord.svg"
+    },
+    {
+      name: "Google",
+      icon: "/icons/google.svg"
+    },
+    {
+      name: "Github",
+      icon: "/icons/github.svg"
+    }
+  ]
   return (
     <div style={{
       height: "100vh",
       width: "100vw",
-      backgroundImage: "url(\"../../../public/images/background.png\")",
+      backgroundImage: "url(\"../../../public/images/NewBackground.jpg\")",
       backgroundSize: "cover",
-      backgroundPosition: "0% 10%",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
       display: "flex",
       justifyContent: "center",
       alignItems: "center"
     }}>
+      <h1 style={{
+          padding: "1.2rem 2.2rem",
+          width: "20rem",
+          fontWeight: "bold",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          color: "beige"
+        }}>Cojourney</h1>
       <div style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center"
       }}>
-        <h1 style={{
-          padding: "1.2rem",
-          width: "20rem",
-          fontWeight: "bold",
-          textAlign: "center",
-          color: "beige"
-        }}>Cojourney</h1>
         <div style={{
           width: "20rem",
           backgroundColor: "rgba(0, 0, 0, 0.8)",
@@ -39,50 +60,28 @@ export default function OAuthUser () {
           <h3 style={{
             fontSize: "1rem",
             fontWeight: "normal"
-          }}>Please login to continue</h3>
+          }}>Login to continue</h3>
           <div style={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-around",
             alignItems: "center",
             paddingTop: "1rem",
             width: "100%"
           }}>
-            <img
-              src={"/icons/x.svg"}
-              alt="Twitter"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
-            <img
-              src={"/icons/discord.svg"}
-              alt="Discord"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
-            <img
-              src={"/icons/google.svg"}
-              alt="Google"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
-            <img
-              src={"/icons/github.svg"}
-              alt="Github"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
+            {
+              loginProviders.map((provider, index) => (
+                <img
+                  key={index}
+                  src={provider.icon}
+                  alt={provider.name}
+                  style={{
+                    width: "2.5rem",
+                    height: "2.5rem",
+                    cursor: "pointer"
+                  }}
+                />
+              ))
+            }
           </div>
         </div>
       </div>
