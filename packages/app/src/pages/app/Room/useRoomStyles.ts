@@ -1,4 +1,5 @@
 import { createStyles } from "@mantine/core"
+import { isSmartphone } from "../../../helpers/functions"
 
 const useRoomStyles = createStyles((theme) => ({
   headerContainer: {
@@ -17,7 +18,7 @@ const useRoomStyles = createStyles((theme) => ({
       height: "calc(100vh - 200px)"
     },
     "@media (max-width: 900px)": {
-      height: "calc(100vh - 160px)",
+      height: isSmartphone ? "" : "calc(100vh - 160px)",
       position: "relative"
     }
   },

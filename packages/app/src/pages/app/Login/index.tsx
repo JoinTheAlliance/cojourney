@@ -15,6 +15,7 @@ import google from "../../../../public/images/google.svg"
 import github from "../../../../public/images/github.svg"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import { type Database } from "../../../../types/database.types"
+import { isSmartphone } from "../../../helpers/functions"
 
 const Welcome = (): JSX.Element => {
   const theme = useMantineTheme()
@@ -26,13 +27,14 @@ const Welcome = (): JSX.Element => {
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: "/"
+        redirectTo: isSmartphone ? "cojourney://" : "/"
       }
     })
   }
 
   return (
     <Container
+      pt={isSmartphone ? "4xl" : "xxl"}
       fluid
       p={"xxl"}
       bg={theme.black}

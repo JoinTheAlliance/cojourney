@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import backgroundImage from "../../../../public/images/background-friends.svg"
 import { Text, Container, Paper, useMantineTheme } from "@mantine/core"
 import { useNavigate } from "react-router-dom"
+import { isSmartphone } from "../../../helpers/functions"
 
 const Splash = (): JSX.Element => {
   const theme = useMantineTheme()
@@ -18,6 +19,7 @@ const Splash = (): JSX.Element => {
   })
   return (
     <Container
+      pt={isSmartphone ? "4xl" : "xxl"}
       fluid
       p={"xxl"}
       style={{
