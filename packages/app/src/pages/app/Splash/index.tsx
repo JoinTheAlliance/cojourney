@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import backgroundImage from "../../../../../public/images/background-friends.svg"
+import backgroundImage from "../../../../public/images/background-friends.svg"
 import { Text, Container, Paper, useMantineTheme } from "@mantine/core"
 import { useNavigate } from "react-router-dom"
 
@@ -8,9 +8,13 @@ const Splash = (): JSX.Element => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    setTimeout(() => {
-      navigate("/welcome")
-    }, 2000)
+    const redirectToWelcome = setTimeout(() => {
+      navigate("/login")
+    }, 3000)
+
+    return () => {
+      clearTimeout(redirectToWelcome)
+    }
   })
   return (
     <Container

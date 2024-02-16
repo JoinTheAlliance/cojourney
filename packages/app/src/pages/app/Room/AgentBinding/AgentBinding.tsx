@@ -63,7 +63,7 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
     startAgent()
   }, [supabase, userId])
 
-  return <>&nbsp;</>
+  return <></>
 }
 
 export default AgentBinding

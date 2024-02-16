@@ -9,19 +9,14 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import "./App.css"
 import LoadingOverlay from "./components/LoadingOverlay/LoadingOverlay"
 import constants from "./constants/constants"
-// import Error404 from "./pages/404/Error404"
-// import CJProfile from "./pages/app/CJProfile"
-// import RoomLayout from "./pages/app/Room/index"
-// import Root from "./pages/app/root"
-// import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
-// import UserProfile from "./pages/app/UserProfile"
-import Splash from "./pages/app/Screens/Splash"
-import Welcome from "./pages/app/Screens/Welcome"
-import Chat from "./pages/app/Screens/Chat"
-import ConnectionsScreen from "./pages/app/Screens/Connections"
-import CJProfileScreen from "./pages/app/Screens/CJProfile"
-import FriendProfile from "./pages/app/Screens/FriendProfile"
-import MyAccount from "./pages/app/Screens/MyAccount"
+import Error404 from "./pages/404/Error404"
+import CJProfile from "./pages/app/CJProfile"
+import RoomLayout from "./pages/app/Room/index"
+import Root from "./pages/app/root"
+import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
+import UserProfile from "./pages/app/UserProfile"
+import FriendProfile from "./pages/app/FriendProfile"
+import Welcome from "./pages/app/Login"
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -29,56 +24,36 @@ const supabase = createClient(
 )
 
 const router = createBrowserRouter([
-  // {
-  //   path: "/",
-  //   element: <Root />,
-  //   errorElement: <Error404 />,
-  //   children: [
-  //     {
-  //       path: "/chat/:roomId",
-  //       element: <RoomLayout />
-  //     },
-  //     {
-  //       path: "/account",
-  //       element: <UserPreferences />
-  //     },
-  //     {
-  //       path: "/profile",
-  //       element: <UserProfile />
-  //     },
-  //     {
-  //       path: "/cjprofile",
-  //       element: <CJProfile />
-  //     }
-  //   ]
-  // },
   {
     path: "/",
-    element: <Splash />
+    element: <Root />,
+    errorElement: <Error404 />,
+    children: [
+      {
+        path: "/chat/:roomId",
+        element: <RoomLayout />
+      },
+      {
+        path: "/account",
+        element: <UserPreferences />
+      },
+      {
+        path: "/profile",
+        element: <UserProfile />
+      },
+      {
+        path: "/friend-profile",
+        element: <FriendProfile />
+      },
+      {
+        path: "/cjprofile",
+        element: <CJProfile />
+      }
+    ]
   },
   {
-    path: "/welcome",
+    path: "/login",
     element: <Welcome />
-  },
-  {
-    path: "/chat",
-    element: <Chat />
-  },
-  {
-    path: "/connections",
-    element: <ConnectionsScreen />
-  },
-  {
-    path: "/cj-profile",
-    element: <CJProfileScreen />
-  },
-  {
-    path: "/friend-profile",
-    element: <FriendProfile />
-  },
-  {
-    path: "/my-account",
-    element: <MyAccount />
   }
 ])
 
@@ -122,7 +97,10 @@ const App = (): JSX.Element => {
             "2xl": "2rem",
             "3xl": "3rem",
             "4xl": "4rem",
-            "5xl": "5rem"
+            "5xl": "5rem",
+            "6xl": "6rem",
+            "7xl": "7rem",
+            "8xl": "8rem"
           }
         }}
         withGlobalStyles

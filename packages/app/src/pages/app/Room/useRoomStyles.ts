@@ -3,10 +3,10 @@ import { createStyles } from "@mantine/core"
 const useRoomStyles = createStyles((theme) => ({
   headerContainer: {
     position: "relative",
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white
+    borderBottom: "0.0625rem solid #2A2A2A"
   },
   messagesContainer: {
+    padding: "1rem",
     paddingTop: 20,
     position: "relative",
     width: "100%",
@@ -17,14 +17,15 @@ const useRoomStyles = createStyles((theme) => ({
       height: "calc(100vh - 200px)"
     },
     "@media (max-width: 900px)": {
-      height: "calc(100vh - 200px)",
+      height: "calc(100vh - 160px)",
       position: "relative"
     }
   },
   textInputContainer: {
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
-    width: "100%"
+    padding: "1rem",
+    position: "absolute",
+    bottom: "0",
+    width: "-webkit-fill-available"
   },
   desktopSideMenu: {
     position: "fixed",

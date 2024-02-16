@@ -1,4 +1,5 @@
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Container,
   Group,
@@ -8,21 +9,30 @@ import {
   useMantineTheme
 } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { type Database } from "../../../../types/database.types"
 import useRoomStyles from "../Room/useRoomStyles"
 import ProfileHeader from "../../../components/ProfileHeader"
 import UserAvatar from "../../../components/UserAvatar"
 import userIcon from "../../../../public/images/user-avatar-robot.svg"
 
 export default function Profile () {
+  const navigate = useNavigate()
   const isMobile = useMediaQuery("(max-width: 900px)")
+  const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
+
+  const logout = () => {
+    supabase.auth.signOut()
+    navigate("/login")
+  }
 
   const theme = useMantineTheme()
 
   return (
     <div>
       <div className={roomClasses.headerContainer}>
-        <ProfileHeader title="CJ" />
+        <ProfileHeader title="John Doe" />
       </div>
       <div
         className={roomClasses.messagesContainer}
@@ -48,7 +58,7 @@ export default function Profile () {
               mt={"xl"}
               weight={"600"}
             >
-              Cojourney Guide
+              8 Mutual Connections
             </Text>
             <Group>
               <Text
@@ -80,8 +90,11 @@ export default function Profile () {
               gap: theme.spacing.xs
             }}
           >
-            <Button mb={"lg"} fullWidth variant="transparent" size="md">
-              <Text color={theme.colors.red[8]}>Reset Memories</Text>
+            <Button fullWidth variant="transparent" size="md">
+              <Text color={theme.white}>Unfriend</Text>
+            </Button>
+            <Button fullWidth variant="transparent" size="md" onClick={logout}>
+              <Text color={theme.colors.red[8]}>Block</Text>
             </Button>
           </Group>
         </Paper>

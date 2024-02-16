@@ -1,5 +1,5 @@
 import React from "react"
-import backgroundImage from "../../../../../public/images/background-friends.svg"
+import backgroundImage from "../../../../public/images/background-friends.svg"
 import {
   Image,
   Container,
@@ -9,18 +9,26 @@ import {
   Flex,
   Paper
 } from "@mantine/core"
-import twitter from "../../../../../public/images/x.svg"
-import discord from "../../../../../public/images/discord.svg"
-import google from "../../../../../public/images/google.svg"
-import github from "../../../../../public/images/github.svg"
-import { useNavigate } from "react-router-dom"
+import twitter from "../../../../public/images/x.svg"
+import discord from "../../../../public/images/discord.svg"
+import google from "../../../../public/images/google.svg"
+import github from "../../../../public/images/github.svg"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { type Database } from "../../../../types/database.types"
 
 const Welcome = (): JSX.Element => {
   const theme = useMantineTheme()
-  const navigate = useNavigate()
+  const supabase = useSupabaseClient<Database>()
 
-  const handleLoginViaProvider = (_provider: string) => {
-    navigate("/connections")
+  const handleLoginViaProvider = async (
+    provider: "google" | "discord" | "twitter" | "github"
+  ) => {
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: "/"
+      }
+    })
   }
 
   return (
@@ -80,28 +88,36 @@ const Welcome = (): JSX.Element => {
                 style={{
                   cursor: "pointer"
                 }}
-                onClick={() => { handleLoginViaProvider("twitter") }}
+                onClick={() => {
+                  handleLoginViaProvider("twitter")
+                }}
               />
               <Image
                 src={discord}
                 style={{
                   cursor: "pointer"
                 }}
-                onClick={() => { handleLoginViaProvider("discord") }}
+                onClick={() => {
+                  handleLoginViaProvider("discord")
+                }}
               />
               <Image
                 src={google}
                 style={{
                   cursor: "pointer"
                 }}
-                onClick={() => { handleLoginViaProvider("google") }}
+                onClick={() => {
+                  handleLoginViaProvider("google")
+                }}
               />
               <Image
                 src={github}
                 style={{
                   cursor: "pointer"
                 }}
-                onClick={() => { handleLoginViaProvider("github") }}
+                onClick={() => {
+                  handleLoginViaProvider("github")
+                }}
               />
             </Flex>
           </Group>

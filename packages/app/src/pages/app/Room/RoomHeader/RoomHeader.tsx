@@ -1,6 +1,5 @@
-import { Avatar, Flex, Tooltip } from "@mantine/core"
+import { Flex, Group, Tooltip, Text, useMantineTheme } from "@mantine/core"
 import React from "react"
-import { MoreHorizontal } from "react-feather"
 import { useNavigate } from "react-router-dom"
 import UserAvatarWithIndicator from "../../../../components/UserAvatarWithIndicator/UserAvatarWithIndicator"
 import useGlobalStore from "../../../../store/useGlobalStore"
@@ -16,84 +15,48 @@ const RoomHeader = (): JSX.Element => {
   if (!roomData || !roomParticipants) {
     return <p>Error</p>
   }
+  const theme = useMantineTheme()
 
   return (
     <div style={{ zIndex: "9999" }}>
       <div className={classes.container}>
         <div className={classes.headerLeft}>
           <div className={classes.participants}>
-            <Avatar.Group spacing="sm">
-              {roomParticipants.slice(0, 3).map((participant) => {
-                if (!participant.userData) return null
-
-                return (
-                  <Tooltip
-                    key={participant.id}
+            <Group
+              noWrap
+              onClick={() => {
+                navigate("/cjprofile")
+              }}
+            >
+              <Tooltip
+                key={roomParticipants[roomParticipants.length - 1].id}
+                // @ts-expect-error
+                label={roomParticipants[roomParticipants.length - 1].userData.name}
+                withArrow
+              >
+                <div>
+                  <UserAvatarWithIndicator
                     // @ts-expect-error
-                    label={participant.userData.name}
-                    withArrow
-                  >
-                    <div>
-                      <UserAvatarWithIndicator
-                        // @ts-expect-error
-                        image={participant.userData.avatar_url}
-                        size={40}
-                        // @ts-expect-error
-                        user_email={participant.userData.email}
-                      />
-                    </div>
-                  </Tooltip>
-                )
-              })}
-              {roomParticipants.length > 3 && (
-                <Avatar radius="xl">{`+${roomParticipants.length - 3}`}</Avatar>
-              )}
-            </Avatar.Group>
+                    image={roomParticipants[roomParticipants.length - 1].userData.avatar_url}
+                    size={40}
+                    // @ts-expect-error
+                    user_email={roomParticipants[roomParticipants.length - 1].userData.email}
+                  />
+                </div>
+              </Tooltip>
+              <Group display={"block"}>
+                <Flex align={"baseline"}>
+                  <Text color={theme.white} weight={500}>
+                    {"CJ"}
+                  </Text>
+                </Flex>
+                <Text size="xs" color="dimmed">
+                  {"Online"}
+                </Text>
+              </Group>
+            </Group>
           </div>
         </div>
-        <Flex align="center">
-          <Tooltip
-            withArrow
-            label="CJ Profile"
-          >
-            <MoreHorizontal
-              style={{ cursor: "pointer", color: "#757474" }}
-              onClick={() => { navigate("/cjprofile") }}
-            />
-          </Tooltip>
-        </Flex>
-        {/* <Flex align="center">
-          <Tooltip
-            withArrow
-            label="Use AI tools to help you write your messages, or to be a menace to your friends."
-          >
-            <Button
-              onClick={() => {
-                setApp({
-                  isTldrMenuOpen: true,
-                });
-              }}
-              mr={10}
-              variant="light"
-            >
-              ChatGPT
-            </Button>
-          </Tooltip>
-          {isMobile && (
-            <Tooltip
-              label="Room Settings"
-              withArrow
-            >
-              <ActionIcon
-                color="blue"
-                onClick={(): void => setIsRoomSettingsOpened(true)}
-                size="xl"
-              >
-                <Settings size={20} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Flex> */}
       </div>
     </div>
   )

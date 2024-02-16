@@ -3,6 +3,7 @@ import { IconChevronLeft, IconDots } from "@tabler/icons-react"
 import React from "react"
 import UserAvatar from "../UserAvatar"
 import { useNavigate } from "react-router-dom"
+import { useMediaQuery } from "@mantine/hooks"
 
 const AppShellHeader = ({
   title,
@@ -15,6 +16,7 @@ const AppShellHeader = ({
 }) => {
   const theme = useMantineTheme()
   const navigate = useNavigate()
+  const isMobile = useMediaQuery("(max-width: 900px)")
   return (
     <Header
       display={"flex"}
@@ -22,6 +24,7 @@ const AppShellHeader = ({
       px="xl"
       bg={"transparent"}
       withBorder={false}
+      ml={isMobile ? 0 : "25vw"}
     >
       <Flex
         direction={"row"}
@@ -31,16 +34,17 @@ const AppShellHeader = ({
           width: "100%"
         }}
         justify="space-between"
-      >
-        <IconChevronLeft
-          style={{
-            cursor: "pointer",
-            width: rem(32),
-            height: rem(32),
-            color: theme.colors.gray[6]
-          }}
-          onClick={() => { navigate(-1) }}
-        />
+      >{
+        isMobile ? <IconChevronLeft
+        style={{
+          cursor: "pointer",
+          width: rem(32),
+          height: rem(32),
+          color: theme.colors.gray[6]
+        }}
+        onClick={() => { navigate(-1) }}
+      /> : <div></div>
+      }
         {src ? (
           <Flex
             direction={"row"}

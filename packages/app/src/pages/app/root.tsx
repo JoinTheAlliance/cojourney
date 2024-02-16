@@ -9,12 +9,12 @@ import useListenToRoomChanges from "../../Hooks/rooms/useListenToRoomChanges"
 import useListenToUnreadMessagesChanges from "../../Hooks/rooms/useListenToUnreadMessages"
 import useLoadUnreadMessages from "../../Hooks/rooms/useLoadUnreadMessages"
 import useLoadUserData from "../../Hooks/useLoadUserData"
-import AuthUser from "../../components/AuthUser/AuthUser"
 import RegisterUser from "../../components/RegisterUser/RegisterUser"
 import SideMenu from "../../components/SideMenu/SideMenu"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import useRootStyles from "./useRootStyles"
+import Splash from "./Splash"
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -108,7 +108,7 @@ const Root = (): JSX.Element => {
   }, [session])
 
   if (!session) {
-    return <AuthUser />
+    return <Splash />
     // return <OAuthUser />;
   }
 
