@@ -31,20 +31,29 @@ export default function AboutCojourney () {
         Powered by AI. Made for Humanity.
       </h1>
       <div className="bg-[#87888F] rounded-3xl p-8 max-w-4xl md:w-4/5 w-full mb-16">
-        <div className="flex">
+        <div className="flex items-center">
           <Image
             src="/images/profile.png"
             width={70}
             height={70}
-            className="w-20 h-20 mr-8"
+            className="w-20 h-20 rounded-full mr:2 md:mr-8 md:rounded-none md:rounded-l-lg"
             alt="profile"
           />
-          <div className="flex flex-col justify-around">
-            <h1 className="mb-4 text-4xl font-bold">CJ</h1>
-            <p className="text-xl">
+          <div className="ml-4 md:ml-0">
+            <h2 className="mb-4 text-2xl font-bold text-gray-800 md:text-4xl ">
+              CJ
+            </h2>
+            <p className="hidden text-[#1D1D1D] text-lg md:text-xl md:block">
+              {' '}
               Life is short. Let’s try to make the most of it!
             </p>
           </div>
+        </div>
+        <div className="py-4 md:hidden">
+          <p className="text-[#1D1D1D] text-lg md:text-xl">
+            {' '}
+            Life is short. Let’s try to make the most of it!
+          </p>
         </div>
       </div>
       {infos.map((info, index) => {
@@ -56,7 +65,7 @@ export default function AboutCojourney () {
             } items-center gap-6 justify-between max-w-7xl md:w-4/5 w-full`}
           >
             <div className="flex flex-col items-start w-full gap-6 md:w-1/2">
-              <h1 className="text-[24px] text-white font-semibold">
+              <h1 className="text-xl font-semibold text-white md:text-2xl">
                 {info.title}
               </h1>
               <div className="flex flex-col gap-4">
@@ -68,7 +77,7 @@ export default function AboutCojourney () {
               </div>
             </div>
             <div
-              className={`flex ${
+              className={`flex justify-center md:justify-normal ${
                 index % 2 !== 0 ? '' : 'md:justify-end'
               } w-full  md:w-1/2`}
             >
