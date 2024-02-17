@@ -14,7 +14,7 @@ const socials = [
     link: '/#'
   },
   {
-    name: 'gh',
+    name: 'github',
     link: 'https://github.com/CojourneyAI/cojourney'
   }
 ]
