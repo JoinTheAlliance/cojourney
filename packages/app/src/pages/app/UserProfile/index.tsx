@@ -13,11 +13,18 @@ import {
 import { ChevronLeft } from "react-feather"
 import { useMediaQuery } from "@mantine/hooks"
 import useProfileStyles from "./index.styles"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { type Database } from "../../../../types/database.types"
 
 export default function Profile () {
   const { classes } = useProfileStyles()
   const navigate = useNavigate()
   const isMobile = useMediaQuery("(max-width: 900px)")
+  const supabase = useSupabaseClient<Database>()
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    console.log(error)
+  }
 
   return (
     <div className={classes.container}>
@@ -101,7 +108,7 @@ export default function Profile () {
             >
               Subscription Settings
             </Title>
-            <Text className={classes.logoutButton}>Logout</Text>
+            <Text onClick={signOut} className={classes.logoutButton}>Logout</Text>
           </Flex>
         </Flex>
       </Flex>
