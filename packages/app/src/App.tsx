@@ -1,5 +1,4 @@
 import { MantineProvider } from "@mantine/core"
-import { useColorScheme } from "@mantine/hooks"
 import { ModalsProvider } from "@mantine/modals"
 import { Notifications } from "@mantine/notifications"
 import { SessionContextProvider } from "@supabase/auth-helpers-react"
@@ -16,11 +15,8 @@ import RoomLayout from "./pages/app/Room/index"
 import Root from "./pages/app/root"
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
 import UserProfile from "./pages/app/UserProfile"
-import Splash from "./pages/app/Screens/Splash"
-import Welcome from "./pages/app/Screens/Welcome"
-import Chat from "./pages/app/Screens/Chat"
-import ConnectionsScreen from "./pages/app/Screens/Connections"
-import CJProfileScreen from "./pages/app/Screens/CJProfile"
+import FriendProfile from "./pages/app/FriendProfile"
+import Welcome from "./pages/app/Login"
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -30,9 +26,7 @@ const supabase = createClient(
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <Root />
-    ),
+    element: <Root />,
     errorElement: <Error404 />,
     children: [
       {
@@ -48,50 +42,27 @@ const router = createBrowserRouter([
         element: <UserProfile />
       },
       {
+        path: "/friend-profile",
+        element: <FriendProfile />
+      },
+      {
         path: "/cjprofile",
         element: <CJProfile />
       }
     ]
   },
   {
-    path: "/splash",
-    element: (
-      <Splash />
-    )
-  },
-  {
-    path: "/welcome",
-    element: (
-      <Welcome />
-    )
-  },
-  {
-    path: "/chat",
-    element: (
-      <Chat />
-    )
-  },
-  {
-    path: "/connections",
-    element: (
-      <ConnectionsScreen />
-    )
-  },
-  {
-    path: "/cj-profile",
-    element: (
-      <CJProfileScreen />
-    )
+    path: "/login",
+    element: <Welcome />
   }
 ])
 
 const App = (): JSX.Element => {
-  const colorScheme = useColorScheme()
   return (
     <SessionContextProvider supabaseClient={supabase}>
       <MantineProvider
         theme={{
-          colorScheme,
+          colorScheme: "dark",
           primaryColor: "blue",
           defaultRadius: "md",
           colors: {
@@ -118,13 +89,18 @@ const App = (): JSX.Element => {
             }
           },
           fontSizes: {
+            xxl: "1.75rem",
             "2xl": "2.25rem"
           },
           spacing: {
+            xxl: "1.75rem",
             "2xl": "2rem",
             "3xl": "3rem",
             "4xl": "4rem",
-            "5xl": "5rem"
+            "5xl": "5rem",
+            "6xl": "6rem",
+            "7xl": "7rem",
+            "8xl": "8rem"
           }
         }}
         withGlobalStyles

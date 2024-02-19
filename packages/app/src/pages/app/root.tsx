@@ -9,13 +9,13 @@ import useListenToRoomChanges from "../../Hooks/rooms/useListenToRoomChanges"
 import useListenToUnreadMessagesChanges from "../../Hooks/rooms/useListenToUnreadMessages"
 import useLoadUnreadMessages from "../../Hooks/rooms/useLoadUnreadMessages"
 import useLoadUserData from "../../Hooks/useLoadUserData"
-// import AuthUser from "../../components/AuthUser/AuthUser"
 import RegisterUser from "../../components/RegisterUser/RegisterUser"
 import SideMenu from "../../components/SideMenu/SideMenu"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import useRootStyles from "./useRootStyles"
-import OAuthUser from "../../components/OAuthUser"
+import Splash from "./Splash"
+import { isSmartphone } from "../../helpers/functions"
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -109,8 +109,8 @@ const Root = (): JSX.Element => {
   }, [session])
 
   if (!session) {
-    // return <AuthUser />
-    return <OAuthUser />
+    return <Splash />
+    // return <OAuthUser />;
   }
 
   if (session && !user.registerComplete) {
@@ -118,12 +118,18 @@ const Root = (): JSX.Element => {
   }
   // const hasMoreThanOneFriend = friends.length > 0 || requests.length > 0 || pending.length > 0;
   return (
-    <div className={classes.container}>
+    <div className={classes.container}
+    style={{
+      marginTop: isSmartphone ? "8rem" : "0"
+    }}>
       {isMobile
 ? (
         <>
-          <div className={classes.header}>
-            <h3>Cojourney</h3>
+          <div className={classes.header}
+          style={{
+            marginTop: isSmartphone ? "4rem" : "0"
+          }}>
+            <h3>COJOURNEY</h3>
             <Burger
               opened={app.isMobileMenuOpen}
               onClick={(): void => { setApp({ isMobileMenuOpen: true }) }}
@@ -136,6 +142,12 @@ const Root = (): JSX.Element => {
             position="right"
             withCloseButton
             zIndex={100}
+            styles={{
+              header: {
+                marginTop: isSmartphone ? "4rem" : "",
+                backgroundColor: "transparent"
+              }
+            }}
           >
             <SideMenu />
           </Drawer>

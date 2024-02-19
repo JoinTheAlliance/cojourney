@@ -2,116 +2,146 @@ import React from "react"
 
 import { useNavigate } from "react-router-dom"
 import {
-  Avatar,
-  Divider,
+  Container,
   Flex,
+  Grid,
+  Group,
   Input,
+  Paper,
   Select,
   Text,
-  Title
+  Button,
+  useMantineTheme
 } from "@mantine/core"
-import { ChevronLeft } from "react-feather"
 import { useMediaQuery } from "@mantine/hooks"
-import useProfileStyles from "./index.styles"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import { type Database } from "../../../../types/database.types"
+import useRoomStyles from "../Room/useRoomStyles"
+import ProfileHeader from "../../../components/ProfileHeader"
+import UserAvatar from "../../../components/UserAvatar"
+import userIcon from "../../../../public/images/user-avatar-robot.svg"
 
 export default function Profile () {
-  const { classes } = useProfileStyles()
   const navigate = useNavigate()
   const isMobile = useMediaQuery("(max-width: 900px)")
   const supabase = useSupabaseClient<Database>()
+  const { classes: roomClasses } = useRoomStyles()
+  const theme = useMantineTheme()
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     console.log(error)
+    navigate("/login")
   }
 
   return (
-    <div className={classes.container}>
-      <Flex align="center">
-        <ChevronLeft
-          size={30}
-          onClick={() => { navigate(-1) }}
-          style={{ cursor: "pointer" }}
-        />
-        <Flex
-          justify="center"
-          className={classes.titleContainer}
-        >
-          <Title>Profile</Title>
-        </Flex>
-      </Flex>
-      {!isMobile && <Divider my="xs" />}
-      <Flex
-        direction="column"
-        align="center"
-        justify="center"
-        className={classes.content}
+    <div>
+      <div className={roomClasses.headerContainer}>
+        <ProfileHeader title={"My Account"} />
+      </div>
+      <div
+        className={roomClasses.messagesContainer}
+        style={{
+          alignItems: "center",
+          display: "flex"
+        }}
       >
-        <Flex
-          direction="column"
-          content="space-between"
-          gap={16}
+        <Paper
+          shadow="xs"
+          radius="lg"
+          p="xl"
+          w={"100%"}
+          mx={isMobile ? "0" : "8xl"}
         >
-          <Flex
-            direction="column"
-            align="center"
-            gap={8}
-          >
-            <Avatar
-              size={300}
-              radius={200}
-            />
-            <Title order={2}>metadata</Title>
-          </Flex>
-          <Flex
-            direction="column"
-            gap={16}
-          >
-            <Input.Wrapper label="Location">
-              <Input
-                placeholder="Your Location"
-                classNames={{ input: classes.input }}
-              />
-            </Input.Wrapper>
-            <Flex>
-              <Input.Wrapper label="Age">
+          <Container maw={"100%"} p={"xxl"} style={{}}>
+            <UserAvatar src={userIcon} online={true} size="lg" />
+
+            <Text
+              align="center"
+              size="xl"
+              color={theme.colors.gray[4]}
+              mt={"xl"}
+              weight={"500"}
+            >
+              metadude
+            </Text>
+
+            <Flex direction="column" gap={16}>
+              <Input.Wrapper style={{ color: "white" }}>
+                <label>Location</label>
                 <Input
-                  placeholder="Your Age"
-                  value={26}
-                  type="Number"
-                  classNames={{ input: classes.select }}
-                  style={{ marginRight: "1rem" }}
+                  placeholder="San Francisco, CA"
+                  // p={"sm"}
+                  styles={{
+                    input: {
+                      padding: "1.5rem",
+                      border: "1px solid #232627",
+                      borderRadius: "0.8rem",
+                      backgroundColor: "#141414",
+                      color: "white"
+                    }
+                  }}
                 />
               </Input.Wrapper>
-              <Select
-                label="Pronouns"
-                placeholder="Pick value"
-                classNames={{
-                  input: classes.select
-                }}
-                data={[
-                  { value: "He/Him", label: "He/Him" },
-                  { value: "She/Her", label: "She/Her" }
-                ]}
-              />
+              <Grid gutter={"xs"}>
+                <Grid.Col span={6}>
+                  <Input.Wrapper style={{ color: theme.white }}>
+                    <label>Age</label>
+                    <Input
+                      placeholder="Your Age"
+                      value={26}
+                      type="Number"
+                      styles={{
+                        input: {
+                          border: "none",
+                          backgroundColor: "#232627",
+                          padding: "1.5rem 1rem",
+                          color: "white"
+                        }
+                      }}
+                      style={{ marginRight: "1rem" }}
+                    />
+                  </Input.Wrapper>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Paper bg={"transparent"} style={{ color: "white" }}>
+                    <label>Pronouns</label>
+                    <Select
+                      placeholder="He/Him"
+                      styles={{
+                        input: {
+                          border: "none",
+                          backgroundColor: "#232627",
+                          padding: "1.5rem 1rem",
+                          color: "white"
+                        }
+                      }}
+                      data={[
+                        { value: "He/Him", label: "He/Him" },
+                        { value: "She/Her", label: "She/Her" }
+                      ]}
+                    />
+                  </Paper>
+                </Grid.Col>
+              </Grid>
             </Flex>
-          </Flex>
-          <Flex
-            direction="column"
-            gap={8}
-            style={{ marginTop: "4rem" }}
+          </Container>
+          <Group
+            mb={"lg"}
+            mt={"4xl"}
+            style={{
+              gap: theme.spacing.xs
+            }}
           >
-            <Title
-              style={{ textAlign: "center" }}
-              order={4}
-            >
-              Subscription Settings
-            </Title>
-            <Text onClick={signOut} className={classes.logoutButton}>Logout</Text>
-          </Flex>
-        </Flex>
-      </Flex>
+            <Button fullWidth variant="transparent" size="md">
+              <Text color={theme.white}>Subscription Settings</Text>
+            </Button>
+            <Button fullWidth variant="transparent" size="md" onClick={signOut}>
+              <Text color={theme.colors.red[8]}>Logout</Text>
+            </Button>
+          </Group>
+        </Paper>
+      </div>
     </div>
   )
 }

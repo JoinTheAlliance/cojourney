@@ -4,7 +4,6 @@ import { useSession } from "@supabase/auth-helpers-react"
 import React, { useEffect, useState } from "react"
 import { Send } from "react-feather"
 import { type RealtimeChannel } from "@supabase/supabase-js"
-// import { type Database } from "../../../../../types/database.types"
 import useGlobalStore from "../../../../store/useGlobalStore"
 import useTypingBroadCast from "../../../../Hooks/rooms/useTypingBroadcast"
 
@@ -17,7 +16,6 @@ const MessagesTextInput = ({
   roomChannel,
   inputHandler
 }: Props): JSX.Element => {
-  // const supabase = useSupabaseClient<Database>()
   const session = useSession()
 
   const {
@@ -133,8 +131,9 @@ const MessagesTextInput = ({
   return (
     <form onSubmit={async (e): Promise<void> => { await onMessageSend(e) }}>
       <TextInput
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         onChange={(event): void => { setMessage(event.target.value) }}
-        placeholder="Send message"
+        placeholder="Start typing..."
         rightSection={sendButton()}
         value={message}
         spellCheck="false"

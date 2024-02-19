@@ -1,74 +1,91 @@
 import React from "react"
-
-import { useNavigate } from "react-router-dom"
-import { Divider, Flex, Text, Title } from "@mantine/core"
-import { ChevronLeft } from "react-feather"
+import {
+  Container,
+  Group,
+  Paper,
+  Text,
+  Button,
+  useMantineTheme
+} from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
-import useProfileStyles from "./index.styles"
-import UserAvatarWithIndicator from "../../../components/UserAvatarWithIndicator/UserAvatarWithIndicator"
+import useRoomStyles from "../Room/useRoomStyles"
+import ProfileHeader from "../../../components/ProfileHeader"
+import UserAvatar from "../../../components/UserAvatar"
+import userIcon from "../../../../public/images/user-avatar-robot.svg"
 
-export default function CJProfile () {
-  const { classes } = useProfileStyles()
-  const navigate = useNavigate()
+export default function Profile () {
   const isMobile = useMediaQuery("(max-width: 900px)")
+  const { classes: roomClasses } = useRoomStyles()
+
+  const theme = useMantineTheme()
 
   return (
-    <div className={classes.container}>
-      <Flex align="center">
-        <ChevronLeft
-          size={30}
-          onClick={() => { navigate(-1) }}
-          style={{ cursor: "pointer" }}
-        />
-        <Flex
-          justify="center"
-          className={classes.titleContainer}
-        >
-          <Title>CJ</Title>
-        </Flex>
-      </Flex>
-      {!isMobile && <Divider my="xs" />}
-      <Flex
-        direction="column"
-        align="center"
-        justify="center"
-        className={classes.content}
+    <div>
+      <div className={roomClasses.headerContainer}>
+        <ProfileHeader title="CJ" />
+      </div>
+      <div
+        className={roomClasses.messagesContainer}
+        style={{
+          alignItems: "center",
+          display: "flex"
+        }}
       >
-        <Flex
-          direction="column"
-          content="space-between"
-          gap={16}
+        <Paper
+          shadow="xs"
+          radius="lg"
+          p="xl"
+          w={"100%"}
+          mx={isMobile ? "0" : "8xl"}
         >
-          <Flex
-            direction="column"
-            align="center"
-            gap={8}
+          <Container maw={"100%"} p={"xxl"} style={{}}>
+            <UserAvatar src={userIcon} online={true} size={"lg"} />
+
+            <Text
+              align="center"
+              size="md"
+              color={theme.colors.gray[4]}
+              mt={"xl"}
+              weight={"600"}
+            >
+              Cojourney Guide
+            </Text>
+            <Group>
+              <Text
+                size="sm"
+                color={theme.colors.gray[4]}
+                mt={"2xl"}
+                // mb={"sm"}
+                weight={"400"}
+                italic={true}
+              >
+                I&apos;m here for anything you need. No problem is too big or
+                too small!
+              </Text>
+              <Text
+                w={"100%"}
+                align="right"
+                size="sm"
+                color={theme.colors.gray[4]}
+                weight={"400"}
+              >
+                --CJ
+              </Text>
+            </Group>
+          </Container>
+          <Group
+            mb={"lg"}
+            mt={"4xl"}
+            style={{
+              gap: theme.spacing.xs
+            }}
           >
-            <UserAvatarWithIndicator
-              size={300}
-              checkOnline
-              image=""
-              radius={250}
-              user_email=""
-            />
-            <Title order={3}>Cojourney guide</Title>
-          </Flex>
-          <Text
-            size="xs"
-            italic
-            color="#757474"
-          >
-            I’m here for anything you need. No problem is too big or too small!
-          </Text>
-          <Flex
-            direction="column"
-            gap={8}
-            style={{ marginTop: "4rem" }}
-          >
-            <Text className={classes.logoutButton}>Reset memories</Text>
-          </Flex>
-        </Flex>
-      </Flex>
+            <Button mb={"lg"} fullWidth variant="transparent" size="md">
+              <Text color={theme.colors.red[8]}>Reset Memories</Text>
+            </Button>
+          </Group>
+        </Paper>
+      </div>
     </div>
   )
 }

@@ -1,21 +1,11 @@
 import { createStyles } from "@mantine/core"
 
-const useRoomHeaderStyles = createStyles((theme) => ({
+const useRoomHeaderStyles = createStyles((_theme) => ({
   container: {
-    padding: 10,
+    padding: "1rem",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: `${
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.colors.white
-    }`,
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[3]
-    }`,
-    "@media (max-width: 900px)": {
-      padding: 5
-    }
+    justifyContent: "center"
   },
 
   headerLeft: {
@@ -24,8 +14,7 @@ const useRoomHeaderStyles = createStyles((theme) => ({
   },
 
   participants: {
-    cursor: "pointer",
-    marginRight: 20
+    cursor: "pointer"
   }
 }))
 

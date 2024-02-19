@@ -1,6 +1,7 @@
-import { Accordion, Badge } from "@mantine/core"
+import { Accordion, Badge, Text, useMantineTheme } from "@mantine/core"
 import React, { useState } from "react"
 import useGlobalStore from "../../../store/useGlobalStore"
+import GuidesList from "../../Friends/GuidesList/GuidesList"
 import FriendsList from "../../Friends/FriendsList/FriendsList"
 import FriendsPendingList from "../../Friends/FriendsPendingList/FriendsPendingList"
 import FriendsRequestsList from "../../Friends/FriendsRequestsList/FriendsRequestsList"
@@ -10,6 +11,7 @@ const FriendsSideMenuScreen = (): JSX.Element => {
     user,
     relationships: { friends, requests, pending }
   } = useGlobalStore()
+  const theme = useMantineTheme()
 
   // get friend from friends where id is uuid 0s
   const defaultFriends = friends.filter(
@@ -24,56 +26,55 @@ const FriendsSideMenuScreen = (): JSX.Element => {
 
   return (
     <>
-      <FriendsList
-        user={user}
-        friends={defaultFriends}
-      />
-      <Accordion
-        m={10}
-        variant="separated"
-        value={activeAccordion}
-        onChange={setActiveAccordion}
-      >
-        <Accordion.Item value="friends">
-          <Accordion.Control>{`Friends ${notDefaultFriends.length}`}</Accordion.Control>
+      <Accordion m={10} value={activeAccordion} onChange={setActiveAccordion}>
+        <Accordion.Item value="guides">
+          <Accordion.Control px={"xs"}>
+            <Text weight={700} color={theme.white}>
+              {"Guides"}
+            </Text>
+          </Accordion.Control>
           <Accordion.Panel>
-            <FriendsList
-              user={user}
-              friends={notDefaultFriends}
-            />
+            <GuidesList user={user} friends={defaultFriends} />
           </Accordion.Panel>
         </Accordion.Item>
 
-        {requests.length > 0 && (
-          <Accordion.Item value="requests">
-            <Accordion.Control>
-              Requests
-              {requests.length !== 0 && (
-                <Badge
-                  color="red"
-                  variant="filled"
-                  ml={5}
-                >
-                  {requests.length}
-                </Badge>
-              )}
-            </Accordion.Control>
-            <Accordion.Panel>
-              <FriendsRequestsList />
-            </Accordion.Panel>
-          </Accordion.Item>
-        )}
-        {pending.length > 0 && (
-          <Accordion.Item value="pending">
-            <Accordion.Control>
-              Pending
-              {pending.length !== 0 && <Badge ml={5}>{pending.length}</Badge>}
-            </Accordion.Control>
-            <Accordion.Panel>
-              <FriendsPendingList />
-            </Accordion.Panel>
-          </Accordion.Item>
-        )}
+        <Accordion.Item value="friends">
+          <Accordion.Control px={"xs"}>
+            <Text weight={700} color={theme.white}>
+              {"Friends"}
+            </Text>
+          </Accordion.Control>
+          <Accordion.Panel>
+            <FriendsList user={user} friends={notDefaultFriends} />
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        <Accordion.Item value="requests">
+          <Accordion.Control px={"xs"}>
+            <Text weight={700} color={theme.white}>
+              {"Requests"}
+            </Text>
+            {requests.length !== 0 && (
+              <Badge color="red" variant="filled" ml={5}>
+                {requests.length}
+              </Badge>
+            )}
+          </Accordion.Control>
+          <Accordion.Panel>
+            <FriendsRequestsList />
+          </Accordion.Panel>
+        </Accordion.Item>
+        <Accordion.Item value="pending">
+          <Accordion.Control px={"xs"}>
+            <Text weight={700} color={theme.white}>
+              {"Pending"}
+            </Text>
+            {pending.length !== 0 && <Badge ml={5}>{pending.length}</Badge>}
+          </Accordion.Control>
+          <Accordion.Panel>
+            <FriendsPendingList />
+          </Accordion.Panel>
+        </Accordion.Item>
       </Accordion>
     </>
   )

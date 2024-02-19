@@ -3,7 +3,9 @@ import React from "react"
 
 const LoadingRoomData = (): JSX.Element => {
   return (
-    <div>
+    <div style={{
+      padding: "1rem"
+    }}>
       <Skeleton
         mt={20}
         height={50}
