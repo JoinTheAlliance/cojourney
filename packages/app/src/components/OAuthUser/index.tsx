@@ -1,88 +1,116 @@
 import React from "react"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import type { Provider } from "@supabase/supabase-js"
+import { type Database } from "../../../types/database.types"
 
 export default function OAuthUser () {
+  const supabase = useSupabaseClient<Database>()
+  const loginProviders = [
+    {
+      name: "Twitter",
+      icon: "/icons/x.svg"
+    },
+    {
+      name: "Discord",
+      icon: "/icons/discord.svg"
+    },
+    {
+      name: "Google",
+      icon: "/icons/google.svg"
+    },
+    {
+      name: "Github",
+      icon: "/icons/github.svg"
+    }
+  ]
+  const signInWithAuthProvider = async (provider: string) => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider as Provider
+    })
+    if (error) {
+      console.error("Error signing in with provider", error)
+    }
+  }
   return (
-    <div style={{
-      height: "100vh",
-      width: "100vw",
-      backgroundImage: "url(\"../../../public/images/background.png\")",
-      backgroundSize: "cover",
-      backgroundPosition: "0% 10%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center"
-    }}>
-      <div style={{
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        backgroundImage: "url('../../../public/images/NewBackground.jpg')",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center"
-      }}>
-        <h1 style={{
-          padding: "1.2rem",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+    >
+      <h1
+        style={{
+          padding: "1.2rem 2.2rem",
           width: "20rem",
           fontWeight: "bold",
-          textAlign: "center",
+          position: "absolute",
+          top: 0,
+          left: 0,
           color: "beige"
-        }}>Cojourney</h1>
-        <div style={{
-          width: "20rem",
-          backgroundColor: "rgba(0, 0, 0, 0.8)",
-          borderRadius: "1rem",
+        }}
+      >
+        Cojourney
+      </h1>
+      <div
+        style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          padding: "2rem"
-        }}>
-          <h3 style={{
-            fontSize: "1rem",
-            fontWeight: "normal"
-          }}>Please login to continue</h3>
-          <div style={{
+          justifyContent: "center"
+        }}
+      >
+        <div
+          style={{
+            width: "20rem",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            borderRadius: "1rem",
             display: "flex",
-            justifyContent: "center",
+            flexDirection: "column",
             alignItems: "center",
-            paddingTop: "1rem",
-            width: "100%"
-          }}>
-            <img
-              src={"/icons/x.svg"}
-              alt="Twitter"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
-            <img
-              src={"/icons/discord.svg"}
-              alt="Discord"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
-            <img
-              src={"/icons/google.svg"}
-              alt="Google"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
-            <img
-              src={"/icons/github.svg"}
-              alt="Github"
-              style={{
-                width: "2.5rem",
-                height: "2.5rem",
-                cursor: "pointer"
-              }}
-            />
+            justifyContent: "center",
+            boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+            padding: "2rem"
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "1rem",
+              fontWeight: "normal"
+            }}
+          >
+            Login to continue
+          </h3>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              paddingTop: "1rem",
+              width: "100%"
+            }}
+          >
+            {loginProviders.map((provider, index) => (
+              <img
+                key={index}
+                src={provider.icon}
+                alt={provider.name}
+                style={{
+                  width: "2.5rem",
+                  height: "2.5rem",
+                  cursor: "pointer"
+                }}
+                onClick={async () => {
+                  await signInWithAuthProvider(provider.name)
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>

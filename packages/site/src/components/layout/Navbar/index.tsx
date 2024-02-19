@@ -91,7 +91,7 @@ const Navbar = () => {
             href="https://web.cojourney.app"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#0075FF] py-2 px-8 rounded-lg"
+            className="bg-[#0075FF] py-2 px-8 rounded-lg hover:scale-110 transition duration-200 ease-in-out "
           >
             Open App
           </a>
@@ -101,7 +101,9 @@ const Navbar = () => {
             aria-label="Open Menu"
             title="Open Menu"
             className="p-2 transition duration-200 rounded focus:outline-none focus:shadow-outline hover:bg-deep-purple-50 focus:bg-deep-purple-50"
-            onClick={() => { setIsMenuOpen(true) }}
+            onClick={() => {
+              setIsMenuOpen(true)
+            }}
           >
             <svg className="w-5 text-white" viewBox="0 0 24 24">
               <path
@@ -139,7 +141,9 @@ const Navbar = () => {
                       aria-label="Close Menu"
                       title="Close Menu"
                       className="p-2 transition duration-200 rounded hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
-                      onClick={() => { setIsMenuOpen(false) }}
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                      }}
                     >
                       <svg className="w-5 text-gray-600" viewBox="0 0 24 24">
                         <path
@@ -159,27 +163,28 @@ const Navbar = () => {
                         title="Our product"
                         className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
                       >
-                        How it Works
+                        Mission
                       </Link>
                     </li>
                     <li>
                       <Link
-                        href="/#footer"
-                        aria-label="Our product"
-                        title="Our product"
+                        href="https://web.cojourney.app"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
                       >
-                        Where to get it
+                        Get it Now
                       </Link>
                     </li>
                     <li>
                       <Link
-                        href="/#pricing"
-                        aria-label="Product pricing"
+                        href="https://docs.cojourney.app"
                         title="Product pricing"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
                       >
-                        Pricing
+                        Developers
                       </Link>
                     </li>
                   </ul>

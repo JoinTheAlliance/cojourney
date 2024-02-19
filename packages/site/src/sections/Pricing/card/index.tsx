@@ -4,9 +4,11 @@ import Image from 'next/image'
 
 const PricingCard: FC<PricingType> = (props) => {
   return (
-    <div className="bg-[#F3F5F7] p-6 rounded-2xl flex flex-col items-center  gap-4 w-[300px]">
+    <div className="bg-[#F3F5F7] p-6 rounded-2xl flex flex-col items-center  gap-4 md:max-w-[300px]">
       <div className="flex flex-col justify-around h-60">
-        <h1 className="self-center text-4xl font-bold">Basic</h1>
+        <h1 className="self-center text-2xl font-bold md:text-4xl">
+          {props.title}
+        </h1>
         <div className="flex self-center h-12">
           <h4 className="self-center text-lg font-bold">{props.pricingUnit}</h4>
           <h3 className="self-end text-4xl font-bold ">
@@ -15,7 +17,9 @@ const PricingCard: FC<PricingType> = (props) => {
           </h3>
         </div>
         <button
-          className={` ${props.popular ? 'bg-[#0075FF]' : 'bg-[#444]'} cursor-pointer shadow-md px-16 py-2 rounded-3xl capitalize text-white`}
+          className={` ${
+            props.popular ? 'bg-[#0075FF]' : 'bg-[#444]'
+          } cursor-pointer shadow-md px-8 md:px-16 py-2 rounded-3xl capitalize text-white`}
         >
           {props.button}
         </button>

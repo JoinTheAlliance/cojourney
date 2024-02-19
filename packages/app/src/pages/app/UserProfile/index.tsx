@@ -26,13 +26,13 @@ export default function Profile () {
   const isMobile = useMediaQuery("(max-width: 900px)")
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
+  const theme = useMantineTheme()
 
-  const logout = () => {
-    supabase.auth.signOut()
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    console.log(error)
     navigate("/login")
   }
-
-  const theme = useMantineTheme()
 
   return (
     <div>
@@ -136,7 +136,7 @@ export default function Profile () {
             <Button fullWidth variant="transparent" size="md">
               <Text color={theme.white}>Subscription Settings</Text>
             </Button>
-            <Button fullWidth variant="transparent" size="md" onClick={logout}>
+            <Button fullWidth variant="transparent" size="md" onClick={signOut}>
               <Text color={theme.colors.red[8]}>Logout</Text>
             </Button>
           </Group>

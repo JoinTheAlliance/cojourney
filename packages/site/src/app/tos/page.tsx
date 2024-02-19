@@ -9,17 +9,25 @@ const TermsOfService = () => {
       <section className="mb-6">
         <h2 className="text-xl font-semibold mb-4">Terms of Service</h2>
         <p className="mb-4">
-          {'These Terms of Service ("Terms") form an agreement between you ("User", "you") and Clio Dynamics, Inc. ("Cojourney", "Company", "we", "us"). They apply to the website available at https://cojourney.app (the "Website"), and the Cojourney mobile application (the "App"), collectively referred to as the "Services."'}
+          {
+            'These Terms of Service ("Terms") form an agreement between you ("User", "you") and Clio Dynamics, Inc. ("Cojourney", "Company", "we", "us"). They apply to the website available at https://cojourney.app (the "Website"), and the Cojourney mobile application (the "App"), collectively referred to as the "Services."'
+          }
           `
         </p>
         <p className="mb-4">
-          {'By accessing or using the Services, you agree to these Terms. If you do not understand or agree, please refrain from using the Services.'}
+          {
+            'By accessing or using the Services, you agree to these Terms. If you do not understand or agree, please refrain from using the Services.'
+          }
         </p>
         <p className="mb-4">
-          {'If the Services are used on behalf of an entity, "you" also includes that entity, with the assurance that you are an authorized representative with the authority to bind the entity to these Terms.'}
+          {
+            'If the Services are used on behalf of an entity, "you" also includes that entity, with the assurance that you are an authorized representative with the authority to bind the entity to these Terms.'
+          }
         </p>
         <p className="font-semibold mb-4">
-          {'NOTE: THESE TERMS INCLUDE AN ARBITRATION CLAUSE AND A WAIVER OF CLASS ACTION RIGHTS.'}
+          {
+            'NOTE: THESE TERMS INCLUDE AN ARBITRATION CLAUSE AND A WAIVER OF CLASS ACTION RIGHTS.'
+          }
         </p>
       </section>
 
