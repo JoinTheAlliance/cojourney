@@ -42,6 +42,7 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
       if (setInputHandler) {
       setInputHandler({
         send: async (content: string) => {
+          console.log("sending roomData")
           await fetch(`${import.meta.env.VITE_SERVER_URL}/api/agents/message`, {
             method: "POST",
             headers: {
@@ -49,7 +50,8 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
               Authorization: `Bearer ${(session!).access_token}`
             },
             body: JSON.stringify({
-              content,
+              senderId: session?.user.id,
+              content: { content },
               agentId,
               room_id: roomData?.id
             })

@@ -183,7 +183,7 @@ const Message = ({ message }: Props): JSX.Element => {
                         (event): void =>
                         // eslint-disable-next-line max-len
                         // eslint-disable-next-line react/jsx-curly-newline, implicit-arrow-linebreak
-                        { setEditMessage(event.target.value) }
+                        { setEditMessage(event.target.value as string) }
                         // eslint-disable-next-line react/jsx-curly-newline
                       }
                       placeholder="Send message"

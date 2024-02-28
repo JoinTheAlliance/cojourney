@@ -44,9 +44,9 @@
     "wrangler": "^3.28.1"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.3",
+    "@supabase/supabase-js": "^2.39.7",
     "@tabler/icons-react": "^2.47.0",
-    "bgent": "^0.0.7",
+    "bgent": "^0.0.22",
     "chalk": "^5.3.0",
     "dotenv": "^16.4.1",
     "inquirer": "^9.2.14"

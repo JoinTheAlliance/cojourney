@@ -14,7 +14,7 @@ import SideMenu from "../../components/SideMenu/SideMenu"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import useRootStyles from "./useRootStyles"
-import Splash from "./Splash"
+import Login from "./Login"
 import { isSmartphone } from "../../helpers/functions"
 
 const Root = (): JSX.Element => {
@@ -41,9 +41,11 @@ const Root = (): JSX.Element => {
   } = useGlobalStore()
   const navigate = useNavigate()
 
+  useEffect(() => {
   if (location.pathname === "/" && dms.length > 0) {
     navigate(`/chat/${dms[0].id}`)
   }
+  }, []);
 
   useEffect(() => {
     if (!session) return
@@ -109,7 +111,7 @@ const Root = (): JSX.Element => {
   }, [session])
 
   if (!session) {
-    return <Splash />
+    return <Login />
     // return <OAuthUser />;
   }
 

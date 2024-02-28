@@ -133,9 +133,9 @@ export default function Profile () {
               gap: theme.spacing.xs
             }}
           >
-            <Button fullWidth variant="transparent" size="md">
+            {/* <Button fullWidth variant="transparent" size="md">
               <Text color={theme.white}>Subscription Settings</Text>
-            </Button>
+            </Button> */}
             <Button fullWidth variant="transparent" size="md" onClick={signOut}>
               <Text color={theme.colors.red[8]}>Logout</Text>
             </Button>

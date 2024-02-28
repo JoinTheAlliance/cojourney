@@ -51,7 +51,6 @@ const useLoadUserData = () => {
       name: data?.name,
       email: data?.email,
       imageUrl: data?.avatar_url,
-      registerComplete: data?.register_complete,
       uid: data?.id
     })
   }, [])

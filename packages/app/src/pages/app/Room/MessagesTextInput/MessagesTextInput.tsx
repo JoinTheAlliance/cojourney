@@ -114,6 +114,7 @@ const MessagesTextInput = ({
 
     if (inputHandler?.send) {
       console.log("inputHandler", inputHandler)
+      console.log('*****  inputHandler send:', message)
       await inputHandler.send(message)
     }
   }

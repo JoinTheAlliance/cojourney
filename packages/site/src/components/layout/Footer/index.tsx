@@ -3,11 +3,11 @@ import Image from 'next/image'
 const socials = [
   {
     name: 'x',
-    link: '/#'
+    link: 'https://x.com/WeWillBuildIt'
   },
   {
     name: 'discord',
-    link: '/#'
+    link: 'https://discord.gg/JoinTheAlliance'
   },
   {
     name: 'tiktok',

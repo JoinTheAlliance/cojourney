@@ -126,7 +126,6 @@ export interface Database {
           id: string
           avatar_url: string | null
           name: string | null
-          register_complete: boolean | null
         }
         Insert: {
           created_at?: string | null
@@ -134,7 +133,6 @@ export interface Database {
           id: string
           avatar_url?: string | null
           name?: string | null
-          register_complete?: boolean | null
         }
         Update: {
           created_at?: string | null
@@ -142,7 +140,6 @@ export interface Database {
           id?: string
           avatar_url?: string | null
           name?: string | null
-          register_complete?: boolean | null
         }
       }
     }

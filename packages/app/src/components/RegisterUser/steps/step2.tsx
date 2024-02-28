@@ -18,11 +18,13 @@ import useGlobalStore from "../../../store/useGlobalStore"
 import { type IStepProps } from "../RegisterUser"
 import UploadProfileImage from "../helpers/UploadProfileImage.tsx/UploadProfileImage"
 import constants from "../../../constants/constants"
+import { useNavigate } from "react-router-dom"
 
 const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
   const session = useSession()
   const supabase = useSupabaseClient<Database>()
   const theme = useMantineTheme()
+  const navigate = useNavigate()
 
   const { user, setUser } = useGlobalStore()
 
@@ -80,13 +82,11 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       }); return
     }
 
-    const { error } = await supabase.from("accounts").insert({
+    const { error } = await supabase.from("accounts").update({
       name: user.name,
-      register_complete: true,
       email: session.user.email,
-      avatar_url: IMAGE_URL,
-      id: session?.user.id
-    })
+      avatar_url: IMAGE_URL
+    }).eq("id", session.user.id)
 
     if (error) {
       setIsLoadingSavingData(false)
@@ -128,64 +128,104 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
       imageUrl: IMAGE_URL,
       registerComplete: true
     })
-  }
 
-  return (
-    <div>
-      <h1>Upload your profile image</h1>
-      <UploadProfileImage
-        image={profileImage}
-        setImage={setProfileImage}
+    const { data, error: error2 } = await supabase
+      .from("rooms")
+      .select(
+        `*,
+    relationships(
+      *,
+      userData1:accounts!relationships_user_a_fkey(
+        *
+      ),
+      userData2:accounts!relationships_user_b_fkey(
+        *
+      ),
+      actionUserData:accounts!relationships_user_id_fkey(
+        *
+      )
+    ),
+    participants!inner(
+      *,
+      userData:accounts(
+        *
+      )
+    )
+    `
+      )
+      .filter("participants.user_id", "eq", session.user.id)
+
+    if (error2) {
+      setIsLoadingSavingData(false)
+      showNotification({
+        title: "Error",
+        message: "Unexpected error"
+      }); return
+    }
+  console.log("********** DATA **********", data)
+
+  // get the id of the first room
+  const roomId = data?.[0]?.id
+
+  navigate(`/chat/${roomId}`)
+}
+
+return (
+  <div>
+    <h1>Upload your profile image</h1>
+    <UploadProfileImage
+      image={profileImage}
+      setImage={setProfileImage}
+    />
+    <Flex
+      align="center"
+      m={20}
+      mt={30}
+    >
+      <Avatar
+        mr={20}
+        radius="50%"
+        size={120}
+        bg={
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[7]
+            : theme.colors.gray[2]
+        }
+        src={constants.avatarPlaceholder(session?.user.email || "")}
       />
-      <Flex
-        align="center"
-        m={20}
-        mt={30}
+      <Box>
+        <Title size={20}>Your default profile picture</Title>
+        <Text size={14}>
+          This will be your default profile picture if no other is provided
+        </Text>
+      </Box>
+    </Flex>
+
+    <Divider
+      mb={20}
+      mt={20}
+    />
+    <Flex justify="space-between">
+      <Button
+        leftIcon={<ArrowLeft size={16} />}
+        onClick={(): void => { prevStep() }}
+        variant="outline"
       >
-        <Avatar
-          mr={20}
-          radius="50%"
-          size={120}
-          bg={
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[7]
-              : theme.colors.gray[2]
-          }
-          src={constants.avatarPlaceholder(session?.user.email || "")}
-        />
-        <Box>
-          <Title size={20}>Your default profile picture</Title>
-          <Text size={14}>
-            This will be your default profile picture if no other is provided
-          </Text>
-        </Box>
-      </Flex>
+        Back
+      </Button>
 
-      <Divider
-        mb={20}
-        mt={20}
-      />
-      <Flex justify="space-between">
-        <Button
-          leftIcon={<ArrowLeft size={16} />}
-          onClick={(): void => { prevStep() }}
-          variant="outline"
-        >
-          Back
-        </Button>
-
-        <Button
-          loading={isLoadingSavingData}
-          onClick={(): void => {
-            handleSubmit()
-          }}
-          rightIcon={<Flag size={16} />}
-        >
-          Finish
-        </Button>
-      </Flex>
-    </div>
-  )
+      <Button
+        loading={isLoadingSavingData}
+        onClick={(): void => {
+          handleSubmit()
+        }}
+        rightIcon={<Flag size={16} />}
+      >
+        Finish
+      </Button>
+    </Flex>
+  </div>
+)
 }
 
 export default Step2
