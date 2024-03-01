@@ -13,7 +13,7 @@ type IDatabaseFriends = Database["public"]["Tables"]["relationships"]["Row"]
 
 export interface IUser {
   email: string | null
-  imageUrl: string | null
+  avatar_url: string | null
   name: string | null
   registerComplete: boolean | null
   uid: string | null
@@ -129,7 +129,7 @@ export const initialState: IGlobalStateValues = {
     email: null,
     name: null,
     uid: null,
-    imageUrl: null,
+    avatar_url: null,
     registerComplete: false
   },
   currentRoom: {

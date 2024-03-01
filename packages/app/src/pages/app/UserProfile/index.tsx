@@ -28,7 +28,7 @@ export default function Profile () {
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
   const theme = useMantineTheme()
-  const { clearState } = useGlobalStore()
+  const { user, clearState } = useGlobalStore()
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -56,7 +56,7 @@ export default function Profile () {
           mx={isMobile ? "0" : "8xl"}
         >
           <Container maw={"100%"} p={"xxl"} style={{}}>
-            <UserAvatar src={userIcon} online={true} size="lg" />
+            <UserAvatar src={user.avatar_url ?? userIcon} online={true} size="lg" />
 
             <Text
               align="center"
@@ -65,7 +65,7 @@ export default function Profile () {
               mt={"xl"}
               weight={"500"}
             >
-              metadude
+              {user.name}
             </Text>
 
             <Flex direction="column" gap={16}>

@@ -42,7 +42,7 @@ const RegisterUser = (): JSX.Element => {
             prevStep={prevStep}
           />
         </Stepper.Step>
-        {/* <Stepper.Step
+        <Stepper.Step
           description="Profile Image"
           label="Second step"
         >
@@ -51,7 +51,7 @@ const RegisterUser = (): JSX.Element => {
             nextStep={nextStep}
             prevStep={prevStep}
           />
-        </Stepper.Step> */}
+        </Stepper.Step>
         <Stepper.Completed>
           Completed, click back button to get to previous step
         </Stepper.Completed>

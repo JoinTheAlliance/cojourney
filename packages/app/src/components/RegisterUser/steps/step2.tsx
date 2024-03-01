@@ -125,7 +125,7 @@ const Step2 = ({ prevStep }: IStepProps): JSX.Element => {
     setUser({
       uid: session.user.id,
       email: session.user.email,
-      imageUrl: IMAGE_URL,
+      avatar_url: IMAGE_URL,
       registerComplete: true
     })
 

@@ -21,7 +21,7 @@ const UserPreferences = (): JSX.Element => {
   const supabase = useSupabaseClient<Database>()
 
   const [image, setImage] = useState<File | null>(null)
-  const [imageUrl, setImageUrl] = useState<string | null>(user.imageUrl)
+  const [avatar_url, setImageUrl] = useState<string | null>(user.avatar_url)
   const [isSavingChanges, setIsSavingChanges] = useState(false)
 
   const isMobile = useMediaQuery("(max-width: 900px)")
@@ -50,7 +50,7 @@ const UserPreferences = (): JSX.Element => {
       }); return
     }
 
-    let IMAGE_URL = imageUrl
+    let IMAGE_URL = avatar_url
 
     if (image) {
       const { data: imageUploadData, error } = await supabase.storage
@@ -126,7 +126,7 @@ const UserPreferences = (): JSX.Element => {
     setIsSavingChanges(false)
 
     setUser({
-      imageUrl: IMAGE_URL,
+      avatar_url: IMAGE_URL,
       name: data.name
     })
   })
@@ -147,7 +147,7 @@ const UserPreferences = (): JSX.Element => {
         <Avatar
           mr={20}
           size={150}
-          src={user.imageUrl ?? constants.avatarPlaceholder(user.email ?? "")}
+          src={user.avatar_url ?? constants.avatarPlaceholder(user.email ?? "")}
         />
         <div>
           <h1>{user.name}</h1>
@@ -160,7 +160,7 @@ const UserPreferences = (): JSX.Element => {
           <Grid.Col span={COL_SPAN}>
             <UploadProfileImage
               image={image}
-              imageUrl={imageUrl}
+              avatar_url={avatar_url}
               setImage={setImage}
               setImageUrl={setImageUrl}
             />

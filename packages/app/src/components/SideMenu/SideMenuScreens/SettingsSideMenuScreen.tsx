@@ -25,7 +25,7 @@ const SettingsSideMenuScreen = (): JSX.Element => {
       >
         <UserAvatarWithIndicator
           user_email={user.email || ""}
-          image={user.imageUrl || ""}
+          image={user.avatar_url || ""}
           size={80}
           checkOnline
         />

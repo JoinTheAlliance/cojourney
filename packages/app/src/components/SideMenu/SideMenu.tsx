@@ -2,15 +2,19 @@ import { Button, Flex, Group, Navbar, Text, rem, useMantineTheme } from "@mantin
 import React from "react"
 import { useNavigate } from "react-router"
 import iconImgSrc from "../../../public/icons/account.svg"
-import user from "../../../public/images/user-avatar-bot.svg"
+import userId from "../../../public/images/user-avatar-bot.svg"
 import UserAvatar from "../UserAvatar"
 import useSideMenuStyles from "./SideMenu.styles"
 import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen"
+import useGlobalStore from "../../store/useGlobalStore"
 
-const SideMenu = ({ closeMenu }): JSX.Element => {
+const SideMenu = ({ closeMenu }: {
+  closeMenu: () => void
+}): JSX.Element => {
   const { classes } = useSideMenuStyles()
   const theme = useMantineTheme()
   const navigate = useNavigate()
+  const { user } = useGlobalStore()
 
   return (
     <Navbar className={classes.container} width={{ sm: 400 }}>
@@ -46,10 +50,10 @@ const SideMenu = ({ closeMenu }): JSX.Element => {
               }}
             >
               <Group>
-                <UserAvatar src={user} online={true} />
+                <UserAvatar src={user.avatar_url ?? userId} online={true} />
                 <div>
                   <Text color={theme.white} weight={500}>
-                    metadude (me)
+                    {user.name}
                   </Text>
                   <Text size="xs" color="dimmed">
                     Online

@@ -1,18 +1,20 @@
-import React from "react"
 import {
-  Text,
-  Group,
-  useMantineTheme,
+  Button,
   Flex,
+  Group,
+  Text,
   rem,
-  Button
+  useMantineTheme
 } from "@mantine/core"
-import iconImgSrc from "../../../public/icons/account.svg"
-import user from "../../../public/images/user-avatar-bot.svg"
-import UserAvatar from "../UserAvatar"
+import React from "react"
 import { useNavigate } from "react-router"
+import iconImgSrc from "../../../public/icons/account.svg"
+import useGlobalStore from "../../store/useGlobalStore"
+import UserAvatar from "../UserAvatar"
+import userIcon from "../../../public/images/user-avatar-bot.svg"
 
 const MyAccountInfo = () => {
+  const { user } = useGlobalStore()
   const theme = useMantineTheme()
   const navigate = useNavigate()
   return (
@@ -30,10 +32,10 @@ const MyAccountInfo = () => {
     }}
   >
     <Group>
-      <UserAvatar src={user} online={true} />
+      <UserAvatar src={user.avatar_url ?? userIcon} online={true} />
       <div>
         <Text color={theme.white} weight={500}>
-          metadude (me)
+          {user.name}
         </Text>
         <Text size="xs" color="dimmed">
           Online
