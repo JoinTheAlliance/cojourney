@@ -8,14 +8,24 @@ import useRoomHeaderStyles from "./useRoomHeaderStyles"
 const RoomHeader = (): JSX.Element => {
   const { classes } = useRoomHeaderStyles()
   const {
-    currentRoom: { roomData, roomParticipants }
+    currentRoom
   } = useGlobalStore()
+
+    // @ts-expect-error
+    const friend = currentRoom ? currentRoom?.roomData?.relationships[0]?.userData2 : null
   const navigate = useNavigate()
 
-  if (!roomData || !roomParticipants) {
+  if (!friend) {
     return <p>Error</p>
   }
   const theme = useMantineTheme()
+
+  const agentId = "00000000-0000-0000-0000-000000000000"
+
+  const goToProfile = () => {
+    if (friend.id === agentId) navigate("/cjprofile")
+    else navigate("/friend-profile")
+  }
 
   return (
     <div style={{ zIndex: "9999" }}>
@@ -24,30 +34,25 @@ const RoomHeader = (): JSX.Element => {
           <div className={classes.participants}>
             <Group
               noWrap
-              onClick={() => {
-                navigate("/cjprofile")
-              }}
+              onClick={goToProfile}
             >
               <Tooltip
-                key={roomParticipants[roomParticipants.length - 1].id}
-                // @ts-expect-error
-                label={roomParticipants[roomParticipants.length - 1].userData.name}
+                key={friend.id}
+                label={friend.name}
                 withArrow
               >
                 <div>
                   <UserAvatarWithIndicator
-                    // @ts-expect-error
-                    image={roomParticipants[roomParticipants.length - 1].userData.avatar_url}
+                    image={friend.avatar_url}
                     size={40}
-                    // @ts-expect-error
-                    user_email={roomParticipants[roomParticipants.length - 1].userData.email}
+                    user_email={friend.email}
                   />
                 </div>
               </Tooltip>
               <Group display={"block"}>
                 <Flex align={"baseline"}>
                   <Text color={theme.white} weight={500}>
-                    {"CJ"}
+                    {friend.name}
                   </Text>
                 </Flex>
                 <Text size="xs" color="dimmed">

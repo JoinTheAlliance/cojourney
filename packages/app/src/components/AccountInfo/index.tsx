@@ -9,12 +9,11 @@ import {
 import React from "react"
 import { useNavigate } from "react-router"
 import iconImgSrc from "../../../public/icons/account.svg"
-import useGlobalStore from "../../store/useGlobalStore"
 import UserAvatar from "../UserAvatar"
-import userIcon from "../../../public/images/user-avatar-bot.svg"
+import useGlobalStore from "../../store/useGlobalStore"
 
 const MyAccountInfo = () => {
-  const { user } = useGlobalStore()
+  const { user, setApp } = useGlobalStore()
   const theme = useMantineTheme()
   const navigate = useNavigate()
   return (
@@ -32,7 +31,7 @@ const MyAccountInfo = () => {
     }}
   >
     <Group>
-      <UserAvatar src={user.avatar_url ?? userIcon} online={true} />
+      <UserAvatar src={user.avatar_url || ''} online={true} />
       <div>
         <Text color={theme.white} weight={500}>
           {user.name}
@@ -57,7 +56,7 @@ const MyAccountInfo = () => {
           paddingLeft: rem(20),
           color: "#757474"
         }}
-        onClick={() => { navigate("/profile") }}
+        onClick={() => {  navigate("/profile"), setApp({ isMobileMenuOpen: false }) }}
       >
         <Text mr={"md"}>My Account</Text>
         <img src={iconImgSrc} alt="Icon" width={"20px"} height={"20px"} />

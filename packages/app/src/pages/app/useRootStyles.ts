@@ -1,5 +1,4 @@
 import { createStyles } from "@mantine/core"
-import backgroundImage from "../../../public/images/background-chat.svg"
 import { isSmartphone } from "../../helpers/functions"
 
 const useRootStyles = createStyles((theme) => ({
@@ -10,7 +9,6 @@ const useRootStyles = createStyles((theme) => ({
     }
   },
   content: {
-    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${backgroundImage})`,
     height: "100vh",
     backgroundSize: "cover",
     backgroundPosition: "center",

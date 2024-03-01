@@ -9,13 +9,13 @@ import useListenToRoomChanges from "../../Hooks/rooms/useListenToRoomChanges"
 import useListenToUnreadMessagesChanges from "../../Hooks/rooms/useListenToUnreadMessages"
 import useLoadUnreadMessages from "../../Hooks/rooms/useLoadUnreadMessages"
 import useLoadUserData from "../../Hooks/useLoadUserData"
-import RegisterUser from "../../components/RegisterUser/RegisterUser"
 import SideMenu from "../../components/SideMenu/SideMenu"
 import { isSmartphone } from "../../helpers/functions"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import OAuthUser from "./../../components/OAuthUser"
 import useRootStyles from "./useRootStyles"
+import backgroundImage from "../../../public/images/background-chat.svg"
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -25,6 +25,13 @@ const Root = (): JSX.Element => {
 
   const { getUnreadMessages } = useLoadUnreadMessages()
 
+  const {
+    currentRoom
+  } = useGlobalStore()
+
+    // @ts-expect-error
+    const friend = currentRoom ? currentRoom?.roomData?.relationships[0]?.userData2 : null
+
   const { classes } = useRootStyles()
   const location = useLocation()
 
@@ -32,7 +39,6 @@ const Root = (): JSX.Element => {
   const session = useSession()
   const supabase = useSupabaseClient<Database>()
   const {
-    user,
     app,
     setApp,
     currentRoom: { usersTyping },
@@ -45,7 +51,7 @@ const Root = (): JSX.Element => {
   if (location.pathname === "/" && dms.length > 0) {
     navigate(`/chat/${dms[0].id}`)
   }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (!session) return
@@ -114,9 +120,6 @@ const Root = (): JSX.Element => {
     return <OAuthUser />
   }
 
-  if (session && !user.name) {
-    return <RegisterUser />
-  }
   // const hasMoreThanOneFriend = friends.length > 0 || requests.length > 0 || pending.length > 0;
   return (
     <div className={classes.container}
@@ -157,7 +160,9 @@ const Root = (): JSX.Element => {
 : (
         <SideMenu closeMenu={(): void => {}} />
       )}
-      <div className={classes.content}>
+      <div className={classes.content} style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${friend?.avatar_url ? friend.avatar_url : backgroundImage})`
+      }}>
         <Outlet />
       </div>
     </div>

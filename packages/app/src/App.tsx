@@ -16,6 +16,7 @@ import Root from "./pages/app/root"
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
 import UserProfile from "./pages/app/UserProfile"
 import OAuthUser from "./components/OAuthUser"
+import FriendProfile from "./pages/app/FriendProfile"
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <UserProfile />
+      },
+      {
+        path: "/friend-profile",
+        element: <FriendProfile />
       },
       {
         path: "/cjprofile",
