@@ -115,9 +115,9 @@ const Root = (): JSX.Element => {
     // return <OAuthUser />;
   }
 
-  if (session && !user.registerComplete) {
-    return <RegisterUser />
-  }
+  // if (session && !user.registerComplete) {
+  //   return <RegisterUser />
+  // }
   // const hasMoreThanOneFriend = friends.length > 0 || requests.length > 0 || pending.length > 0;
   return (
     <div className={classes.container}

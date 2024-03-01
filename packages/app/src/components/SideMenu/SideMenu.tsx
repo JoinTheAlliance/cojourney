@@ -71,7 +71,7 @@ const SideMenu = ({ closeMenu }): JSX.Element => {
                     paddingLeft: rem(20),
                     color: "#757474"
                   }}
-                  onClick={() => { closeMenu(); navigate("/profile") }}
+                  onClick={() => { navigate("/profile"); closeMenu() }}
                 >
                   <Text mr={"md"}>My Account</Text>
                   <img src={iconImgSrc} alt="Icon" width={"20px"} height={"20px"} />
