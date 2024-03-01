@@ -11,18 +11,22 @@ import { useMediaQuery } from "@mantine/hooks"
 import useRoomStyles from "../Room/useRoomStyles"
 import ProfileHeader from "../../../components/ProfileHeader"
 import UserAvatar from "../../../components/UserAvatar"
-import userIcon from "../../../../public/images/user-avatar-robot.svg"
+import useGlobalStore from "../../../store/useGlobalStore"
 
 export default function Profile () {
   const isMobile = useMediaQuery("(max-width: 900px)")
   const { classes: roomClasses } = useRoomStyles()
+  const {
+    // @ts-expect-error
+    currentRoom: { roomData: { relationships: [{ userData2: friend }] } }
+  } = useGlobalStore()
 
   const theme = useMantineTheme()
 
   return (
     <div>
       <div className={roomClasses.headerContainer}>
-        <ProfileHeader title="CJ" />
+        <ProfileHeader title={friend.name} />
       </div>
       <div
         className={roomClasses.messagesContainer}
@@ -39,7 +43,7 @@ export default function Profile () {
           mx={isMobile ? "0" : "8xl"}
         >
           <Container maw={"100%"} p={"xxl"} style={{}}>
-            <UserAvatar src={userIcon} online={true} size={"lg"} />
+            <UserAvatar src={friend.avatar_url} online={true} size={"lg"} />
 
             <Text
               align="center"
@@ -48,7 +52,7 @@ export default function Profile () {
               mt={"xl"}
               weight={"600"}
             >
-              Cojourney Guide
+              {friend.name}
             </Text>
             <Group>
               <Text
@@ -69,7 +73,7 @@ export default function Profile () {
                 color={theme.colors.gray[4]}
                 weight={"400"}
               >
-                --CJ
+                --{friend.name}
               </Text>
             </Group>
           </Container>

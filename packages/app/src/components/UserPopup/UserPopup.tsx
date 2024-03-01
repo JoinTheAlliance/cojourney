@@ -11,8 +11,7 @@ interface Props {
 const UserPopup = ({ children }: Props): JSX.Element => {
   const {
     relationships: { friends },
-    setApp,
-    user: { uid }
+    setApp
   } = useGlobalStore()
 
   const navigate = useNavigate()
@@ -20,12 +19,11 @@ const UserPopup = ({ children }: Props): JSX.Element => {
   return (
     <div
       onClick={() => {
-      const friendship = friends.find((friend) => {
-        return friend.user_a === uid || friend.user_b === uid
-      })
+      const friendship = friends.find(x => x.id.toString() === children.key)
 
       setApp({
-        secondaryActiveSideMenu: friendship?.room_id
+        secondaryActiveSideMenu: friendship?.room_id,
+        isMobileMenuOpen: false
       })
 
       navigate(`/chat/${friendship?.room_id}`)

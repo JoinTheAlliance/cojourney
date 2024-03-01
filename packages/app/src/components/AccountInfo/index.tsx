@@ -8,11 +8,15 @@ import {
   Button
 } from "@mantine/core"
 import iconImgSrc from "../../../public/icons/account.svg"
-import user from "../../../public/images/user-avatar-bot.svg"
 import UserAvatar from "../UserAvatar"
 import { useNavigate } from "react-router"
+import useGlobalStore from "../../store/useGlobalStore"
 
 const MyAccountInfo = () => {
+  const {
+    user,
+    setApp,
+  } = useGlobalStore()
   const theme = useMantineTheme()
   const navigate = useNavigate()
   return (
@@ -30,10 +34,10 @@ const MyAccountInfo = () => {
     }}
   >
     <Group>
-      <UserAvatar src={user} online={true} />
+      <UserAvatar src={user.imageUrl || ''} online={true} />
       <div>
         <Text color={theme.white} weight={500}>
-          metadude (me)
+          {user.name}
         </Text>
         <Text size="xs" color="dimmed">
           Online
@@ -55,7 +59,7 @@ const MyAccountInfo = () => {
           paddingLeft: rem(20),
           color: "#757474"
         }}
-        onClick={() => { navigate("/profile") }}
+        onClick={() => {  navigate("/profile"), setApp({ isMobileMenuOpen: false }) }}
       >
         <Text mr={"md"}>My Account</Text>
         <img src={iconImgSrc} alt="Icon" width={"20px"} height={"20px"} />

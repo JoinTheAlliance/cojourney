@@ -35,8 +35,8 @@ const UploadProfileImage = ({
       >
         <Group
           position="center"
-          spacing="xl"
-          style={{ minHeight: 120, pointerEvents: "none" }}
+          spacing="xs"
+          style={{ pointerEvents: "none" }}
         >
           <Dropzone.Accept>
             <Upload size={50} />
@@ -51,7 +51,7 @@ const UploadProfileImage = ({
           <div>
             <Text
               inline
-              size="xl"
+              size="sm"
             >
               Drag images here or click to select files
             </Text>
@@ -68,6 +68,7 @@ const UploadProfileImage = ({
           <img
             alt="Uploaded Profile"
             src={src}
+            height={100}
           />
           <Divider
             mb={10}

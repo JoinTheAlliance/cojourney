@@ -14,13 +14,27 @@ import { type Database } from "../../../../types/database.types"
 import useRoomStyles from "../Room/useRoomStyles"
 import ProfileHeader from "../../../components/ProfileHeader"
 import UserAvatar from "../../../components/UserAvatar"
-import userIcon from "../../../../public/images/user-avatar-robot.svg"
+import useGlobalStore from "../../../store/useGlobalStore"
+import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests"
 
 export default function Profile () {
   const navigate = useNavigate()
   const isMobile = useMediaQuery("(max-width: 900px)")
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
+
+  const {
+    // @ts-expect-error
+    currentRoom: { roomData: { relationships: [ friendship ] } },
+    // @ts-expect-error
+    currentRoom: { roomData: { relationships: [{ userData2: friend }] } }
+  } = useGlobalStore()
+
+  const { handleDeleteFriendship } = useHandleFriendsRequests()
+
+  const unfriend = () => {
+    handleDeleteFriendship({friendship})
+  }
 
   const logout = () => {
     supabase.auth.signOut()
@@ -32,7 +46,7 @@ export default function Profile () {
   return (
     <div>
       <div className={roomClasses.headerContainer}>
-        <ProfileHeader title="John Doe" />
+        <ProfileHeader title={friend.name} />
       </div>
       <div
         className={roomClasses.messagesContainer}
@@ -49,7 +63,7 @@ export default function Profile () {
           mx={isMobile ? "0" : "8xl"}
         >
           <Container maw={"100%"} p={"xxl"} style={{}}>
-            <UserAvatar src={userIcon} online={true} size={"lg"} />
+            <UserAvatar src={friend.avatar_url} online={true} size={"lg"} />
 
             <Text
               align="center"
@@ -79,7 +93,7 @@ export default function Profile () {
                 color={theme.colors.gray[4]}
                 weight={"400"}
               >
-                --CJ
+                -- {friend.name}
               </Text>
             </Group>
           </Container>
@@ -90,7 +104,7 @@ export default function Profile () {
               gap: theme.spacing.xs
             }}
           >
-            <Button fullWidth variant="transparent" size="md">
+            <Button fullWidth variant="transparent" size="md" onClick={unfriend}>
               <Text color={theme.white}>Unfriend</Text>
             </Button>
             <Button fullWidth variant="transparent" size="md" onClick={logout}>

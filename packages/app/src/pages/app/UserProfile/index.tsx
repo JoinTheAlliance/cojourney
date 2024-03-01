@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 import { useNavigate } from "react-router-dom"
 import {
@@ -19,7 +19,9 @@ import { type Database } from "../../../../types/database.types"
 import useRoomStyles from "../Room/useRoomStyles"
 import ProfileHeader from "../../../components/ProfileHeader"
 import UserAvatar from "../../../components/UserAvatar"
-import userIcon from "../../../../public/images/user-avatar-robot.svg"
+import useGlobalStore from "../../../store/useGlobalStore"
+import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
+import { showNotification } from "@mantine/notifications"
 
 export default function Profile () {
   const navigate = useNavigate()
@@ -27,11 +29,64 @@ export default function Profile () {
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
   const theme = useMantineTheme()
+  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [uploading, setUploading] = useState<boolean>(false)
+  const { user, setUser } = useGlobalStore()
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     console.log(error)
     navigate("/login")
+  }
+
+  const uploadImage = async (): Promise<void> => {
+    if (!user.uid) return
+    setUploading(true)
+
+    const { data: imageUploadData, error: imageUploadError } =
+      await supabase.storage
+        .from("profile-images")
+        .upload(
+          `${user.uid}-${new Date().getTime()}/profile.png`,
+          // @ts-expect-error
+          profileImage,
+          {
+            cacheControl: "0",
+            upsert: true
+          }
+        )
+
+    if (imageUploadError) {
+      setUploading(false)
+      showNotification({
+        title: "Error",
+        message: "Unexpected error"
+      })
+      return
+    }
+
+    const existingImage = user.imageUrl?.split("profile-images/")[1] as string
+    supabase.storage.from("profile-images").remove([existingImage])
+
+    const { data: imageUrlData } = supabase.storage
+      .from("profile-images")
+      .getPublicUrl(imageUploadData.path)
+
+    const IMAGE_URL = imageUrlData.publicUrl
+
+    await supabase
+      .from("accounts")
+      .update({
+        avatar_url: IMAGE_URL
+      })
+      .eq("id", user.uid)
+
+    setUser({
+      ...user,
+      imageUrl: IMAGE_URL
+    })
+    setProfileImage(null)
+    setUploading(false)
   }
 
   return (
@@ -54,7 +109,7 @@ export default function Profile () {
           mx={isMobile ? "0" : "8xl"}
         >
           <Container maw={"100%"} p={"xxl"} style={{}}>
-            <UserAvatar src={userIcon} online={true} size="lg" />
+            <UserAvatar src={user.imageUrl || ""} online={true} size="lg" />
 
             <Text
               align="center"
@@ -63,7 +118,7 @@ export default function Profile () {
               mt={"xl"}
               weight={"500"}
             >
-              metadude
+              {user.name}
             </Text>
 
             <Flex direction="column" gap={16}>
@@ -124,6 +179,13 @@ export default function Profile () {
                   </Paper>
                 </Grid.Col>
               </Grid>
+              <Input.Wrapper style={{ color: "white" }}>
+                <label>Profile Picture</label>
+                <UploadProfileImage
+                  image={profileImage}
+                  setImage={setProfileImage}
+                />
+              </Input.Wrapper>
             </Flex>
           </Container>
           <Group
@@ -133,9 +195,16 @@ export default function Profile () {
               gap: theme.spacing.xs
             }}
           >
-            {/* <Button fullWidth variant="transparent" size="md">
-              <Text color={theme.white}>Subscription Settings</Text>
-            </Button> */}
+            <Button
+              loading={uploading}
+              fullWidth
+              variant="transparent"
+              size="md"
+              onClick={uploadImage}
+              disabled={!profileImage}
+            >
+              <Text color={theme.white}>Update</Text>
+            </Button>
             <Button fullWidth variant="transparent" size="md" onClick={signOut}>
               <Text color={theme.colors.red[8]}>Logout</Text>
             </Button>

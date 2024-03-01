@@ -10,10 +10,10 @@ const Messages = (): JSX.Element => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView()
-    console.log("messagesEndRef.current scroll", messagesEndRef.current)
+    // console.log("messagesEndRef.current scroll", messagesEndRef.current)
   }
 
-  console.log("messagesEndRef", messagesEndRef.current)
+  // console.log("messagesEndRef", messagesEndRef.current)
 
   const {
     currentRoom: { messages, isLoadingMessages }

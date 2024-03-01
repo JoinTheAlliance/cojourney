@@ -26,7 +26,11 @@ const FriendsSideMenuScreen = (): JSX.Element => {
 
   return (
     <>
-      <Accordion m={10} value={activeAccordion} onChange={setActiveAccordion}>
+      <Accordion m={10} value={activeAccordion} onChange={setActiveAccordion}
+      style={{
+        height: "calc(100vh - 18vh)",
+        overflow: "auto"
+      }}>
         <Accordion.Item value="guides">
           <Accordion.Control px={"xs"}>
             <Text weight={700} color={theme.white}>
