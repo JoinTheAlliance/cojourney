@@ -19,9 +19,9 @@ import { type Database } from "../../../../types/database.types"
 import useRoomStyles from "../Room/useRoomStyles"
 import ProfileHeader from "../../../components/ProfileHeader"
 import UserAvatar from "../../../components/UserAvatar"
-import useGlobalStore from "../../../store/useGlobalStore"
 import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
 import { showNotification } from "@mantine/notifications"
+import useGlobalStore from "../../../store/useGlobalStore"
 
 export default function Profile () {
   const navigate = useNavigate()
@@ -31,12 +31,12 @@ export default function Profile () {
   const theme = useMantineTheme()
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [uploading, setUploading] = useState<boolean>(false)
-  const { user, setUser } = useGlobalStore()
+  const { user, setUser, clearState } = useGlobalStore()
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    console.log(error)
-    navigate("/login")
+    await supabase.auth.signOut()
+    clearState()
+    navigate("/")
   }
 
   const uploadImage = async (): Promise<void> => {
@@ -65,7 +65,7 @@ export default function Profile () {
       return
     }
 
-    const existingImage = user.imageUrl?.split("profile-images/")[1] as string
+    const existingImage = user.avatar_url?.split("profile-images/")[1] as string
     supabase.storage.from("profile-images").remove([existingImage])
 
     const { data: imageUrlData } = supabase.storage
@@ -83,7 +83,7 @@ export default function Profile () {
 
     setUser({
       ...user,
-      imageUrl: IMAGE_URL
+      avatar_url: IMAGE_URL
     })
     setProfileImage(null)
     setUploading(false)
@@ -109,8 +109,7 @@ export default function Profile () {
           mx={isMobile ? "0" : "8xl"}
         >
           <Container maw={"100%"} p={"xxl"} style={{}}>
-            <UserAvatar src={user.imageUrl || ""} online={true} size="lg" />
-
+            <UserAvatar src={user.avatar_url || ""} online={true} size="lg" />
             <Text
               align="center"
               size="xl"

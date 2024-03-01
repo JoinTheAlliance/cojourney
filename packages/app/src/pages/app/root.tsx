@@ -10,11 +10,11 @@ import useListenToUnreadMessagesChanges from "../../Hooks/rooms/useListenToUnrea
 import useLoadUnreadMessages from "../../Hooks/rooms/useLoadUnreadMessages"
 import useLoadUserData from "../../Hooks/useLoadUserData"
 import SideMenu from "../../components/SideMenu/SideMenu"
+import { isSmartphone } from "../../helpers/functions"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
+import OAuthUser from "./../../components/OAuthUser"
 import useRootStyles from "./useRootStyles"
-import Login from "./Login"
-import { isSmartphone } from "../../helpers/functions"
 import backgroundImage from "../../../public/images/background-chat.svg"
 
 const Root = (): JSX.Element => {
@@ -39,7 +39,6 @@ const Root = (): JSX.Element => {
   const session = useSession()
   const supabase = useSupabaseClient<Database>()
   const {
-    user,
     app,
     setApp,
     currentRoom: { usersTyping },
@@ -118,8 +117,7 @@ const Root = (): JSX.Element => {
   }, [session])
 
   if (!session) {
-    return <Login />
-    // return <OAuthUser />;
+    return <OAuthUser />
   }
 
   // const hasMoreThanOneFriend = friends.length > 0 || requests.length > 0 || pending.length > 0;
@@ -155,12 +153,12 @@ const Root = (): JSX.Element => {
               }
             }}
           >
-            <SideMenu />
+            <SideMenu closeMenu={(): void => { setApp({ isMobileMenuOpen: false }) }} />
           </Drawer>
         </>
       )
 : (
-        <SideMenu />
+        <SideMenu closeMenu={(): void => {}} />
       )}
       <div className={classes.content} style={{
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${friend?.avatar_url ? friend.avatar_url : backgroundImage})`

@@ -50,7 +50,7 @@ const useLoadUserData = () => {
     setUser({
       name: data?.name,
       email: data?.email,
-      imageUrl: data?.avatar_url,
+      avatar_url: data?.avatar_url,
       uid: data?.id
     })
   }, [])

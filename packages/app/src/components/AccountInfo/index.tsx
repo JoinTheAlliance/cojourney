@@ -1,22 +1,19 @@
-import React from "react"
 import {
-  Text,
-  Group,
-  useMantineTheme,
+  Button,
   Flex,
+  Group,
+  Text,
   rem,
-  Button
+  useMantineTheme
 } from "@mantine/core"
+import React from "react"
+import { useNavigate } from "react-router"
 import iconImgSrc from "../../../public/icons/account.svg"
 import UserAvatar from "../UserAvatar"
-import { useNavigate } from "react-router"
 import useGlobalStore from "../../store/useGlobalStore"
 
 const MyAccountInfo = () => {
-  const {
-    user,
-    setApp,
-  } = useGlobalStore()
+  const { user, setApp } = useGlobalStore()
   const theme = useMantineTheme()
   const navigate = useNavigate()
   return (
@@ -34,7 +31,7 @@ const MyAccountInfo = () => {
     }}
   >
     <Group>
-      <UserAvatar src={user.imageUrl || ''} online={true} />
+      <UserAvatar src={user.avatar_url || ''} online={true} />
       <div>
         <Text color={theme.white} weight={500}>
           {user.name}

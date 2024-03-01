@@ -20,7 +20,7 @@ const EditUser = (): JSX.Element => {
   const supabase = useSupabaseClient<Database>()
 
   const [image, setImage] = useState<File | null>(null)
-  const [imageUrl, setImageUrl] = useState<string | null>(user.imageUrl)
+  const [avatar_url, setImageUrl] = useState<string | null>(user.avatar_url)
   const [isSavingChanges, setIsSavingChanges] = useState(false)
 
   const isMobile = useMediaQuery("(max-width: 900px)")
@@ -49,7 +49,7 @@ const EditUser = (): JSX.Element => {
       }); return
     }
 
-    let IMAGE_URL = imageUrl
+    let IMAGE_URL = avatar_url
 
     if (image) {
       const { data: imageUploadData, error } = await supabase.storage
@@ -126,7 +126,7 @@ const EditUser = (): JSX.Element => {
     setIsSavingChanges(false)
 
     setUser({
-      imageUrl: IMAGE_URL,
+      avatar_url: IMAGE_URL,
       name: data.name
     })
   })
@@ -138,7 +138,7 @@ const EditUser = (): JSX.Element => {
         <Grid.Col span={COL_SPAN}>
           <UploadProfileImage
             image={image}
-            imageUrl={imageUrl}
+            avatar_url={avatar_url}
             setImage={setImage}
             setImageUrl={setImageUrl}
           />

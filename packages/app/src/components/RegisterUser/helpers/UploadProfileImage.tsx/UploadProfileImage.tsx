@@ -6,7 +6,7 @@ import { showNotification } from "@mantine/notifications"
 
 interface IUploadProfileImage {
   image: File | null
-  imageUrl?: string | null
+  avatar_url?: string | null
   setImage: React.Dispatch<React.SetStateAction<File | null>>
   setImageUrl?: React.Dispatch<React.SetStateAction<string | null>>
 }
@@ -14,7 +14,7 @@ interface IUploadProfileImage {
 const UploadProfileImage = ({
   image,
   setImage,
-  imageUrl,
+  avatar_url,
   setImageUrl
 }: IUploadProfileImage): JSX.Element => {
   const imageUpload = (): JSX.Element => {
@@ -93,7 +93,7 @@ const UploadProfileImage = ({
 
     // Adding the date at the end will fool the idiot browser into thinking its a new image
     // preventing the fucking browser from cashing the image.
-    if (imageUrl) return imagePreviewCard(`${imageUrl}?${Date.now()}`)
+    if (avatar_url) return imagePreviewCard(`${avatar_url}?${Date.now()}`)
 
     if (!image) {
       return (
@@ -112,7 +112,7 @@ const UploadProfileImage = ({
   }
 
   const returnCorrectComponent = (): JSX.Element => {
-    if (image || imageUrl) return imageUploaded()
+    if (image || avatar_url) return imageUploaded()
 
     return imageUpload()
   }

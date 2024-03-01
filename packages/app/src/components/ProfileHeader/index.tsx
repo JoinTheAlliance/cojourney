@@ -1,7 +1,6 @@
 import { Text, useMantineTheme } from "@mantine/core"
 import React from "react"
 import useRoomHeaderStyles from "./useProfileHeaderStyles"
-import useGlobalStore from "../../store/useGlobalStore"
 
 const ProfileHeader = ({ title }: { title: string }): JSX.Element => {
   const { classes } = useRoomHeaderStyles()
