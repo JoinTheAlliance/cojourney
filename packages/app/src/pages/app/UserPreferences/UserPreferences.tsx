@@ -16,7 +16,7 @@ interface IFormValues {
 }
 
 const UserPreferences = (): JSX.Element => {
-  const { user, setUser } = useGlobalStore()
+  const { user, setUser, clearState } = useGlobalStore()
   const session = useSession()
   const supabase = useSupabaseClient<Database>()
 
@@ -190,11 +190,12 @@ const UserPreferences = (): JSX.Element => {
           <Button
             mr="auto"
             leftIcon={<User />}
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault()
               e.stopPropagation()
               // log out with supabase
-              supabase.auth.signOut()
+              await supabase.auth.signOut()
+              clearState()
             }}
             variant="white"
           >

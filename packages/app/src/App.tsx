@@ -15,8 +15,7 @@ import RoomLayout from "./pages/app/Room/index"
 import Root from "./pages/app/root"
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
 import UserProfile from "./pages/app/UserProfile"
-import FriendProfile from "./pages/app/FriendProfile"
-import Welcome from "./pages/app/Login"
+import OAuthUser from "./components/OAuthUser"
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -42,10 +41,6 @@ const router = createBrowserRouter([
         element: <UserProfile />
       },
       {
-        path: "/friend-profile",
-        element: <FriendProfile />
-      },
-      {
         path: "/cjprofile",
         element: <CJProfile />
       }
@@ -53,7 +48,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Welcome />
+    element: <OAuthUser />
   }
 ])
 

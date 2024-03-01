@@ -20,6 +20,7 @@ import useRoomStyles from "../Room/useRoomStyles"
 import ProfileHeader from "../../../components/ProfileHeader"
 import UserAvatar from "../../../components/UserAvatar"
 import userIcon from "../../../../public/images/user-avatar-robot.svg"
+import useGlobalStore from "../../../store/useGlobalStore"
 
 export default function Profile () {
   const navigate = useNavigate()
@@ -27,11 +28,12 @@ export default function Profile () {
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
   const theme = useMantineTheme()
+  const { clearState } = useGlobalStore()
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    console.log(error)
-    navigate("/login")
+    await supabase.auth.signOut()
+    clearState()
+    navigate("/")
   }
 
   return (

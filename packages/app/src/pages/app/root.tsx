@@ -11,11 +11,11 @@ import useLoadUnreadMessages from "../../Hooks/rooms/useLoadUnreadMessages"
 import useLoadUserData from "../../Hooks/useLoadUserData"
 import RegisterUser from "../../components/RegisterUser/RegisterUser"
 import SideMenu from "../../components/SideMenu/SideMenu"
+import { isSmartphone } from "../../helpers/functions"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
+import OAuthUser from "./../../components/OAuthUser"
 import useRootStyles from "./useRootStyles"
-import Login from "./Login"
-import { isSmartphone } from "../../helpers/functions"
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -111,13 +111,12 @@ const Root = (): JSX.Element => {
   }, [session])
 
   if (!session) {
-    return <Login />
-    // return <OAuthUser />;
+    return <OAuthUser />
   }
 
-  // if (session && !user.registerComplete) {
-  //   return <RegisterUser />
-  // }
+  if (session && !user.name) {
+    return <RegisterUser />
+  }
   // const hasMoreThanOneFriend = friends.length > 0 || requests.length > 0 || pending.length > 0;
   return (
     <div className={classes.container}
@@ -156,7 +155,7 @@ const Root = (): JSX.Element => {
         </>
       )
 : (
-        <SideMenu />
+        <SideMenu closeMenu={(): void => {}} />
       )}
       <div className={classes.content}>
         <Outlet />
