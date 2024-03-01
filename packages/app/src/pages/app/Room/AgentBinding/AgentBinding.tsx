@@ -43,7 +43,7 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
       setInputHandler({
         send: async (content: string) => {
           console.log("sending roomData")
-          await fetch(`${import.meta.env.VITE_SERVER_URL}/api/agents/message`, {
+          await fetch(`${import.meta.env.VITE_SERVER_URL ?? "http://localhost:7998"}/api/agents/message`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

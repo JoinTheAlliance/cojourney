@@ -12,7 +12,7 @@ import {
 import twitter from "../../../../public/images/x.svg"
 import discord from "../../../../public/images/discord.svg"
 import google from "../../../../public/images/google.svg"
-import github from "../../../../public/images/github.svg"
+// import github from "../../../../public/images/github.svg"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import { type Database } from "../../../../types/database.types"
 import { isSmartphone } from "../../../helpers/functions"
@@ -112,7 +112,7 @@ const Welcome = (): JSX.Element => {
                   handleLoginViaProvider("google")
                 }}
               />
-              <Image
+              {/* <Image
                 src={github}
                 style={{
                   cursor: "pointer"
@@ -120,7 +120,7 @@ const Welcome = (): JSX.Element => {
                 onClick={() => {
                   handleLoginViaProvider("github")
                 }}
-              />
+              /> */}
             </Flex>
           </Group>
         </Paper>

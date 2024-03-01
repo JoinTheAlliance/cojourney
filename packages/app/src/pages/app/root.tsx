@@ -151,7 +151,7 @@ const Root = (): JSX.Element => {
               }
             }}
           >
-            <SideMenu />
+            <SideMenu closeMenu={(): void => { setApp({ isMobileMenuOpen: false }) }} />
           </Drawer>
         </>
       )
