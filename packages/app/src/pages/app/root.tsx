@@ -3,6 +3,7 @@ import { useMediaQuery } from "@mantine/hooks"
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
 import React, { useEffect } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
+import backgroundImage from "../../../public/images/background-chat.svg"
 import { type Database } from "../../../types/database.types"
 import useListenToFriendshipChanges from "../../Hooks/relationships/useListenToFrienshipChanges"
 import useListenToRoomChanges from "../../Hooks/rooms/useListenToRoomChanges"
@@ -15,7 +16,6 @@ import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingInd
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import OAuthUser from "./../../components/OAuthUser"
 import useRootStyles from "./useRootStyles"
-import backgroundImage from "../../../public/images/background-chat.svg"
 
 const Root = (): JSX.Element => {
   const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -48,7 +48,7 @@ const Root = (): JSX.Element => {
   const navigate = useNavigate()
 
   useEffect(() => {
-  if (location.pathname === "/" && dms.length > 0) {
+  if ((location.pathname === "/" || location.pathname === "/#") && dms.length > 0) {
     navigate(`/chat/${dms[0].id}`)
   }
   }, [])
@@ -57,7 +57,7 @@ const Root = (): JSX.Element => {
     if (!session) return
     if (!location) return
 
-    if (location.pathname === "/") {
+    if (location.pathname === "/" || location.pathname === "/#") {
       setCurrentRoom(initialState.currentRoom)
       setApp({
         secondaryActiveSideMenu: null,
