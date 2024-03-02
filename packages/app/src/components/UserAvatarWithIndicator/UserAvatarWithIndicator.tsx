@@ -39,24 +39,23 @@ const UserAvatarWithIndicator = ({
   }, [onlineUsers, user_email, app, checkOnline])
 
   return (
-    // <Indicator
-    //   color={isOnline ? "#0AB161" : "#8a8a8a"}
-    //   offset={5}
-    //   position="bottom-end"
-    //   size={15}
-    //   withBorder
-    //   style={{
-    //     display: "flex",
-    //     justifyContent: "center",
-    //     alignItems: "center"
-    //   }}
-    // >
+    <Indicator
+      color={isOnline ? "#0AB161" : "#8a8a8a"}
+      offset={5}
+      position="bottom-end"
+      size={0} // hidden for now
+      withBorder
+      style={{
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+    >
       <Avatar
         radius={radius}
         size={size}
         src={image || constants.avatarPlaceholder(user_email)}
       />
-    // </Indicator>
+    </Indicator>
   )
 }
 

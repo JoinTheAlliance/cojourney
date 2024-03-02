@@ -12,7 +12,11 @@ import {
   type Message,
   type State,
   parseJSONObjectFromText,
-  messageHandlerTemplate
+  messageHandlerTemplate,
+  getRelationship,
+  type Goal,
+  GoalStatus,
+  createGoal
 } from 'bgent'
 import actions from './actions'
 import evaluators from './evaluators'
@@ -66,7 +70,6 @@ async function handleMessage (
   const { senderId, room_id, userIds: user_ids, agentId } = message
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
-    console.log('*** trying completion:')
     console.log(context)
     const response = await runtime.completion({
       context,
@@ -92,8 +95,6 @@ async function handleMessage (
     const parsedResponse = parseJSONObjectFromText(
       response
     ) as unknown as Content
-
-    console.log('parsedResponse', parsedResponse)
 
     if (
       (parsedResponse.user as string)?.includes(
@@ -137,8 +138,6 @@ async function handleMessage (
       console.warn('Empty response, skipping')
     }
   }
-
-  console.log('responseContent', responseContent)
 
   await _saveResponseMessage(message, state, responseContent)
   await runtime.processActions(message, responseContent)
@@ -248,9 +247,9 @@ const routes: Route[] = [
 
       console.log('*** message is', message)
 
-        if (!token && (message as { token: string }).token) {
-          token = (message as { token: string }).token
-        }
+      if (!token && (message as { token: string }).token) {
+        token = (message as { token: string }).token
+      }
 
       // check if payload role is 'service_role'
       console.log('token', token)
@@ -266,16 +265,16 @@ const routes: Route[] = [
       if (out?.payload?.role !== 'service_role') {
         userId = out?.payload?.sub || out?.payload?.id || out?.id
 
-      if (!userId) {
-        return _setHeaders(new Response('Unauthorized', { status: 401 }))
-      }
+        if (!userId) {
+          return _setHeaders(new Response('Unauthorized', { status: 401 }))
+        }
 
-      if (!userId) {
-        console.log(
-          'Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.'
-        )
+        if (!userId) {
+          console.log(
+            'Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.'
+          )
+        }
       }
-    }
 
       const runtime = new BgentRuntime({
         debugMode: env.NODE_ENV === 'development',
@@ -307,6 +306,143 @@ const routes: Route[] = [
         console.error('error', error)
         return new Response(error as string, { status: 500 })
       }
+
+      return new Response('ok', { status: 200 })
+    }
+  },
+  {
+    path: /^\/api\/agents\/newuser/,
+    async handler ({ req, env }: HandlerArgs) {
+      if (req.method === 'OPTIONS') {
+        return
+      }
+
+      const supabase = createClient(
+        env.SUPABASE_URL,
+        env.SUPABASE_SERVICE_API_KEY,
+        {
+          auth: {
+            persistSession: false
+          }
+        }
+      )
+
+      let token = req.headers.get('Authorization')?.replace('Bearer ', '')
+      const message = await req.json() as { user_id: UUID, token: string }
+
+      if (!token && (message as unknown as { token: string }).token) {
+        token = (message as unknown as { token: string }).token
+      }
+
+      const out = (token && jwt.decode(token)) as {
+        payload: { sub: string, role: string, id: string }
+        id: string
+      }
+
+      let userId = ''
+      if (out?.payload?.role !== 'service_role') {
+        userId = out?.payload?.sub || out?.payload?.id || out?.id
+
+        if (!userId) {
+          return _setHeaders(new Response('Unauthorized', { status: 401 }))
+        }
+
+        if (!userId) {
+          console.log(
+            'Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.'
+          )
+        }
+      }
+      const runtime = new BgentRuntime({
+        debugMode: env.NODE_ENV === 'development',
+        serverUrl: 'https://api.openai.com/v1',
+        supabase,
+        token: env.OPENAI_API_KEY,
+        actions: [...actions, ...defaultActions],
+        evaluators: [...evaluators, ...defaultEvaluators]
+      })
+
+      const zeroUuid = '00000000-0000-0000-0000-000000000000' as UUID
+
+      const newMessage = {
+        senderId: message.user_id,
+        agentId: zeroUuid,
+        userIds: [message.user_id, zeroUuid],
+        content: { content: '*User has joined Cojourney. Greet them!*', action: 'NEW_USER' }
+      } as Message
+
+      const data = await getRelationship({
+        runtime,
+        userA: message.user_id as UUID,
+        userB: zeroUuid
+      })
+
+      const room_id = data?.room_id
+
+      const { data: accountData, error: accountError } = await supabase.from('accounts').select('*').eq('id', message.user_id)
+
+      if (accountError) {
+        return new Response(accountError.message, { status: 500 })
+      }
+
+      if (!accountData || accountData.length === 0) {
+        return new Response('Account not found', { status: 404 })
+      }
+
+      const userName = accountData[0].name || 'the user'
+
+      const newGoal: Goal = {
+        name: 'First Time User Goal',
+        status: GoalStatus.IN_PROGRESS,
+        user_ids: [message.user_id as UUID, zeroUuid],
+        user_id: zeroUuid as UUID,
+        objectives: [
+          {
+            description: `Welcome the ${userName} to Cojourney`,
+            completed: false
+          },
+          {
+            description: `Get details about ${userName}'s personal life`,
+            completed: false
+          },
+          {
+            description: `Get details about ${userName}'s goals for using Cojourney - friendly, professional, romantic and/or personal growth oriented (or they have other ideas?)`,
+            completed: false
+          },
+          {
+            description: `Get details about ${userName}'s career, school, or work`,
+            completed: false
+          },
+          {
+            description: `Get details about where ${userName} lives and how far they'd go to meet someone`,
+            completed: false
+          },
+          {
+            description: `Get details about ${userName}'s life ambitions`,
+            completed: false
+          },
+          {
+            description: `Introduce ${userName} to another user`,
+            completed: false
+          },
+          {
+            description: `Let ${userName} know that they can talk about anything forever, but they will need to subscribe to get more than one introduction per day`,
+            completed: false
+          }
+        ]
+      }
+
+      await createGoal({
+        runtime,
+        goal: newGoal
+      })
+
+      await supabase.from('messages').insert({
+        user_id: message.user_id,
+        user_ids: [message.user_id, zeroUuid],
+        content: newMessage.content,
+        room_id
+      })
 
       return new Response('ok', { status: 200 })
     }
