@@ -214,12 +214,52 @@ class Route {
 const routes: Route[] = [
   {
     path: /^\/api\/agents\/message/,
-    async handler ({ req, env, userId, supabase }: HandlerArgs) {
+    async handler ({ req, env }: HandlerArgs) {
       if (req.method === 'OPTIONS') {
         return
       }
 
+      const supabase = createClient(
+        env.SUPABASE_URL,
+        env.SUPABASE_SERVICE_API_KEY,
+        {
+          auth: {
+            persistSession: false
+          }
+        }
+      )
+
+      let token = req.headers.get('Authorization')?.replace('Bearer ', '')
       const message = await req.json()
+
+        if (!token && (message as { token: string }).token) {
+          token = (message as { token: string }).token
+        }
+
+      // check if payload role is 'service_role'
+      console.log('token', token)
+
+      const out = (token && jwt.decode(token)) as {
+        payload: { sub: string, role: string, id: string }
+        id: string
+      }
+
+      console.log('out', out)
+
+      let userId = ''
+      if (out?.payload?.role !== 'service_role') {
+        userId = out?.payload?.sub || out?.payload?.id || out?.id
+
+      if (!userId) {
+        return _setHeaders(new Response('Unauthorized', { status: 401 }))
+      }
+
+      if (!userId) {
+        console.log(
+          'Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.'
+        )
+      }
+    }
 
       const runtime = new BgentRuntime({
         debugMode: env.NODE_ENV === 'development',
@@ -235,7 +275,7 @@ const routes: Route[] = [
       }
 
       if (!(message as Message).senderId && userId) {
-        (message as Message).senderId = userId
+        (message as Message).senderId = userId as UUID
       }
 
       if (!(message as Message).userIds) {
@@ -253,85 +293,6 @@ const routes: Route[] = [
       }
 
       return new Response('ok', { status: 200 })
-    }
-  },
-  {
-    path: /^\/api\/agents\/notify/,
-    async handler ({ req, env, userId, supabase }: HandlerArgs) {
-      if (req.method === 'OPTIONS') {
-        return
-      }
-
-      const message = await req.json()
-
-      const runtime = new BgentRuntime({
-        debugMode: env.NODE_ENV === 'development',
-        serverUrl: 'https://api.openai.com/v1',
-        supabase,
-        token: env.OPENAI_API_KEY,
-        actions: [...actions, ...defaultActions],
-        evaluators: [...evaluators, ...defaultEvaluators]
-      })
-
-      if (!(message as Message).agentId) {
-        return new Response('agentId is required', { status: 400 })
-      }
-
-      if (!(message as Message).senderId) {
-        (message as Message).senderId = userId
-      }
-
-      if (!(message as Message).userIds) {
-        (message as Message).userIds = [
-          (message as Message).senderId!,
-          (message as Message).agentId!
-        ]
-      }
-
-      try {
-        await onMessage(message as Message, runtime)
-      } catch (error) {
-        console.error('error', error)
-        return new Response(error as string, { status: 500 })
-      }
-
-      return new Response('ok', { status: 200 })
-    }
-  },
-  {
-    path: /^\/api\/agents\/update/,
-    async handler ({ req, env, supabase }: HandlerArgs) {
-      if (req.method === 'OPTIONS') {
-        return
-      }
-
-      const message = (await req.json()) as Message
-
-      const runtime = new BgentRuntime({
-        debugMode: false,
-        serverUrl: 'https://api.openai.com/v1',
-        supabase,
-        token: env.OPENAI_API_KEY,
-        actions,
-        evaluators
-      })
-
-      if (!message.agentId) {
-        return new Response('agentId is required', { status: 400 })
-      }
-
-      if (!message.userIds) {
-        if (message.senderId) {
-          (message as Message).userIds.push(message.senderId)
-        }
-        message.userIds = [message.agentId!]
-      }
-
-      const state = await runtime.composeState(message)
-
-      if (shouldSkipMessage(state, message.agentId)) return
-
-      return await onMessage(message, runtime, state)
     }
   },
   {
@@ -354,7 +315,7 @@ async function handleRequest (
 ) {
   const { pathname } = new URL(req.url)
 
-  console.log('pathname')
+  console.log('pathname', pathname)
 
   if (req.method === 'OPTIONS') {
     return _setHeaders(
@@ -375,48 +336,10 @@ async function handleRequest (
 
     if (matchUrl) {
       try {
-        const supabase = createClient(
-          env.SUPABASE_URL,
-          env.SUPABASE_SERVICE_API_KEY,
-          {
-            auth: {
-              persistSession: false
-            }
-          }
-        )
-
-        const token = req.headers.get('Authorization')?.replace('Bearer ', '')
-
-        // check if payload role is 'service_role'
-
-        const out = (token && jwt.decode(token)) as {
-          payload: { sub: string, role: string, id: string }
-          id: string
-        }
-
-        console.log('out', out)
-
-        let userId = ''
-        if (out?.payload?.role !== 'service_role') {
-          userId = out?.payload?.sub || out?.payload?.id || out?.id
-
-        if (!userId) {
-          return _setHeaders(new Response('Unauthorized', { status: 401 }))
-        }
-
-        if (!userId) {
-          console.log(
-            'Warning, userId is null, which means the token was not decoded properly. This will need to be fixed for security reasons.'
-          )
-        }
-      }
-
         const response = await handler({
           req,
           env,
-          match: matchUrl,
-          userId: userId as UUID,
-          supabase
+          match: matchUrl
         })
 
         return response
