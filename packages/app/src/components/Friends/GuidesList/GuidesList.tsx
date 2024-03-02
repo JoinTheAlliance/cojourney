@@ -50,7 +50,7 @@ const GuidesList = ({
               mt={10}
             >
               <UserAvatarWithIndicator
-                image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
+                image={friendData?.avatar_url || getAvatarImage(friendData?.name || friendData?.email || "")}
                 size={40}
                 // @ts-expect-error
                 user_email={friendData.email}

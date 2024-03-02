@@ -51,7 +51,7 @@ const Root = (): JSX.Element => {
   if ((location.pathname === "/" || location.pathname === "/#") && dms.length > 0) {
     navigate(`/chat/${dms[0].id}`)
   }
-  }, [])
+  }, [location.pathname, dms])
 
   useEffect(() => {
     if (!session) return
@@ -162,7 +162,7 @@ const Root = (): JSX.Element => {
       )}
       <div className={classes.content} style={{
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${friend.avatar_url || getAvatarImage(friend.name || friend.email || "")})`
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${friend?.avatar_url || getAvatarImage(friend?.name || friend?.email || "")})`
       }}>
         <Outlet />
       </div>

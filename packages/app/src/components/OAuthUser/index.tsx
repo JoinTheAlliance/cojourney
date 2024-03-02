@@ -18,10 +18,10 @@ export default function OAuthUser () {
       name: "Google",
       icon: "/icons/google.svg"
     },
-    {
-      name: "Github",
-      icon: "/icons/github.svg"
-    }
+    // {
+    //   name: "Github",
+    //   icon: "/icons/github.svg"
+    // }
   ]
   const signInWithAuthProvider = async (provider: string) => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -50,6 +50,8 @@ export default function OAuthUser () {
           padding: "1.2rem 2.2rem",
           width: "20rem",
           fontWeight: "bold",
+          // uppercase
+          textTransform: "uppercase",
           position: "absolute",
           top: 0,
           left: 0,
@@ -82,10 +84,10 @@ export default function OAuthUser () {
           <h3
             style={{
               fontSize: "1rem",
-              fontWeight: "normal"
+              // fontWeight: "normal"
             }}
           >
-            Login to continue
+            Login to Continue
           </h3>
           <div
             style={{
@@ -102,8 +104,8 @@ export default function OAuthUser () {
                 src={provider.icon}
                 alt={provider.name}
                 style={{
-                  width: "2.5rem",
-                  height: "2.5rem",
+                  width: "60px",
+                  height: "60px",
                   cursor: "pointer"
                 }}
                 onClick={async () => {

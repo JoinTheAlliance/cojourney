@@ -62,7 +62,7 @@ const FriendsPendingList = (): JSX.Element => {
             <Flex>
               <UserPopup>
                 <UserAvatarWithIndicator
-                  image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
+                  image={friendData?.avatar_url || getAvatarImage(friendData?.name || friendData?.email || "")}
                   size={40}
                   user_email={friendData.email || ""}
                   checkOnline

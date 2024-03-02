@@ -44,7 +44,7 @@ const RoomHeader = (): JSX.Element => {
               >
                 <div>
                   <UserAvatarWithIndicator
-                    image={friend.avatar_url || getAvatarImage(friend.name as string || friend.email as string || "")}
+                    image={friend?.avatar_url || getAvatarImage(friend.name as string || friend.email as string || "/background.png")}
                     size={40}
                     user_email={friend.email}
                   />

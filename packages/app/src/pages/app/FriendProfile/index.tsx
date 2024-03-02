@@ -16,6 +16,7 @@ import ProfileHeader from "../../../components/ProfileHeader"
 import UserAvatar from "../../../components/UserAvatar"
 import useGlobalStore from "../../../store/useGlobalStore"
 import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 export default function Profile () {
   const navigate = useNavigate()
@@ -63,19 +64,9 @@ export default function Profile () {
           mx={isMobile ? "0" : "8xl"}
         >
           <Container maw={"100%"} p={"xxl"} style={{}}>
-            <UserAvatar src={friend.avatar_url} online={true} size={"lg"} />
-
-            <Text
-              align="center"
-              size="md"
-              color={theme.colors.gray[4]}
-              mt={"xl"}
-              weight={"600"}
-            >
-              8 Mutual Connections
-            </Text>
+            <UserAvatar src={friend?.avatar_url || getAvatarImage(friend?.name as string || friend?.email as string || "")} online={true} size={"lg"} />
             <Group>
-              <Text
+              {/* <Text
                 size="sm"
                 color={theme.colors.gray[4]}
                 mt={"2xl"}
@@ -85,8 +76,8 @@ export default function Profile () {
               >
                 I&apos;m here for anything you need. No problem is too big or
                 too small!
-              </Text>
-              <Text
+              </Text> */}
+              {/* <Text
                 w={"100%"}
                 align="right"
                 size="sm"
@@ -94,7 +85,7 @@ export default function Profile () {
                 weight={"400"}
               >
                 -- {friend.name}
-              </Text>
+              </Text> */}
             </Group>
           </Container>
           <Group

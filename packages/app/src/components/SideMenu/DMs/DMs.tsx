@@ -72,7 +72,7 @@ const DMs = (): JSX.Element => {
               checkOnline
               size={35}
               user_email={friendData?.email || "Error"}
-              image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
+              image={friendData?.avatar_url || getAvatarImage(friendData?.name || friendData?.email || "")}
             />
             {unread && unread?.message_count >= 1 && (
               <Badge

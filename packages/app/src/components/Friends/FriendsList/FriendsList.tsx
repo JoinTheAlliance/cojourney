@@ -4,6 +4,7 @@ import { type IFriend, type IUser } from "../../../store/useGlobalStore"
 import getFriend from "../../../utils/getFriend"
 import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator"
 import UserPopup from "../../UserPopup/UserPopup"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 const FriendsList = ({
   friends,
@@ -49,8 +50,7 @@ const FriendsList = ({
               mt={10}
             >
               <UserAvatarWithIndicator
-                // @ts-expect-error
-                image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
+                image={friendData?.avatar_url || getAvatarImage(friendData?.name || friendData?.email || "")}
                 size={40}
                 // @ts-expect-error
                 user_email={friendData.email}
