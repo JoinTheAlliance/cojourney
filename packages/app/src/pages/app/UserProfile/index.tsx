@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import { useNavigate } from "react-router-dom"
 import {
@@ -32,6 +32,33 @@ export default function Profile () {
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [uploading, setUploading] = useState<boolean>(false)
   const { user, setUser, clearState } = useGlobalStore()
+  const [ location, setLocation] = useState("");
+  const [ settingLocation, setSettingLocation] = useState(false);
+
+  const getAutoLocation = async() => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        setSettingLocation(true);
+        console.log("Latitude is :", position);
+        
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`)
+        const data = await resp.json()
+        const country = data.address.country;
+        const province = data.address.province;
+        setLocation(`${province}, ${country}`);
+        setSettingLocation(false);
+      },
+      (error) => alert(error.message),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  }
+
+  useEffect(() => {
+    getAutoLocation();
+  }, []);
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -130,7 +157,10 @@ export default function Profile () {
               <Input.Wrapper style={{ color: "white" }}>
                 <label>Location</label>
                 <Input
-                  placeholder="San Francisco, CA"
+                  value={location}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                  }}
                   // p={"sm"}
                   styles={{
                     input: {
@@ -142,6 +172,16 @@ export default function Profile () {
                     }
                   }}
                 />
+                <br/>
+                <Button
+                  fullWidth
+                  variant="transparent"
+                  size="md"
+                  onClick={getAutoLocation}
+                  disabled={settingLocation}
+                >
+                  <Text color={theme.white}>Get Location</Text>
+                </Button>
               </Input.Wrapper>
               <Grid gutter={"xs"}>
                 <Grid.Col span={6}>
