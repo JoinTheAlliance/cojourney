@@ -91,6 +91,10 @@ export default function Profile () {
     setUploading(false)
   }
 
+  const back = () => {
+    navigate("/");
+  }
+
   return (
     <div>
       <div className={roomClasses.headerContainer}>
@@ -206,6 +210,16 @@ export default function Profile () {
             >
               <Text color={theme.white}>Update</Text>
             </Button>
+            {isMobile &&
+              <Button
+                fullWidth
+                variant="transparent"
+                size="md"
+                onClick={back}
+              >
+                <Text color={theme.white}>Back</Text>
+              </Button>
+            }
             <Button fullWidth variant="transparent" size="md" onClick={signOut}>
               <Text color={theme.colors.red[8]}>Logout</Text>
             </Button>
