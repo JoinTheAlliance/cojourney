@@ -6,7 +6,6 @@ import useListenToMessagesChanges from "../../../Hooks/rooms/useListenToMessages
 import useLoadUnreadMessages from "../../../Hooks/rooms/useLoadUnreadMessages"
 import useTypingStatus from "../../../Hooks/rooms/useTypingStatus"
 import useGlobalStore from "../../../store/useGlobalStore"
-import AgentBinding from "./AgentBinding/AgentBinding"
 import Messages from "./Messages/Messages"
 import MessagesTextInput from "./MessagesTextInput/MessagesTextInput"
 import RoomHeader from "./RoomHeader/RoomHeader"
@@ -23,8 +22,6 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
   const {
     currentRoom: { roomData, isRoomMember }
   } = useGlobalStore()
-
-  const [inputHandler, setInputHandler] = useState(null)
 
   const { getRoomMessages } = useGetRoomMessages()
   const { getUnreadMessages } = useLoadUnreadMessages()
@@ -45,25 +42,21 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
     fetchData()
   }, [roomData])
 
+  const [userMessage, setUserMessage] = useState("" as unknown)
+
   return (
     <div>
-      <AgentBinding
-        // @ts-expect-error
-        roomData={roomData}
-        // @ts-expect-error
-        setInputHandler={setInputHandler}
-      />
       <div className={classes.headerContainer}>
         <RoomHeader />
       </div>
       <div className={classes.messagesContainer}>
-        <Messages />
+        <Messages userMessage={userMessage} />
       </div>
       {isRoomMember && (
         <div className={classes.textInputContainer}>
           <MessagesTextInput
             roomChannel={roomChannel}
-            inputHandler={inputHandler}
+            onMessageSent={(message) => { setUserMessage(message) }}
           />
         </div>
       )}
