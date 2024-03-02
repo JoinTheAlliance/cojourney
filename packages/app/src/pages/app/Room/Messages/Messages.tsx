@@ -67,7 +67,7 @@ const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Eleme
   return (
     <ScrollArea
       w="100%"
-      h="calc(100%)"
+      h="calc(100% - 1em)"
     >
       <Box>
         {(userMessage ? [...messages
