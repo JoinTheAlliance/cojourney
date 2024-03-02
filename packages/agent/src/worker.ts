@@ -28,6 +28,7 @@ async function handleMessage (
   message: Message,
   state?: State
 ) {
+  console.log('**** handling message')
   const _saveRequestMessage = async (message: Message, state: State) => {
     const { content: senderContent /* senderId, userIds, room_id */ } = message
 
@@ -65,6 +66,8 @@ async function handleMessage (
   const { senderId, room_id, userIds: user_ids, agentId } = message
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+    console.log('*** trying completion:')
+    console.log(context)
     const response = await runtime.completion({
       context,
       stop: []
@@ -89,6 +92,8 @@ async function handleMessage (
     const parsedResponse = parseJSONObjectFromText(
       response
     ) as unknown as Content
+
+    console.log('parsedResponse', parsedResponse)
 
     if (
       (parsedResponse.user as string)?.includes(
@@ -132,6 +137,8 @@ async function handleMessage (
       console.warn('Empty response, skipping')
     }
   }
+
+  console.log('responseContent', responseContent)
 
   await _saveResponseMessage(message, state, responseContent)
   await runtime.processActions(message, responseContent)
@@ -231,6 +238,15 @@ const routes: Route[] = [
 
       let token = req.headers.get('Authorization')?.replace('Bearer ', '')
       const message = await req.json()
+
+      // if message.userIds is a string, parse it from json
+      if (typeof (message as Message).userIds === 'string') {
+        (message as Message).userIds = JSON.parse(
+          (message as Message).userIds as unknown as string
+        )
+      }
+
+      console.log('*** message is', message)
 
         if (!token && (message as { token: string }).token) {
           token = (message as { token: string }).token

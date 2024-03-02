@@ -2,21 +2,21 @@ import { ActionIcon, Loader, Text, TextInput } from "@mantine/core"
 import { showNotification } from "@mantine/notifications"
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
 import { type RealtimeChannel } from "@supabase/supabase-js"
-import { type Content } from "bgent"
 import React, { useEffect, useState } from "react"
 import { Send } from "react-feather"
 import { type Database } from "../../../../../types/database.types"
 import useTypingBroadCast from "../../../../Hooks/rooms/useTypingBroadcast"
 import useGlobalStore from "../../../../store/useGlobalStore"
+import { v4 as uuidv4 } from "uuid"
 
 interface Props {
-  inputHandler: { send: (message: Content) => Promise<void> } | null
   roomChannel: RealtimeChannel
+  onMessageSent: (data: unknown) => void
 }
 
 const MessagesTextInput = ({
   roomChannel,
-  inputHandler
+  onMessageSent
 }: Props): JSX.Element => {
   const session = useSession()
   const supabase = useSupabaseClient<Database>()
@@ -115,19 +115,23 @@ const MessagesTextInput = ({
     setIsSendingMessage(false)
     setMessage("")
 
-    const { data, error } = await supabase
-      .from("messages")
-      .insert({
-        content: { content: message },
-        room_id: roomData.id,
-        is_edited: false,
-        user_id: session.user.id,
-        user_ids: userIds
-      })
-      .select()
-      .single()
+    const messageObject = {
+      id: uuidv4(),
+      content: { content: message },
+      room_id: roomData.id,
+      created_at: new Date().toISOString(),
+      is_edited: false,
+      user_id: session.user.id,
+      user_ids: userIds
+    }
+    onMessageSent(messageObject)
 
-    if (!data || error) {
+    const { error } = await supabase
+      .from("messages")
+      // @ts-expect-error - we are adding id to the messageObject
+      .insert(messageObject)
+
+    if (error) {
       setIsSendingMessage(false)
       showNotification({
         title: "Error",
