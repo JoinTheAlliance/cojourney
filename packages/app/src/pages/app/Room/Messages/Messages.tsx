@@ -6,15 +6,10 @@ import EmptyRoom from "../../../../components/InfoScreens/EmptyRoom"
 import Message from "./Message/Message"
 
 const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Element => {
-  console.log(userMessage)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView()
-    // console.log("messagesEndRef.current scroll", messagesEndRef.current)
   }
-
-  // console.log("messagesEndRef", messagesEndRef.current)
-  console.log("userMessage", userMessage)
   const {
     user,
     currentRoom: { messages, isLoadingMessages }
@@ -22,7 +17,7 @@ const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Eleme
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages?.length])
+  }, [messages?.length, userMessage])
 
   if (isLoadingMessages) {
     return (
@@ -68,26 +63,6 @@ const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Eleme
 
   if (!messages) return <p>Error loading messages</p>
   if (messages.length === 0) return <EmptyRoom />
-
-  console.log("messages", messages)
-
-//   {
-//     "created_at": "2024-03-02T09:06:32.293347+00:00",
-//     "user_id": "59c8a2f6-00fc-4caf-9aad-0acfdfa0bda3",
-//     "content": {
-//         "content": "hello"
-//     },
-//     "is_edited": false,
-//     "room_id": "628fc3ba-b8f5-4b98-9347-92fab4f2551e",
-//     "updated_at": null,
-//     "user_ids": [
-//         "59c8a2f6-00fc-4caf-9aad-0acfdfa0bda3",
-//         "00000000-0000-0000-0000-000000000000"
-//     ],
-//     "id": "c3f3791a-b756-4d6f-bd05-7f32f5f95c6e",
-//     "embedding": null,
-//     "unique": true,
-// }
 
   return (
     <ScrollArea

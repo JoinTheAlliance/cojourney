@@ -120,7 +120,6 @@ const MessagesTextInput = ({
       content: { content: message },
       room_id: roomData.id,
       created_at: new Date().toISOString(),
-      is_edited: false,
       user_id: session.user.id,
       user_ids: userIds
     }

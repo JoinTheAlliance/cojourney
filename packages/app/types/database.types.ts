@@ -42,7 +42,6 @@ export interface Database {
         Row: {
           created_at: string | null
           id: number
-          is_edited: boolean
           content: {
             name?: string
             content: string
@@ -54,7 +53,6 @@ export interface Database {
         Insert: {
           created_at?: string | null
           id?: number
-          is_edited?: boolean
           content: {
             name?: string
             content: string
@@ -66,7 +64,6 @@ export interface Database {
         Update: {
           created_at?: string | null
           id?: number
-          is_edited?: boolean
           content?: {
             name?: string
             content: string
@@ -151,10 +148,10 @@ export interface Database {
         Args: {
           p_user_id: string
         }
-        Returns: {
+        Returns: Array<{
           room_id: string
           message_count: number
-        }[]
+        }>
       }
       is_user_participant_in_room: {
         Args: {
