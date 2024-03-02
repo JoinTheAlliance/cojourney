@@ -1,0 +1,47 @@
+{
+  "name": "@cojourney/agent",
+  "description": "Real human connection. Powered by AI.",
+  "version": "0.0.1",
+  "author": "Cojourney (https://cojourney.app)",
+  "repository": "https://github.com/ClioDynamics/Cojourney",
+  "bugs": "https://github.com/ClioDynamics/Cojourney/issues",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "resolutions": {
+    "@types/react": "^18.2.0"
+  },
+  "files": [
+    "scripts",
+    "package.json",
+    "package-lock.json"
+  ],
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "npm run build",
+    "test": "npm run test"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20230419.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "20.9.4",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "itty-router": "^3.0.12",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "@rollup/plugin-json": "^6.1.0",
+    "@supabase/supabase-js": "^2.39.3",
+    "@tsndr/cloudflare-worker-jwt": "^2.2.1",
+    "dotenv": "^16.4.5",
+    "ts-node": "^10.9.2"
+  }
+}

@@ -1,5 +1,5 @@
 name = "cojourney"
-main = "scripts/worker.ts"
+main = "src/index.ts"
 compatibility_date = "2023-11-21"
 node_compat = true
 

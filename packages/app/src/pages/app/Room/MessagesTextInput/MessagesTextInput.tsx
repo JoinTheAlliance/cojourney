@@ -1,14 +1,16 @@
 import { ActionIcon, Loader, Text, TextInput } from "@mantine/core"
 import { showNotification } from "@mantine/notifications"
-import { useSession } from "@supabase/auth-helpers-react"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import { type RealtimeChannel } from "@supabase/supabase-js"
+import { type Content } from "bgent"
 import React, { useEffect, useState } from "react"
 import { Send } from "react-feather"
-import { type RealtimeChannel } from "@supabase/supabase-js"
-import useGlobalStore from "../../../../store/useGlobalStore"
+import { type Database } from "../../../../../types/database.types"
 import useTypingBroadCast from "../../../../Hooks/rooms/useTypingBroadcast"
+import useGlobalStore from "../../../../store/useGlobalStore"
 
 interface Props {
-  inputHandler: { send: (message: string) => Promise<void> } | null
+  inputHandler: { send: (message: Content) => Promise<void> } | null
   roomChannel: RealtimeChannel
 }
 
@@ -17,6 +19,7 @@ const MessagesTextInput = ({
   inputHandler
 }: Props): JSX.Element => {
   const session = useSession()
+  const supabase = useSupabaseClient<Database>()
 
   const {
     currentRoom: { roomData, usersTyping, myMessage },
@@ -112,10 +115,24 @@ const MessagesTextInput = ({
     setIsSendingMessage(false)
     setMessage("")
 
-    if (inputHandler?.send) {
-      console.log("inputHandler", inputHandler)
-      console.log('*****  inputHandler send:', message)
-      await inputHandler.send(message)
+    const { data, error } = await supabase
+      .from("messages")
+      .insert({
+        content: { content: message },
+        room_id: roomData.id,
+        is_edited: false,
+        user_id: session.user.id,
+        user_ids: userIds
+      })
+      .select()
+      .single()
+
+    if (!data || error) {
+      setIsSendingMessage(false)
+      showNotification({
+        title: "Error",
+        message: "Unable to send message."
+      })
     }
   }
 

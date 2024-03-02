@@ -44,7 +44,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/CojourneyAI/Cojourney/tree/main/packages/create-docusaurus/templates/shared/'
+            'https://github.com/ClioDynamics/Cojourney/tree/main/packages/create-docusaurus/templates/shared/'
         },
         theme: {
           customCss: './src/css/custom.css'
@@ -68,7 +68,7 @@ const config = {
             label: 'Getting Started'
           },
           {
-            href: 'https://github.com/CojourneyAI/Cojourney',
+            href: 'https://github.com/ClioDynamics/Cojourney',
             label: 'GitHub',
             position: 'right'
           }
@@ -104,7 +104,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/CojourneyAI/Cojourney'
+                href: 'https://github.com/ClioDynamics/Cojourney'
               }
             ]
           }

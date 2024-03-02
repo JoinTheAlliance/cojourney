@@ -3,8 +3,8 @@
   "description": "Real human connection. Powered by AI.",
   "version": "0.0.9",
   "author": "Cojourney (https://cojourney.app)",
-  "repository": "https://github.com/cojourneyai/cojourney",
-  "bugs": "https://github.com/cojourneyai/cojourney/issues",
+  "repository": "https://github.com/ClioDynamics/Cojourney",
+  "bugs": "https://github.com/ClioDynamics/Cojourney/issues",
   "license": "MIT",
   "workspaces": [
     "packages/*"
@@ -18,8 +18,8 @@
     "package-lock.json"
   ],
   "scripts": {
-    "dev": "wrangler dev -- --dev & lerna run dev --ignore @cojourney/app-native --ignore @cojourney/docs",
-    "dev:all": "wrangler dev -- --dev & lerna run dev",
+    "dev": "lerna run dev --ignore @cojourney/app-native --ignore @cojourney/docs",
+    "dev:all": "lerna run dev",
     "shell": "node --no-warnings shell/index.mjs",
     "shell:dev": "node --no-warnings shell/index.mjs --dev",
     "build": "lerna run build",
@@ -46,7 +46,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",
     "@tabler/icons-react": "^2.47.0",
-    "bgent": "^0.0.22",
+    "bgent": "^0.0.25",
     "chalk": "^5.3.0",
     "dotenv": "^16.4.1",
     "inquirer": "^9.2.14"

@@ -15,7 +15,7 @@ const socials = [
   },
   {
     name: 'github',
-    link: 'https://github.com/CojourneyAI/cojourney'
+    link: 'https://github.com/ClioDynamics/Cojourney'
   }
 ]
 const Footer: React.FC = () => {

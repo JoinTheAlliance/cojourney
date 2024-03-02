@@ -87,11 +87,11 @@ const AgentBinding = ({ roomData, setInputHandler }: Props) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${(session!).access_token}`
+              Authorization: `BeareFr ${(session!).access_token}`
             },
             body: JSON.stringify({
               senderId: session?.user.id,
-              content: { content },
+              content,
               agentId,
               room_id: roomData?.id
             })
