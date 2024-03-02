@@ -35,11 +35,29 @@ export default function Profile () {
   const [ location, setLocation] = useState("");
   const [ settingLocation, setSettingLocation] = useState(false);
 
+  const saveLocation = async (newLocation: string) => {
+    const oldLocation = location;
+    setLocation(newLocation);
+
+    if (oldLocation != newLocation) {
+      await supabase
+      .from("accounts")
+      .update({
+        location: newLocation,
+      })
+      .eq("id", user.uid)
+
+    setUser({
+      ...user,
+      location: newLocation,
+    })
+    }
+  }
+
   const getAutoLocation = async() => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         setSettingLocation(true);
-        console.log("Latitude is :", position);
         
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
@@ -48,7 +66,7 @@ export default function Profile () {
         const data = await resp.json()
         const country = data.address.country;
         const province = data.address.province;
-        setLocation(`${province}, ${country}`);
+        saveLocation(`${province}, ${country}`);
         setSettingLocation(false);
       },
       (error) => alert(error.message),
@@ -159,7 +177,7 @@ export default function Profile () {
                 <Input
                   value={location}
                   onChange={(e) => {
-                    setLocation(e.target.value);
+                    saveLocation(e.target.value);
                   }}
                   // p={"sm"}
                   styles={{
