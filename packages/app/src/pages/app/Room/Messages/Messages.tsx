@@ -4,6 +4,7 @@ import useGlobalStore, { type IDatabaseMessage } from "../../../../store/useGlob
 
 import EmptyRoom from "../../../../components/InfoScreens/EmptyRoom"
 import Message from "./Message/Message"
+import { Content } from "bgent"
 
 const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Element => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
@@ -71,6 +72,10 @@ const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Eleme
     >
       <Box>
         {(userMessage ? [...messages
+        .filter(
+          // filter any messages where action is NEW_USER
+          (message) => (message.content as Content).action !== "NEW_USER"
+        )
           .filter(
             // filter out messages that match userMessage
             (message) => message.content.content !== userMessage.content.content
