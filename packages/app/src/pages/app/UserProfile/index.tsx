@@ -39,9 +39,10 @@ export default function Profile () {
     navigate("/")
   }
 
-  const uploadImage = async (): Promise<void> => {
+  const uploadImage = async (imgFile: File): Promise<void> => {
     if (!user.uid) return
     setUploading(true)
+    const targetImage = profileImage || imgFile;
 
     const { data: imageUploadData, error: imageUploadError } =
       await supabase.storage
@@ -49,7 +50,7 @@ export default function Profile () {
         .upload(
           `${user.uid}-${new Date().getTime()}/profile.png`,
           // @ts-expect-error
-          profileImage,
+          targetImage,
           {
             cacheControl: "0",
             upsert: true
@@ -184,7 +185,10 @@ export default function Profile () {
                 <label>Profile Picture</label>
                 <UploadProfileImage
                   image={profileImage}
-                  setImage={setProfileImage}
+                  setImage={(e)=> {
+                    setProfileImage(e);
+                    uploadImage(e);
+                  }}                  
                 />
               </Input.Wrapper>
             </Flex>
