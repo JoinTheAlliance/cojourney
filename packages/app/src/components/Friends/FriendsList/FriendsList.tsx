@@ -50,7 +50,7 @@ const FriendsList = ({
             >
               <UserAvatarWithIndicator
                 // @ts-expect-error
-                image={friendData.avatar_url}
+                image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
                 size={40}
                 // @ts-expect-error
                 user_email={friendData.email}

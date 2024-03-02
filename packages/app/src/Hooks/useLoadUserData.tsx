@@ -10,6 +10,7 @@ import useGlobalStore, {
 } from "../store/useGlobalStore"
 import { type Database } from "../../types/database.types"
 import useHandleSignout from "./useHandleSignout"
+import { getAvatarImage } from "../helpers/getAvatarImage"
 
 const useLoadUserData = () => {
   const supabase = useSupabaseClient<Database>()
@@ -50,7 +51,7 @@ const useLoadUserData = () => {
     setUser({
       name: data?.name,
       email: data?.email,
-      avatar_url: data?.avatar_url,
+      avatar_url: data?.avatar_url || getAvatarImage(data?.name || data?.email || ""),
       uid: data?.id
     })
   }, [])

@@ -66,7 +66,9 @@ export default function Profile () {
     }
 
     const existingImage = user.avatar_url?.split("profile-images/")[1] as string
-    supabase.storage.from("profile-images").remove([existingImage])
+    if (existingImage) {
+      supabase.storage.from("profile-images").remove([existingImage])
+    }
 
     const { data: imageUrlData } = supabase.storage
       .from("profile-images")

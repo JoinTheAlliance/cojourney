@@ -10,6 +10,7 @@ import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadP
 import { type Database } from "../../../../types/database.types"
 import constants from "../../../constants/constants"
 import useGlobalStore from "../../../store/useGlobalStore"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 interface IFormValues {
   name: string
@@ -21,7 +22,7 @@ const UserPreferences = (): JSX.Element => {
   const supabase = useSupabaseClient<Database>()
 
   const [image, setImage] = useState<File | null>(null)
-  const [avatar_url, setImageUrl] = useState<string | null>(user.avatar_url)
+  const [avatar_url, setImageUrl] = useState<string | null>(user.avatar_url || getAvatarImage(user.name as string || user.email as string || ""))
   const [isSavingChanges, setIsSavingChanges] = useState(false)
 
   const isMobile = useMediaQuery("(max-width: 900px)")

@@ -3,7 +3,6 @@ import { useMediaQuery } from "@mantine/hooks"
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
 import React, { useEffect } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
-import backgroundImage from "../../../public/images/background-chat.svg"
 import { type Database } from "../../../types/database.types"
 import useListenToFriendshipChanges from "../../Hooks/relationships/useListenToFrienshipChanges"
 import useListenToRoomChanges from "../../Hooks/rooms/useListenToRoomChanges"
@@ -12,6 +11,7 @@ import useLoadUnreadMessages from "../../Hooks/rooms/useLoadUnreadMessages"
 import useLoadUserData from "../../Hooks/useLoadUserData"
 import SideMenu from "../../components/SideMenu/SideMenu"
 import { isSmartphone } from "../../helpers/functions"
+import { getAvatarImage } from "../../helpers/getAvatarImage"
 import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingIndicatorFromOfflineUsers"
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import OAuthUser from "./../../components/OAuthUser"
@@ -161,7 +161,8 @@ const Root = (): JSX.Element => {
         <SideMenu closeMenu={(): void => {}} />
       )}
       <div className={classes.content} style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${friend?.avatar_url ? friend.avatar_url : backgroundImage})`
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${friend.avatar_url || getAvatarImage(friend.name || friend.email || "")})`
       }}>
         <Outlet />
       </div>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import UserAvatarWithIndicator from "../../../../components/UserAvatarWithIndicator/UserAvatarWithIndicator"
 import useGlobalStore from "../../../../store/useGlobalStore"
 import useRoomHeaderStyles from "./useRoomHeaderStyles"
+import { getAvatarImage } from "../../../../helpers/getAvatarImage"
 
 const RoomHeader = (): JSX.Element => {
   const { classes } = useRoomHeaderStyles()
@@ -43,7 +44,7 @@ const RoomHeader = (): JSX.Element => {
               >
                 <div>
                   <UserAvatarWithIndicator
-                    image={friend.avatar_url}
+                    image={friend.avatar_url || getAvatarImage(friend.name as string || friend.email as string || "")}
                     size={40}
                     user_email={friend.email}
                   />

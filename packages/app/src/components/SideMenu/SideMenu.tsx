@@ -7,6 +7,7 @@ import UserAvatar from "../UserAvatar"
 import useSideMenuStyles from "./SideMenu.styles"
 import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen"
 import useGlobalStore from "../../store/useGlobalStore"
+import { getAvatarImage } from "../../helpers/getAvatarImage"
 
 const SideMenu = ({ closeMenu }: {
   closeMenu: () => void
@@ -50,7 +51,7 @@ const SideMenu = ({ closeMenu }: {
               }}
             >
               <Group>
-                <UserAvatar src={user.avatar_url ?? userId} online={true} />
+                <UserAvatar src={user.avatar_url || getAvatarImage(user.name || user.email || "")} online={true} />
                 <div>
                   <Text color={theme.white} weight={500}>
                     {user.name}

@@ -14,6 +14,7 @@ import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWit
 import getFriend from "../../../utils/getFriend"
 import UserPopup from "../../UserPopup/UserPopup"
 import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 const FriendsPendingList = (): JSX.Element => {
   const {
@@ -61,7 +62,7 @@ const FriendsPendingList = (): JSX.Element => {
             <Flex>
               <UserPopup>
                 <UserAvatarWithIndicator
-                  image={friendData.avatar_url || ""}
+                  image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
                   size={40}
                   user_email={friendData.email || ""}
                   checkOnline

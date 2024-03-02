@@ -8,6 +8,7 @@ import useGlobalStore, {
 import useSideMenuStyles from "../SideMenu.styles"
 import getFriend from "../../../utils/getFriend"
 import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 const DMs = (): JSX.Element => {
   const { classes, cx } = useSideMenuStyles()
@@ -71,7 +72,7 @@ const DMs = (): JSX.Element => {
               checkOnline
               size={35}
               user_email={friendData?.email || "Error"}
-              image={friendData?.avatar_url || ""}
+              image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
             />
             {unread && unread?.message_count >= 1 && (
               <Badge

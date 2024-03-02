@@ -11,6 +11,7 @@ import { useNavigate } from "react-router"
 import iconImgSrc from "../../../public/icons/account.svg"
 import UserAvatar from "../UserAvatar"
 import useGlobalStore from "../../store/useGlobalStore"
+import { getAvatarImage } from "../../helpers/getAvatarImage"
 
 const MyAccountInfo = () => {
   const { user, setApp } = useGlobalStore()
@@ -31,7 +32,7 @@ const MyAccountInfo = () => {
     }}
   >
     <Group>
-      <UserAvatar src={user.avatar_url || ''} online={true} />
+      <UserAvatar src={user.avatar_url || getAvatarImage(user.name || user.email || "")} online={true} />
       <div>
         <Text color={theme.white} weight={500}>
           {user.name}
@@ -56,7 +57,7 @@ const MyAccountInfo = () => {
           paddingLeft: rem(20),
           color: "#757474"
         }}
-        onClick={() => {  navigate("/profile"), setApp({ isMobileMenuOpen: false }) }}
+        onClick={() => { navigate("/profile"); setApp({ isMobileMenuOpen: false }) }}
       >
         <Text mr={"md"}>My Account</Text>
         <img src={iconImgSrc} alt="Icon" width={"20px"} height={"20px"} />

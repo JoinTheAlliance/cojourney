@@ -13,6 +13,7 @@ import useGlobalStore from "../../../store/useGlobalStore"
 import getFriend from "../../../utils/getFriend"
 import UserAvatarWithIndicator from "../../UserAvatarWithIndicator/UserAvatarWithIndicator"
 import UserPopup from "../../UserPopup/UserPopup"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 const FriendsRequestsList = (): JSX.Element => {
   const {
@@ -54,7 +55,7 @@ const FriendsRequestsList = (): JSX.Element => {
             <Flex>
               <UserPopup>
                 <UserAvatarWithIndicator
-                  image={friendData.avatar_url || ""}
+                  image={friendData.avatar_url || getAvatarImage(friendData.name || friendData.email || "")}
                   size={40}
                   user_email={friendData.email || ""}
                   checkOnline

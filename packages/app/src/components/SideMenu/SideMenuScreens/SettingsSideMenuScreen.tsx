@@ -7,6 +7,7 @@ import useGlobalStore from "../../../store/useGlobalStore"
 import useSideMenuStyles from "../SideMenu.styles"
 import ChangeThemeModal from "../ChangeThemeModal/ChangeThemeModal"
 import useHandleSignout from "../../../Hooks/useHandleSignout"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 const SettingsSideMenuScreen = (): JSX.Element => {
   const { classes, cx } = useSideMenuStyles()
@@ -25,7 +26,7 @@ const SettingsSideMenuScreen = (): JSX.Element => {
       >
         <UserAvatarWithIndicator
           user_email={user.email || ""}
-          image={user.avatar_url || ""}
+          image={user.avatar_url || getAvatarImage(user.name || user.email || "")}
           size={80}
           checkOnline
         />
