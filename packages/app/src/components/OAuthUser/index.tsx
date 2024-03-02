@@ -36,7 +36,7 @@ export default function OAuthUser () {
       style={{
         height: "100vh",
         width: "100vw",
-        backgroundImage: "url('../../../public/images/NewBackground.jpg')",
+        backgroundImage: "url('/images/NewBackground.jpg')",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
