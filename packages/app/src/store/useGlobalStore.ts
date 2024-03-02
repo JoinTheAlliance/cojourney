@@ -28,7 +28,7 @@ export interface IDatabaseParticipants
   userData: IDatabaseUser | IDatabaseUser[] | null
 }
 
-export interface IDatabaseMessages extends IDatabaseMessagesWithoutUsers {
+export interface IDatabaseMessage extends IDatabaseMessagesWithoutUsers {
   userData: IDatabaseUser | IDatabaseUser[] | null
 }
 
@@ -66,7 +66,7 @@ export interface ICurrentRoom {
   isLoading: boolean
   isLoadingMessages: boolean
   isRoomMember: boolean
-  messages: IDatabaseMessages[] | null
+  messages: IDatabaseMessage[] | null
   myMessage: string
   roomData: Database["public"]["Tables"]["rooms"]["Row"] | null
   roomNotFound: boolean
@@ -101,7 +101,7 @@ export interface IGlobalState extends IGlobalStateValues {
     newMessage,
     supabase
   }: {
-    newMessage: IDatabaseMessages
+    newMessage: IDatabaseMessage
     supabase: SupabaseClient<Database>
   }) => void
   clearState: () => void

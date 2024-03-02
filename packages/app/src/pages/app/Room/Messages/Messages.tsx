@@ -1,11 +1,11 @@
 import { Box, ScrollArea, Skeleton } from "@mantine/core"
 import React, { useEffect, useRef } from "react"
-import useGlobalStore, { type IDatabaseMessages } from "../../../../store/useGlobalStore"
+import useGlobalStore, { type IDatabaseMessage } from "../../../../store/useGlobalStore"
 
 import EmptyRoom from "../../../../components/InfoScreens/EmptyRoom"
 import Message from "./Message/Message"
 
-const Messages = ({ userMessage }): JSX.Element => {
+const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Element => {
   console.log(userMessage)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const scrollToBottom = () => {
@@ -108,7 +108,7 @@ const Messages = ({ userMessage }): JSX.Element => {
             <div key={message.created_at}>
               <Message
                 key={message.id}
-                message={message}
+                message={message as IDatabaseMessage}
               />
             </div>
           )

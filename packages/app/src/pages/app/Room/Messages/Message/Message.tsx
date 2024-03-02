@@ -20,13 +20,13 @@ import { type Database } from "../../../../../../types/database.types"
 import UserAvatarWithIndicator from "../../../../../components/UserAvatarWithIndicator/UserAvatarWithIndicator"
 import UserPopup from "../../../../../components/UserPopup/UserPopup"
 import useGlobalStore, {
-  type IDatabaseMessages
+  type IDatabaseMessage
 } from "../../../../../store/useGlobalStore"
 import MessageFunctions from "../MessagesFunctions/MessageFunctions"
 import useMessageStyles from "../useMessageStyles"
 
 interface Props {
-  message: IDatabaseMessages
+  message: IDatabaseMessage
 }
 
 const Message = ({ message }: Props): JSX.Element => {
@@ -65,7 +65,7 @@ const Message = ({ message }: Props): JSX.Element => {
     })
   }
 
-  const handleEdit = async (m: IDatabaseMessages) => {
+  const handleEdit = async (m: IDatabaseMessage) => {
     if (editMessage.length <= 0) {
       setIsSendingMessage(false)
       openModal({

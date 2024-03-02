@@ -91,7 +91,7 @@ const Navbar = () => {
             href="https://web.cojourney.app"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-[#0075FF] py-2 px-8 rounded-lg hover:scale-110 transition duration-200 ease-in-out "
+            className="bg-[#0075FF] py-2 px-8 bold rounded-lg hover:scale-110 transition duration-200 ease-in-out"
           >
             Open App
           </a>

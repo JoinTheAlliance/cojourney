@@ -38,9 +38,9 @@ const Header = () => {
           href="https://web.cojourney.app"
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-[#0075FF] py-3 px-2 md:px-12 rounded-lg capitalize font-bold hover:scale-110 transition duration-200 ease-in-out"
+          className="bg-[#0075FF] py-3 px-6 md:px-12 rounded-lg capitalize font-bold hover:scale-110 transition duration-200 ease-in-out"
         >
-          Try it now free
+          Try It Now Free
         </a>
         {/* <button className="bg-[#0075FF] py-2 px-2 md:px-8 rounded-lg">
           Download for Mac

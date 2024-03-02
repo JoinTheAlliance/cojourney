@@ -5,7 +5,7 @@ import useGetRoomMessages from "../../../Hooks/rooms/useGetRoomMessages"
 import useListenToMessagesChanges from "../../../Hooks/rooms/useListenToMessagesChanges"
 import useLoadUnreadMessages from "../../../Hooks/rooms/useLoadUnreadMessages"
 import useTypingStatus from "../../../Hooks/rooms/useTypingStatus"
-import useGlobalStore from "../../../store/useGlobalStore"
+import useGlobalStore, { type IDatabaseMessage } from "../../../store/useGlobalStore"
 import Messages from "./Messages/Messages"
 import MessagesTextInput from "./MessagesTextInput/MessagesTextInput"
 import RoomHeader from "./RoomHeader/RoomHeader"
@@ -50,7 +50,7 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
         <RoomHeader />
       </div>
       <div className={classes.messagesContainer}>
-        <Messages userMessage={userMessage} />
+        <Messages userMessage={userMessage as IDatabaseMessage} />
       </div>
       {isRoomMember && (
         <div className={classes.textInputContainer}>

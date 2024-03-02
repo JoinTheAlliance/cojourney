@@ -2,12 +2,12 @@ import { Edit } from "react-feather"
 import React from "react"
 import { ActionIcon, Flex, Tooltip } from "@mantine/core"
 import useGlobalStore, {
-  type IDatabaseMessages
+  type IDatabaseMessage
 } from "../../../../../store/useGlobalStore"
 
 interface IMessageFunctions {
   handleEdit: () => void
-  message: IDatabaseMessages
+  message: IDatabaseMessage
 }
 const MessageFunctions = ({
   handleEdit,
