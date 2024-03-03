@@ -131,7 +131,8 @@ export const initialState: IGlobalStateValues = {
     name: null,
     uid: null,
     avatar_url: null,
-    registerComplete: false
+    registerComplete: false,
+    location: null
   },
   currentRoom: {
     isLoadingMessages: false,

@@ -1,30 +1,30 @@
-import React from "react";
+import React from "react"
 import {
   Container,
   Group,
   Paper,
   Text,
   Button,
-  useMantineTheme,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import useRoomStyles from "../Room/useRoomStyles";
-import ProfileHeader from "../../../components/ProfileHeader";
-import UserAvatar from "../../../components/UserAvatar";
-import useGlobalStore from "../../../store/useGlobalStore";
+  useMantineTheme
+} from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import useRoomStyles from "../Room/useRoomStyles"
+import ProfileHeader from "../../../components/ProfileHeader"
+import UserAvatar from "../../../components/UserAvatar"
+import useGlobalStore from "../../../store/useGlobalStore"
 
-export default function Profile() {
-  const isMobile = useMediaQuery("(max-width: 900px)");
-  const { classes: roomClasses } = useRoomStyles();
+export default function Profile () {
+  const isMobile = useMediaQuery("(max-width: 900px)")
+  const { classes: roomClasses } = useRoomStyles()
   const {
-    // @ts-expect-error
     currentRoom: {
       roomData: {
-        relationships: [{ userData2: friend }],
-      },
-    },
-  } = useGlobalStore();
-  const theme = useMantineTheme();
+        // @ts-expect-error
+        relationships: [{ userData2: friend }]
+      }
+    }
+  } = useGlobalStore()
+  const theme = useMantineTheme()
 
   return (
     <div>
@@ -35,7 +35,7 @@ export default function Profile() {
         className={roomClasses.messagesContainer}
         style={{
           alignItems: "center",
-          display: "flex",
+          display: "flex"
         }}
       >
         <Paper
@@ -92,7 +92,7 @@ export default function Profile() {
             mb={"lg"}
             mt={"4xl"}
             style={{
-              gap: theme.spacing.xs,
+              gap: theme.spacing.xs
             }}
           >
             <Button mb={"lg"} fullWidth variant="transparent" size="md">
@@ -102,5 +102,5 @@ export default function Profile() {
         </Paper>
       </div>
     </div>
-  );
+  )
 }

@@ -402,7 +402,7 @@ const routes: Route[] = [
         user_id: zeroUuid as UUID,
         objectives: [
           {
-            description: `Welcome ${userName} to Cojourney. Greet them and ask them how their day is going.`,
+            description: `Welcome ${userName} to Cojourney. Greet them and ask them what is on their mind.`,
             completed: false
           },
           {

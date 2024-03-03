@@ -32,51 +32,51 @@ export default function Profile () {
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [uploading, setUploading] = useState<boolean>(false)
   const { user, setUser, clearState } = useGlobalStore()
-  const [ location, setLocation] = useState("");
-  const [ settingLocation, setSettingLocation] = useState(false);
+  const [location, setLocation] = useState("")
+  const [settingLocation, setSettingLocation] = useState(false)
 
   const saveLocation = async (newLocation: string) => {
-    const oldLocation = location;
-    setLocation(newLocation);
+    const oldLocation = location
+    setLocation(newLocation)
 
-    if (oldLocation != newLocation) {
+    if (oldLocation !== newLocation) {
       await supabase
       .from("accounts")
       .update({
-        location: newLocation,
+        location: newLocation
       })
-      .eq("id", user.uid)
+      .eq("id", user.uid as string)
 
     setUser({
       ...user,
-      location: newLocation,
+      location: newLocation
     })
     }
   }
 
-  const getAutoLocation = async() => {
+  const getAutoLocation = async () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        setSettingLocation(true);
-        
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
+        setSettingLocation(true)
+
+        const latitude = position.coords.latitude
+        const longitude = position.coords.longitude
 
         const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`)
         const data = await resp.json()
-        const country = data.address.country;
-        const province = data.address.province;
-        saveLocation(`${province}, ${country}`);
-        setSettingLocation(false);
+        const country = data.address.country
+        const province = data.address.province
+        saveLocation(`${province}, ${country}`)
+        setSettingLocation(false)
       },
-      (error) => alert(error.message),
+      (error) => { alert(error.message) },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
+    )
   }
 
   useEffect(() => {
-    getAutoLocation();
-  }, []);
+    getAutoLocation()
+  }, [])
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -87,14 +87,13 @@ export default function Profile () {
   const uploadImage = async (imgFile: File): Promise<void> => {
     if (!user.uid) return
     setUploading(true)
-    const targetImage = profileImage || imgFile;
+    const targetImage = profileImage || imgFile
 
     const { data: imageUploadData, error: imageUploadError } =
       await supabase.storage
         .from("profile-images")
         .upload(
           `${user.uid}-${new Date().getTime()}/profile.png`,
-          // @ts-expect-error
           targetImage,
           {
             cacheControl: "0",
@@ -138,7 +137,7 @@ export default function Profile () {
   }
 
   const back = () => {
-    navigate("/");
+    navigate("/")
   }
 
   return (
@@ -178,7 +177,7 @@ export default function Profile () {
                 <Input
                   value={location}
                   onChange={(e) => {
-                    saveLocation(e.target.value);
+                    saveLocation(e.target.value as string)
                   }}
                   // p={"sm"}
                   styles={{
@@ -247,10 +246,10 @@ export default function Profile () {
                 <label>Profile Picture</label>
                 <UploadProfileImage
                   image={profileImage}
-                  setImage={(e)=> {
-                    setProfileImage(e);
-                    uploadImage(e);
-                  }}                  
+                  setImage={(e: React.SetStateAction<File | null>) => {
+                    setProfileImage(e as File)
+                    if (e) uploadImage(e as File)
+                  }}
                 />
               </Input.Wrapper>
             </Flex>
@@ -267,7 +266,7 @@ export default function Profile () {
               fullWidth
               variant="transparent"
               size="md"
-              onClick={uploadImage}
+              onClick={async () => { if (profileImage) await uploadImage(profileImage) }}
               disabled={!profileImage}
             >
               <Text color={theme.white}>Update</Text>
