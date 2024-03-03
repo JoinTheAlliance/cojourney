@@ -432,6 +432,8 @@ const routes: Route[] = [
         ]
       }
 
+      console.log('**** new goal', newGoal)
+
       await createGoal({
         runtime,
         goal: newGoal
@@ -443,6 +445,13 @@ const routes: Route[] = [
         content: newMessage.content,
         room_id
       })
+
+      try {
+        await onMessage(newMessage, runtime)
+      } catch (error) {
+        console.error('error', error)
+        return new Response(error as string, { status: 500 })
+      }
 
       return new Response('ok', { status: 200 })
     }

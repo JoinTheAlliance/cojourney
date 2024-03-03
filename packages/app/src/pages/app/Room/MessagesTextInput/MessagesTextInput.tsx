@@ -117,7 +117,7 @@ const MessagesTextInput = ({
 
     const messageObject = {
       id: uuidv4(),
-      content: { content: message },
+      content: { content: message, action: "WAIT" },
       room_id: roomData.id,
       created_at: new Date().toISOString(),
       user_id: session.user.id,
