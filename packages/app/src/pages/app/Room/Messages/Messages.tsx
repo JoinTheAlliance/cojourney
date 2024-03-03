@@ -9,16 +9,25 @@ import Message from "./Message/Message"
 const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Element => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView()
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }
   const {
     user,
     currentRoom: { messages, isLoadingMessages }
   } = useGlobalStore()
 
+  
   useEffect(() => {
-    scrollToBottom()
-  }, [messages?.length, userMessage])
+    setTimeout(() => {
+      scrollToBottom();
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  }, [messages?.length, userMessage]);
 
   if (isLoadingMessages) {
     return (

@@ -35,11 +35,29 @@ export default function Profile () {
   const [ location, setLocation] = useState("");
   const [ settingLocation, setSettingLocation] = useState(false);
 
+  const saveLocation = async (newLocation: string) => {
+    const oldLocation = location;
+    setLocation(newLocation);
+
+    if (oldLocation != newLocation) {
+      await supabase
+      .from("accounts")
+      .update({
+        location: newLocation,
+      })
+      .eq("id", user.uid)
+
+    setUser({
+      ...user,
+      location: newLocation,
+    })
+    }
+  }
+
   const getAutoLocation = async() => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         setSettingLocation(true);
-        console.log("Latitude is :", position);
         
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
@@ -48,7 +66,7 @@ export default function Profile () {
         const data = await resp.json()
         const country = data.address.country;
         const province = data.address.province;
-        setLocation(`${province}, ${country}`);
+        saveLocation(`${province}, ${country}`);
         setSettingLocation(false);
       },
       (error) => alert(error.message),
@@ -66,9 +84,10 @@ export default function Profile () {
     navigate("/")
   }
 
-  const uploadImage = async (): Promise<void> => {
+  const uploadImage = async (imgFile: File): Promise<void> => {
     if (!user.uid) return
     setUploading(true)
+    const targetImage = profileImage || imgFile;
 
     const { data: imageUploadData, error: imageUploadError } =
       await supabase.storage
@@ -76,7 +95,7 @@ export default function Profile () {
         .upload(
           `${user.uid}-${new Date().getTime()}/profile.png`,
           // @ts-expect-error
-          profileImage,
+          targetImage,
           {
             cacheControl: "0",
             upsert: true
@@ -159,7 +178,7 @@ export default function Profile () {
                 <Input
                   value={location}
                   onChange={(e) => {
-                    setLocation(e.target.value);
+                    saveLocation(e.target.value);
                   }}
                   // p={"sm"}
                   styles={{
@@ -228,7 +247,10 @@ export default function Profile () {
                 <label>Profile Picture</label>
                 <UploadProfileImage
                   image={profileImage}
-                  setImage={setProfileImage}
+                  setImage={(e)=> {
+                    setProfileImage(e);
+                    uploadImage(e);
+                  }}                  
                 />
               </Input.Wrapper>
             </Flex>
