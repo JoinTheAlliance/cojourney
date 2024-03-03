@@ -46,7 +46,7 @@ const router = createBrowserRouter([
         element: <FriendProfile />
       },
       {
-        path: "/cjprofile",
+        path: "/agentprofile",
         element: <CJProfile />
       }
     ]
