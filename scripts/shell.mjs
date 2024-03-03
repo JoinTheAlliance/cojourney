@@ -16,8 +16,8 @@ dotenv.config()
 const args = process.argv.slice(2)
 const dev = args.includes('--dev')
 
-const SUPABASE_URL = process.env?.SERVER_URL ?? 'https://pronvzrzfwsptkojvudd.supabase.co'
-const SUPABASE_ANON_KEY = process.env?.SERVER_URL ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByb252enJ6ZndzcHRrb2p2dWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NTYwNDcsImV4cCI6MjAyMjQzMjA0N30.I6_-XrqssUb2SWYg5DjsUqSodNS3_RPoET3-aPdqywM'
+const SUPABASE_URL = process.env?.SUPABASE_URL ?? 'https://pronvzrzfwsptkojvudd.supabase.co'
+const SUPABASE_ANON_KEY = process.env?.SUPABASE_ANON_KEY ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByb252enJ6ZndzcHRrb2p2dWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NTYwNDcsImV4cCI6MjAyMjQzMjA0N30.I6_-XrqssUb2SWYg5DjsUqSodNS3_RPoET3-aPdqywM'
 // check for --debug flag in 'node example/shell --debug'
 const SERVER_URL =
   process.env.SERVER_URL ?? dev

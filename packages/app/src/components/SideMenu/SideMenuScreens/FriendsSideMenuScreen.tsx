@@ -45,7 +45,7 @@ const FriendsSideMenuScreen = (): JSX.Element => {
         <Accordion.Item value="friends">
           <Accordion.Control px={"xs"}>
             <Text weight={700} color={theme.white}>
-              {"Friends"}
+              {"Connections"}
             </Text>
           </Accordion.Control>
           <Accordion.Panel>
@@ -53,7 +53,7 @@ const FriendsSideMenuScreen = (): JSX.Element => {
           </Accordion.Panel>
         </Accordion.Item>
 
-        <Accordion.Item value="requests">
+        {/* <Accordion.Item value="requests">
           <Accordion.Control px={"xs"}>
             <Text weight={700} color={theme.white}>
               {"Requests"}
@@ -78,7 +78,7 @@ const FriendsSideMenuScreen = (): JSX.Element => {
           <Accordion.Panel>
             <FriendsPendingList />
           </Accordion.Panel>
-        </Accordion.Item>
+        </Accordion.Item> */}
       </Accordion>
     </>
   )

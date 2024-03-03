@@ -15,20 +15,25 @@ const FriendsList = ({
 }): JSX.Element => {
   const theme = useMantineTheme()
 
-  if (friends.length === 0) {
-    return <p>No friends yet!</p>
+  const filteredFriends = friends.filter((friendship: IFriend) => {
+    const { friendData } = getFriend({
+      friendship,
+      userId: user.uid || ""
+    })
+    return (!!friendData)
+  })
+
+  if (filteredFriends.length === 0) {
+    return <p>No connections yet!</p>
   }
 
   return (
     <div>
-      {friends.map((friendship: IFriend) => {
-        const { friendData } = getFriend({
+      {filteredFriends.map((friendship: IFriend) => {
+        const friendData = getFriend({
           friendship,
           userId: user.uid || ""
-        })
-
-        if (!friendData) return null
-
+        }).friendData
         return (
           <UserPopup
             key={friendship.id}
@@ -64,7 +69,7 @@ const FriendsList = ({
                     mr={10}
                     size={16}
                   >
-                    {friendData.name}
+                    {friendData?.name}
                   </Title>
                 </Flex>
                 <Text
@@ -72,7 +77,7 @@ const FriendsList = ({
                   c="dimmed"
                   size={14}
                 >
-                  {friendData.email}
+                  {friendData?.email}
                 </Text>
               </div>
             </Flex>
