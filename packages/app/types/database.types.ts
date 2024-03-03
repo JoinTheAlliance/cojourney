@@ -138,6 +138,8 @@ export interface Database {
           avatar_url?: string | null
           name?: string | null
           location?: string | null
+          age?: number | null
+          pronouns?: string | null
         }
       }
     }

@@ -34,6 +34,8 @@ export default function Profile () {
   const { user, setUser, clearState } = useGlobalStore()
   const [ location, setLocation] = useState("");
   const [ settingLocation, setSettingLocation] = useState(false);
+  const [age, setAge] = useState(26);
+  const [pronouns, setPronouns] = useState("He/Him");
 
   const saveLocation = async (newLocation: string) => {
     const oldLocation = location;
@@ -52,6 +54,44 @@ export default function Profile () {
       location: newLocation,
     })
     }
+  }
+
+  const saveAge = async (newAge: number) => {
+    const oldAge = age;
+    setAge(newAge);
+
+    if (oldAge != newAge) {
+      await supabase
+      .from("accounts")
+      .update({
+        age: newAge,
+      })
+      .eq("id", user.uid)
+
+    setUser({
+      ...user,
+      age: newAge,
+    })
+    }
+  }
+
+  const savePronouns = async (newPronouns: string) => {
+      const oldPronouns = pronouns;
+      setPronouns(newPronouns);
+
+      if (oldPronouns != newPronouns) {
+        await supabase
+        .from("accounts")
+        .update({
+          pronouns: newPronouns,
+        })
+        .eq("id", user.uid)
+
+      setUser({
+        ...user,
+        pronouns: newPronouns,
+      })
+      }
   }
 
   const getAutoLocation = async() => {
@@ -75,7 +115,20 @@ export default function Profile () {
   }
 
   useEffect(() => {
-    getAutoLocation();
+    const location = user.location;
+    const age = user.age;
+    const pronouns = user.pronouns;
+    if (location) {
+      setLocation(location);
+    } else {
+      getAutoLocation();
+    }
+    if (age) {
+      setAge(age);
+    }
+    if (pronouns) {
+      setPronouns(pronouns);
+    }
   }, []);
 
   const signOut = async () => {
@@ -208,7 +261,10 @@ export default function Profile () {
                     <label>Age</label>
                     <Input
                       placeholder="Your Age"
-                      value={26}
+                      value={age}
+                      onChange={(e) => {
+                        saveAge(Number(e.target.value));
+                      }}
                       type="Number"
                       styles={{
                         input: {
@@ -226,7 +282,8 @@ export default function Profile () {
                   <Paper bg={"transparent"} style={{ color: "white" }}>
                     <label>Pronouns</label>
                     <Select
-                      placeholder="He/Him"
+                      value={pronouns}
+                      onChange={savePronouns}
                       styles={{
                         input: {
                           border: "none",
