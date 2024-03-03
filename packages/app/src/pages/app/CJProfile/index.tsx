@@ -66,8 +66,7 @@ export default function Profile() {
                 weight={"400"}
                 italic={true}
               >
-                I&apos;m here for anything you need. No problem is too big or
-                too small!
+                {friend.profile_line}
               </Text>
               <Text
                 w={"100%"}
