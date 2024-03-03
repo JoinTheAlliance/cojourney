@@ -1,4 +1,4 @@
-import React, {  } from "react";
+import React from "react";
 import {
   Container,
   Group,
@@ -79,7 +79,9 @@ export default function Profile() {
                 --{friend.name}
               </Text>
             </Group>
-            <Text>Location: {friend.location || "Not specified"}</Text>
+            <Group>
+              <Text>Location: {friend.location || "Not specified"}</Text>
+            </Group>
             <Group>
               <Text>Age: {friend.age || "Not specified"}</Text>
             </Group>
