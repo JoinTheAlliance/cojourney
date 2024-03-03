@@ -1,27 +1,30 @@
-import React from "react"
+import React from "react";
 import {
   Container,
   Group,
   Paper,
   Text,
   Button,
-  useMantineTheme
-} from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
-import useRoomStyles from "../Room/useRoomStyles"
-import ProfileHeader from "../../../components/ProfileHeader"
-import UserAvatar from "../../../components/UserAvatar"
-import useGlobalStore from "../../../store/useGlobalStore"
+  useMantineTheme,
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import useRoomStyles from "../Room/useRoomStyles";
+import ProfileHeader from "../../../components/ProfileHeader";
+import UserAvatar from "../../../components/UserAvatar";
+import useGlobalStore from "../../../store/useGlobalStore";
 
-export default function Profile () {
-  const isMobile = useMediaQuery("(max-width: 900px)")
-  const { classes: roomClasses } = useRoomStyles()
+export default function Profile() {
+  const isMobile = useMediaQuery("(max-width: 900px)");
+  const { classes: roomClasses } = useRoomStyles();
   const {
     // @ts-expect-error
-    currentRoom: { roomData: { relationships: [{ userData2: friend }] } }
-  } = useGlobalStore()
-
-  const theme = useMantineTheme()
+    currentRoom: {
+      roomData: {
+        relationships: [{ userData2: friend }],
+      },
+    },
+  } = useGlobalStore();
+  const theme = useMantineTheme();
 
   return (
     <div>
@@ -32,7 +35,7 @@ export default function Profile () {
         className={roomClasses.messagesContainer}
         style={{
           alignItems: "center",
-          display: "flex"
+          display: "flex",
         }}
       >
         <Paper
@@ -63,8 +66,7 @@ export default function Profile () {
                 weight={"400"}
                 italic={true}
               >
-                I&apos;m here for anything you need. No problem is too big or
-                too small!
+                {friend.profile_line}
               </Text>
               <Text
                 w={"100%"}
@@ -76,12 +78,21 @@ export default function Profile () {
                 --{friend.name}
               </Text>
             </Group>
+            <Group>
+              <Text>Location: {friend.location || "Not specified"}</Text>
+            </Group>
+            <Group>
+              <Text>Age: {friend.age || "Not specified"}</Text>
+            </Group>
+            <Group>
+              <Text>Pronouns: {friend.pronouns || "Not specified"}</Text>
+            </Group>
           </Container>
           <Group
             mb={"lg"}
             mt={"4xl"}
             style={{
-              gap: theme.spacing.xs
+              gap: theme.spacing.xs,
             }}
           >
             <Button mb={"lg"} fullWidth variant="transparent" size="md">
@@ -91,5 +102,5 @@ export default function Profile () {
         </Paper>
       </div>
     </div>
-  )
+  );
 }
