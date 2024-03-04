@@ -18,8 +18,7 @@ export interface IUser {
   registerComplete: boolean | null
   uid: string | null
   location: string | null
-  age: number | null
-  pronouns: string | null
+  details: string | null
 }
 
 interface IPreferences {

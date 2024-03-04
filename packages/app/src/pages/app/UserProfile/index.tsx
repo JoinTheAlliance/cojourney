@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Flex,
@@ -11,110 +11,121 @@ import {
   Select,
   Text,
   Button,
-  useMantineTheme
-} from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
-import { useSupabaseClient } from "@supabase/auth-helpers-react"
-import { type Database } from "../../../../types/database.types"
-import useRoomStyles from "../Room/useRoomStyles"
-import ProfileHeader from "../../../components/ProfileHeader"
-import UserAvatar from "../../../components/UserAvatar"
-import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
-import { showNotification } from "@mantine/notifications"
-import useGlobalStore from "../../../store/useGlobalStore"
+  useMantineTheme,
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { type Database } from "../../../../types/database.types";
+import useRoomStyles from "../Room/useRoomStyles";
+import ProfileHeader from "../../../components/ProfileHeader";
+import UserAvatar from "../../../components/UserAvatar";
+import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage";
+import { showNotification } from "@mantine/notifications";
+import useGlobalStore from "../../../store/useGlobalStore";
 
-export default function Profile () {
-  const navigate = useNavigate()
-  const isMobile = useMediaQuery("(max-width: 900px)")
-  const supabase = useSupabaseClient<Database>()
-  const { classes: roomClasses } = useRoomStyles()
-  const theme = useMantineTheme()
-  const [profileImage, setProfileImage] = useState<File | null>(null)
-  const [uploading, setUploading] = useState<boolean>(false)
-  const { user, setUser, clearState } = useGlobalStore()
-  const [ location, setLocation] = useState("");
-  const [ settingLocation, setSettingLocation] = useState(false);
+export default function Profile() {
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 900px)");
+  const supabase = useSupabaseClient<Database>();
+  const { classes: roomClasses } = useRoomStyles();
+  const theme = useMantineTheme();
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const { user, setUser, clearState } = useGlobalStore();
+  const [location, setLocation] = useState("");
+  const [settingLocation, setSettingLocation] = useState(false);
   const [age, setAge] = useState(26);
   const [pronouns, setPronouns] = useState("He/Him");
 
   const saveLocation = async (newLocation: string) => {
-    const oldLocation = location
-    setLocation(newLocation)
+    const oldLocation = location;
+    setLocation(newLocation);
 
     if (oldLocation !== newLocation) {
       await supabase
-      .from("accounts")
-      .update({
-        location: newLocation
-      })
-      .eq("id", user.uid as string)
+        .from("accounts")
+        .update({
+          location: newLocation,
+        })
+        .eq("id", user.uid as string);
 
-    setUser({
-      ...user,
-      location: newLocation
-    })
+      setUser({
+        ...user,
+        location: newLocation,
+      });
     }
-  }
+  };
 
   const saveAge = async (newAge: number) => {
     const oldAge = age;
     setAge(newAge);
 
     if (oldAge != newAge) {
+      const newDetails = user.details ? { ...user.details } : {};
+      newDetails.age = newAge;
+
       await supabase
-      .from("accounts")
-      .update({
-        age: newAge,
-      })
-      .eq("id", user.uid)
-
-    setUser({
-      ...user,
-      age: newAge,
-    })
-    }
-  }
-
-  const savePronouns = async (newPronouns: string) => {
-      const oldPronouns = pronouns;
-      setPronouns(newPronouns);
-
-      if (oldPronouns != newPronouns) {
-        await supabase
         .from("accounts")
         .update({
-          pronouns: newPronouns,
+          details: newDetails,
         })
-        .eq("id", user.uid)
+        .eq("id", user.uid);
 
       setUser({
         ...user,
-        pronouns: newPronouns,
-      })
-      }
-  }
+        details: newDetails,
+      });
+    }
+  };
 
-  const getAutoLocation = async() => {
+  const savePronouns = async (newPronouns: string) => {
+    const oldPronouns = pronouns;
+    setPronouns(newPronouns);
+
+    if (oldPronouns != newPronouns) {
+      const newDetails = user.details ? { ...user.details } : {};
+      newDetails.pronouns = newPronouns;
+
+      await supabase
+        .from("accounts")
+        .update({
+          details: newDetails,
+        })
+        .eq("id", user.uid);
+
+      setUser({
+        ...user,
+        details: newDetails,
+      });
+    }
+  };
+
+  const getAutoLocation = async () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        setSettingLocation(true)
+        setSettingLocation(true);
 
-        const latitude = position.coords.latitude
-        const longitude = position.coords.longitude
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
 
-        const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`)
-        const data = await resp.json()
-        const country = data.address.country
-        const province = data.address.province
-        saveLocation(`${province}, ${country}`)
-        setSettingLocation(false)
+        const resp = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`
+        );
+        const data = await resp.json();
+        const country = data.address.country;
+        const province = data.address.province;
+        saveLocation(`${province}, ${country}`);
+        setSettingLocation(false);
       },
-      (error) => { alert(error.message) },
+      (error) => {
+        alert(error.message);
+      },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    )
-  }
+    );
+  };
 
   useEffect(() => {
+    console.log("user:", user);
     const location = user.location;
     const age = user.age;
     const pronouns = user.pronouns;
@@ -132,15 +143,15 @@ export default function Profile () {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    clearState()
-    navigate("/")
-  }
+    await supabase.auth.signOut();
+    clearState();
+    navigate("/");
+  };
 
   const uploadImage = async (imgFile: File): Promise<void> => {
-    if (!user.uid) return
-    setUploading(true)
-    const targetImage = profileImage || imgFile
+    if (!user.uid) return;
+    setUploading(true);
+    const targetImage = profileImage || imgFile;
 
     const { data: imageUploadData, error: imageUploadError } =
       await supabase.storage
@@ -150,48 +161,50 @@ export default function Profile () {
           targetImage,
           {
             cacheControl: "0",
-            upsert: true
+            upsert: true,
           }
-        )
+        );
 
     if (imageUploadError) {
-      setUploading(false)
+      setUploading(false);
       showNotification({
         title: "Error",
-        message: "Unexpected error"
-      })
-      return
+        message: "Unexpected error",
+      });
+      return;
     }
 
-    const existingImage = user.avatar_url?.split("profile-images/")[1] as string
+    const existingImage = user.avatar_url?.split(
+      "profile-images/"
+    )[1] as string;
     if (existingImage) {
-      supabase.storage.from("profile-images").remove([existingImage])
+      supabase.storage.from("profile-images").remove([existingImage]);
     }
 
     const { data: imageUrlData } = supabase.storage
       .from("profile-images")
-      .getPublicUrl(imageUploadData.path)
+      .getPublicUrl(imageUploadData.path);
 
-    const IMAGE_URL = imageUrlData.publicUrl
+    const IMAGE_URL = imageUrlData.publicUrl;
 
     await supabase
       .from("accounts")
       .update({
-        avatar_url: IMAGE_URL
+        avatar_url: IMAGE_URL,
       })
-      .eq("id", user.uid)
+      .eq("id", user.uid);
 
     setUser({
       ...user,
-      avatar_url: IMAGE_URL
-    })
-    setProfileImage(null)
-    setUploading(false)
-  }
+      avatar_url: IMAGE_URL,
+    });
+    setProfileImage(null);
+    setUploading(false);
+  };
 
   const back = () => {
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   return (
     <div>
@@ -202,7 +215,7 @@ export default function Profile () {
         className={roomClasses.messagesContainer}
         style={{
           alignItems: "center",
-          display: "flex"
+          display: "flex",
         }}
       >
         <Paper
@@ -230,7 +243,7 @@ export default function Profile () {
                 <Input
                   value={location}
                   onChange={(e) => {
-                    saveLocation(e.target.value as string)
+                    saveLocation(e.target.value as string);
                   }}
                   // p={"sm"}
                   styles={{
@@ -239,11 +252,11 @@ export default function Profile () {
                       border: "1px solid #232627",
                       borderRadius: "0.8rem",
                       backgroundColor: "#141414",
-                      color: "white"
-                    }
+                      color: "white",
+                    },
                   }}
                 />
-                <br/>
+                <br />
                 <Button
                   fullWidth
                   variant="transparent"
@@ -270,8 +283,8 @@ export default function Profile () {
                           border: "none",
                           backgroundColor: "#232627",
                           padding: "1.5rem 1rem",
-                          color: "white"
-                        }
+                          color: "white",
+                        },
                       }}
                       style={{ marginRight: "1rem" }}
                     />
@@ -288,12 +301,12 @@ export default function Profile () {
                           border: "none",
                           backgroundColor: "#232627",
                           padding: "1.5rem 1rem",
-                          color: "white"
-                        }
+                          color: "white",
+                        },
                       }}
                       data={[
                         { value: "He/Him", label: "He/Him" },
-                        { value: "She/Her", label: "She/Her" }
+                        { value: "She/Her", label: "She/Her" },
                       ]}
                     />
                   </Paper>
@@ -304,8 +317,8 @@ export default function Profile () {
                 <UploadProfileImage
                   image={profileImage}
                   setImage={(e: React.SetStateAction<File | null>) => {
-                    setProfileImage(e as File)
-                    if (e) uploadImage(e as File)
+                    setProfileImage(e as File);
+                    if (e) uploadImage(e as File);
                   }}
                 />
               </Input.Wrapper>
@@ -315,7 +328,7 @@ export default function Profile () {
             mb={"lg"}
             mt={"4xl"}
             style={{
-              gap: theme.spacing.xs
+              gap: theme.spacing.xs,
             }}
           >
             <Button
@@ -323,21 +336,18 @@ export default function Profile () {
               fullWidth
               variant="transparent"
               size="md"
-              onClick={async () => { if (profileImage) await uploadImage(profileImage) }}
+              onClick={async () => {
+                if (profileImage) await uploadImage(profileImage);
+              }}
               disabled={!profileImage}
             >
               <Text color={theme.white}>Update</Text>
             </Button>
-            {isMobile &&
-              <Button
-                fullWidth
-                variant="transparent"
-                size="md"
-                onClick={back}
-              >
+            {isMobile && (
+              <Button fullWidth variant="transparent" size="md" onClick={back}>
                 <Text color={theme.white}>Back</Text>
               </Button>
-            }
+            )}
             <Button fullWidth variant="transparent" size="md" onClick={signOut}>
               <Text color={theme.colors.red[8]}>Logout</Text>
             </Button>
@@ -345,5 +355,5 @@ export default function Profile () {
         </Paper>
       </div>
     </div>
-  )
+  );
 }
