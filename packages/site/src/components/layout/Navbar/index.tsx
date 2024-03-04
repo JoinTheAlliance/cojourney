@@ -11,7 +11,7 @@ const links = [
   },
   {
     label: 'Get It Now',
-    href: 'https://web.cojourney.app',
+    href: 'https://pages.viral-loops.com/cojourney-alpha-waitlist', // 'https://web.cojourney.app',
     isNewTab: true
   },
   {
@@ -88,7 +88,7 @@ const Navbar = () => {
         </ul>
         <div className="items-center hidden gap-4 lg:flex">
           <a
-            href="https://web.cojourney.app"
+            href="https://pages.viral-loops.com/cojourney-alpha-waitlist" // 'https://web.cojourney.app',
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#0075FF] py-2 px-8 bold rounded-lg hover:scale-110 transition duration-200 ease-in-out"
@@ -168,7 +168,7 @@ const Navbar = () => {
                     </li>
                     <li>
                       <Link
-                        href="https://web.cojourney.app"
+                        href="https://pages.viral-loops.com/cojourney-alpha-waitlist" // 'https://web.cojourney.app',
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"

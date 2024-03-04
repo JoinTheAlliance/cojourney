@@ -35,7 +35,7 @@ const Header = () => {
       </p>
       <div className="flex items-center justify-center gap-8">
         <a
-          href="https://web.cojourney.app"
+          href="https://pages.viral-loops.com/cojourney-alpha-waitlist" // 'https://web.cojourney.app',
           target="_blank"
           rel="noopener noreferrer"
           className="bg-[#0075FF] py-3 px-6 md:px-12 rounded-lg capitalize font-bold hover:scale-110 transition duration-200 ease-in-out"
