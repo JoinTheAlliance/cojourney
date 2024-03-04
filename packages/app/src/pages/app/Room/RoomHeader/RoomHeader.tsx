@@ -22,7 +22,7 @@ const RoomHeader = (): JSX.Element => {
   const theme = useMantineTheme()
 
   const goToProfile = () => {
-    navigate("/friend/" + friend.id)
+    navigate("/friend")
   }
 
   return (
