@@ -59,18 +59,7 @@ export default function Profile () {
       </div>
       <div
         className={roomClasses.messagesContainer}
-        style={{
-          alignItems: "center",
-          display: "flex"
-        }}
       >
-        <Paper
-          shadow="xs"
-          radius="lg"
-          p="xl"
-          w={"100%"}
-          mx={isMobile ? "0" : "8xl"}
-        >
           <Container maw={"100%"} p={"xxl"} style={{}}>
             <UserAvatar
               src={
@@ -82,28 +71,27 @@ export default function Profile () {
               online={true}
               size={"lg"}
             />
+            {friend?.is_agent &&
             <Group>
-              {/* <Text
-                size="sm"
-                color={theme.colors.gray[4]}
-                mt={"2xl"}
-                // mb={"sm"}
-                weight={"400"}
-                italic={true}
-              >
-                I&apos;m here for anything you need. No problem is too big or
-                too small!
-              </Text> */}
-              {/* <Text
-                w={"100%"}
-                align="right"
-                size="sm"
-                color={theme.colors.gray[4]}
-                weight={"400"}
-              >
-                -- {friend.name}
-              </Text> */}
-            </Group>
+            <Text
+              size="sm"
+              color={theme.colors.gray[4]}
+              mt={"2xl"}
+              // mb={"sm"}
+              weight={"600"}
+              italic={false}
+              style={{
+                marginLeft: 'auto',
+                marginRight: 'auto'
+              }}
+            >
+              Cojourney Guide
+            </Text>
+          </Group>
+            }
+            {!friend?.is_agent &&
+            <>
+
 
             <Group>
               <Text>Location: {friend.location || "Not specified"}</Text>
@@ -114,27 +102,29 @@ export default function Profile () {
             <Group>
               <Text>Pronouns: {friend.pronouns || "Not specified"}</Text>
             </Group>
+            </>}
           </Container>
-          <Group
-            mb={"lg"}
-            mt={"4xl"}
-            style={{
-              gap: theme.spacing.xs
-            }}
-          >
-            <Button
-              fullWidth
-              variant="transparent"
-              size="md"
-              onClick={unfriend}
+          {!friend?.is_agent &&
+            <Group
+              mb={"lg"}
+              mt={"4xl"}
+              style={{
+                gap: theme.spacing.xs
+              }}
             >
-              <Text color={theme.white}>Unfriend</Text>
-            </Button>
-            <Button fullWidth variant="transparent" size="md" onClick={logout}>
-              <Text color={theme.colors.red[8]}>Block</Text>
-            </Button>
-          </Group>
-        </Paper>
+              <Button
+                fullWidth
+                variant="transparent"
+                size="md"
+                onClick={unfriend}
+              >
+                <Text color={theme.white}>Unfriend</Text>
+              </Button>
+              <Button fullWidth variant="transparent" size="md" onClick={logout}>
+                <Text color={theme.colors.red[8]}>Block</Text>
+              </Button>
+            </Group>
+          }
       </div>
     </div>
   )

@@ -1,5 +1,4 @@
 import { createStyles } from "@mantine/core"
-import { isSmartphone } from "../../../helpers/functions"
 
 const useRoomStyles = createStyles((theme) => ({
   headerContainer: {
@@ -9,18 +8,18 @@ const useRoomStyles = createStyles((theme) => ({
   messagesContainer: {
     padding: "1rem",
     paddingTop: 20,
-    position: "relative",
     width: "100%",
+    height: "calc(100vh)"
 
-    "@media (min-width: 901px)": {
-      minHeight: "calc(100vh - 120px)",
-      position: "relative",
-      height: "calc(100vh - 200px)"
-    },
-    "@media (max-width: 900px)": {
-      height: isSmartphone ? "" : "calc(100vh - 160px)",
-      position: "relative"
-    }
+    // "@media (min-width: 901px)": {
+    //   minHeight: "calc(100vh - 120px)",
+    //   position: "relative",
+    //   height: "calc(100vh - 200px)"
+    // },
+    // "@media (max-width: 900px)": {
+    //   height: isSmartphone ? "" : "calc(100vh - 160px)",
+    //   position: "relative"
+    // }
   },
   textInputContainer: {
     padding: "1rem",
