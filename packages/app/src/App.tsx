@@ -8,15 +8,14 @@ import React from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import "./App.css"
 import LoadingOverlay from "./components/LoadingOverlay/LoadingOverlay"
+import OAuthUser from "./components/OAuthUser"
 import constants from "./constants/constants"
 import Error404 from "./pages/404/Error404"
-import CJProfile from "./pages/app/CJProfile"
+import FriendProfile from "./pages/app/FriendProfile"
 import RoomLayout from "./pages/app/Room/index"
 import Root from "./pages/app/root"
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
 import UserProfile from "./pages/app/UserProfile"
-import OAuthUser from "./components/OAuthUser"
-import FriendProfile from "./pages/app/FriendProfile"
 
 const supabase = createClient(
   constants.supabaseUrl || "",
@@ -42,12 +41,8 @@ const router = createBrowserRouter([
         element: <UserProfile />
       },
       {
-        path: "/friend-profile",
+        path: "/friend",
         element: <FriendProfile />
-      },
-      {
-        path: "/cjprofile",
-        element: <CJProfile />
       }
     ]
   },

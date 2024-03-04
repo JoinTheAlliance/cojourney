@@ -21,11 +21,8 @@ const RoomHeader = (): JSX.Element => {
   }
   const theme = useMantineTheme()
 
-  const agentId = "00000000-0000-0000-0000-000000000000"
-
   const goToProfile = () => {
-    if (friend.id === agentId) navigate("/cjprofile")
-    else navigate("/friend-profile")
+    navigate("/friend")
   }
 
   return (

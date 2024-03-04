@@ -20,8 +20,8 @@
   "scripts": {
     "dev": "lerna run dev --ignore @cojourney/app-native --ignore @cojourney/docs",
     "dev:all": "lerna run dev",
-    "shell": "node --no-warnings shell/index.mjs",
-    "shell:dev": "node --no-warnings shell/index.mjs --dev",
+    "shell": "node --no-warnings scripts/shell.mjs",
+    "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
     "build": "lerna run build",
     "test": "lerna run test",
     "coverage": "lerna run coverage",
