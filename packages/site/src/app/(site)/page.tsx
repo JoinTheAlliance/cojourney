@@ -22,7 +22,7 @@ export default function Home () {
         <Header />
       </div>
       <AboutCojourney />
-      <Pricing />
+      {/* <Pricing /> */}
       <Footer />
     </main>
   )
