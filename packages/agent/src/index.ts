@@ -38,24 +38,24 @@ async function handleMessage (
 
     // we run evaluation here since some evals could be modulo based, and we should run on every message
     if ((senderContent as Content).content) {
-      const { data: data2, error } = await runtime.supabase.from('messages').select('*').eq('user_id', message.senderId)
-        .eq('room_id', room_id)
-        .order('created_at', { ascending: false })
+      // const { data: data2, error } = await runtime.supabase.from('messages').select('*').eq('user_id', message.senderId)
+      //   .eq('room_id', room_id)
+      //   .order('created_at', { ascending: false })
 
-      if (error) {
-        console.log('error', error)
-        // TODO: dont need this recall
-      } else if (data2.length > 0 && data2[0].content === message.content) {
-        console.log('already saved', data2)
-      } else {
-        await runtime.messageManager.createMemory({
-          user_ids: userIds!,
-          user_id: senderId!,
-          content: senderContent,
-          room_id,
-          embedding: embeddingZeroVector
-        })
-      }
+      // if (error) {
+      //   console.log('error', error)
+      //   // TODO: dont need this recall
+      // } else if (data2.length > 0 && data2[0].content === message.content) {
+      //   console.log('already saved', data2)
+      // } else {
+      //   await runtime.messageManager.createMemory({
+      //     user_ids: userIds!,
+      //     user_id: senderId!,
+      //     content: senderContent,
+      //     room_id,
+      //     embedding: embeddingZeroVector
+      //   })
+      // }
       await runtime.evaluate(message, state)
     }
   }
@@ -176,26 +176,6 @@ export function shouldSkipMessage (state: State, agentId: string): boolean {
   return false
 }
 
-const onMessage = async (
-  message: Message,
-  runtime: BgentRuntime,
-  state?: State
-) => {
-  const { content: senderContent, senderId, agentId } = message
-
-  if (!message.userIds) {
-    message.userIds = [senderId!, agentId!]
-  }
-
-  if (!senderContent) {
-    console.warn('Sender content null, skipping')
-    return
-  }
-
-  const data = (await handleMessage(runtime, message, state)) as Content
-  return data
-}
-
 interface HandlerArgs {
   event: { request: Request, waitUntil: (promise: Promise<unknown>) => void }
   env: {
@@ -303,7 +283,7 @@ const routes: Route[] = [
       }
 
       try {
-        await onMessage(message as Message, runtime)
+        event.waitUntil(handleMessage(runtime, message as Message))
       } catch (error) {
         console.error('error', error)
         return new Response(error as string, { status: 500 })
@@ -522,9 +502,7 @@ async function handleEvent (event) {
       // @ts-expect-error - wrangler env variables
       SUPABASE_SERVICE_API_KEY,
       // @ts-expect-error - wrangler env variables
-      OPENAI_API_KEY,
-      // @ts-expect-error - wrangler env variables
-      NODE_ENV
+      OPENAI_API_KEY
     } as Record<string, string>)
 
     // Return the immediate response to the user
