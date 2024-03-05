@@ -2,6 +2,7 @@
   "name": "@cojourney/agent",
   "description": "Real human connection. Powered by AI.",
   "version": "0.0.1",
+  "type": "module",
   "author": "Cojourney (https://cojourney.app)",
   "repository": "https://github.com/ClioDynamics/Cojourney",
   "bugs": "https://github.com/ClioDynamics/Cojourney/issues",
@@ -10,7 +11,7 @@
     "packages/*"
   ],
   "resolutions": {
-    "@types/react": "^18.2.0"
+    "@types/react": "^18.2.63"
   },
   "files": [
     "scripts",
@@ -20,8 +21,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "build": "npm run build",
-    "test": "npm run test"
+    "test": "jest --runInBand"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230419.0",
@@ -39,8 +39,9 @@
   },
   "dependencies": {
     "@rollup/plugin-json": "^6.1.0",
-    "@supabase/supabase-js": "^2.39.3",
+    "@supabase/supabase-js": "^2.39.7",
     "@tsndr/cloudflare-worker-jwt": "^2.2.1",
+    "babel-jest": "^29.7.0",
     "dotenv": "^16.4.5",
     "ts-node": "^10.9.2"
   }

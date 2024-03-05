@@ -6,3 +6,5 @@
 .wrangler
 .env.*
 .env
+embedding-cache.json
+test-report.json

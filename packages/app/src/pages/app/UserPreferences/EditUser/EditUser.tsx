@@ -21,7 +21,7 @@ const EditUser = (): JSX.Element => {
   const supabase = useSupabaseClient<Database>()
 
   const [image, setImage] = useState<File | null>(null)
-  const [avatar_url, setImageUrl] = useState<string | null>(user.avatar_url || getAvatarImage(user.name as string || user.email as string || ""))
+  const [avatar_url, setImageUrl] = useState<string | null>(user.avatar_url || getAvatarImage(user.name! || user.email! || ""))
   const [isSavingChanges, setIsSavingChanges] = useState(false)
 
   const isMobile = useMediaQuery("(max-width: 900px)")

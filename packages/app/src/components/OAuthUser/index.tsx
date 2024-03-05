@@ -17,7 +17,7 @@ export default function OAuthUser () {
     {
       name: "Google",
       icon: "/icons/google.svg"
-    },
+    }
     // {
     //   name: "Github",
     //   icon: "/icons/github.svg"
@@ -83,7 +83,7 @@ export default function OAuthUser () {
         >
           <h3
             style={{
-              fontSize: "1rem",
+              fontSize: "1rem"
               // fontWeight: "normal"
             }}
           >

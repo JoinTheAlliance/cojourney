@@ -2,12 +2,11 @@ import { Button, Flex, Group, Navbar, Text, rem, useMantineTheme } from "@mantin
 import React from "react"
 import { useNavigate } from "react-router"
 import iconImgSrc from "../../../public/icons/account.svg"
-import userId from "../../../public/images/user-avatar-bot.svg"
+import { getAvatarImage } from "../../helpers/getAvatarImage"
+import useGlobalStore from "../../store/useGlobalStore"
 import UserAvatar from "../UserAvatar"
 import useSideMenuStyles from "./SideMenu.styles"
 import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen"
-import useGlobalStore from "../../store/useGlobalStore"
-import { getAvatarImage } from "../../helpers/getAvatarImage"
 
 const SideMenu = ({ closeMenu }: {
   closeMenu: () => void

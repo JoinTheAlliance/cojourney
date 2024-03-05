@@ -1,15 +1,13 @@
-import { Accordion, Badge, Text, useMantineTheme } from "@mantine/core"
+import { Accordion, Text, useMantineTheme } from "@mantine/core"
 import React, { useState } from "react"
 import useGlobalStore from "../../../store/useGlobalStore"
-import GuidesList from "../../Friends/GuidesList/GuidesList"
 import FriendsList from "../../Friends/FriendsList/FriendsList"
-import FriendsPendingList from "../../Friends/FriendsPendingList/FriendsPendingList"
-import FriendsRequestsList from "../../Friends/FriendsRequestsList/FriendsRequestsList"
+import GuidesList from "../../Friends/GuidesList/GuidesList"
 
 const FriendsSideMenuScreen = (): JSX.Element => {
   const {
     user,
-    relationships: { friends, requests, pending }
+    relationships: { friends /* requests, pending */ }
   } = useGlobalStore()
   const theme = useMantineTheme()
 

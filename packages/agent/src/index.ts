@@ -34,7 +34,7 @@ async function handleMessage (
 ) {
   console.log('**** handling message')
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, senderId, userIds, room_id } = message
+    const { content: senderContent, /* senderId, userIds, room_id */ } = message
 
     // we run evaluation here since some evals could be modulo based, and we should run on every message
     if ((senderContent as Content).content) {
@@ -376,13 +376,21 @@ const routes: Route[] = [
       const userName = accountData[0].name || 'the user'
 
       const newGoal: Goal = {
-        name: 'First Time User Goal',
+        name: 'First Time User Introduction (HIGH PRIORITY)',
         status: GoalStatus.IN_PROGRESS,
         user_ids: [message.user_id as UUID, zeroUuid],
         user_id: zeroUuid as UUID,
         objectives: [
           {
-            description: `Welcome ${userName} to Cojourney. Greet them and ask them what is on their mind.`,
+            description: `${userName} just joined Cojourney. Greet them and ask them if they are ready to get started.`,
+            completed: false
+          },
+          {
+            description: `Get basic details about ${userName}'s age and gender`,
+            completed: false
+          },
+          {
+            description: `Get details about ${userName}'s location-- where they live and how far they'd go to meet someone`,
             completed: false
           },
           {
@@ -394,19 +402,15 @@ const routes: Route[] = [
             completed: false
           },
           {
-            description: `Get details about ${userName}'s location-- where they live and how far they'd go to meet someone`,
-            completed: false
-          },
-          {
             description: `Get details about ${userName}'s goals for meeting new people: friendly, professional, romantic, personal growth oriented, etc`,
             completed: false
           },
           {
-            description: `Introduce ${userName} to another user`,
+            description: `Let ${userName} know that they can can always chat with CJ to get help with something-- anything!`,
             completed: false
           },
           {
-            description: `Let ${userName} know that they can can always chat with CJ to get help with something-- anything!`,
+            description: 'Let the user know that CJ has enough information to start making introductions, but they more information they give, the more accurate the introductions will be.',
             completed: false
           }
         ]

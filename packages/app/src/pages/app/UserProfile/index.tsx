@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react"
 
-import { useNavigate } from "react-router-dom";
 import {
+  Button,
   Container,
   Flex,
   Grid,
@@ -10,62 +10,62 @@ import {
   Paper,
   Select,
   Text,
-  Button,
-  useMantineTheme,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { type Database } from "../../../../types/database.types";
-import useRoomStyles from "../Room/useRoomStyles";
-import ProfileHeader from "../../../components/ProfileHeader";
-import UserAvatar from "../../../components/UserAvatar";
-import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage";
-import { showNotification } from "@mantine/notifications";
-import useGlobalStore from "../../../store/useGlobalStore";
-import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
+  useMantineTheme
+} from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import { showNotification } from "@mantine/notifications"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { CountryDropdown, RegionDropdown } from "react-country-region-selector"
+import { useNavigate } from "react-router-dom"
+import { type Database } from "../../../../types/database.types"
+import ProfileHeader from "../../../components/ProfileHeader"
+import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
+import UserAvatar from "../../../components/UserAvatar"
+import useGlobalStore from "../../../store/useGlobalStore"
+import useRoomStyles from "../Room/useRoomStyles"
 
-export default function Profile() {
-  const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 900px)");
-  const supabase = useSupabaseClient<Database>();
-  const { classes: roomClasses } = useRoomStyles();
-  const theme = useMantineTheme();
-  const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const { user, setUser, clearState } = useGlobalStore();
-  const [location, setLocation] = useState("");
-  const [country, setCountry] = useState("Canada");
-  const [region, setRegion] = useState("Ontario");
+export default function Profile () {
+  const navigate = useNavigate()
+  const isMobile = useMediaQuery("(max-width: 900px)")
+  const supabase = useSupabaseClient<Database>()
+  const { classes: roomClasses } = useRoomStyles()
+  const theme = useMantineTheme()
+  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [uploading, setUploading] = useState<boolean>(false)
+  const { user, setUser, clearState } = useGlobalStore()
+  const [location, setLocation] = useState("")
+  const [country, setCountry] = useState("Canada")
+  const [region, setRegion] = useState("Ontario")
 
   const saveLocation = async (newLocation: string) => {
-    const oldLocation = location;
-    setLocation(newLocation);
+    const oldLocation = location
+    setLocation(newLocation)
 
     if (oldLocation !== newLocation) {
       await supabase
         .from("accounts")
         .update({
-          location: newLocation,
+          location: newLocation
         })
-        .eq("id", user.uid as string);
+        .eq("id", user.uid!)
 
       setUser({
         ...user,
-        location: newLocation,
-      });
+        location: newLocation
+      })
     }
-  };
+  }
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    clearState();
-    navigate("/");
-  };
+    await supabase.auth.signOut()
+    clearState()
+    navigate("/")
+  }
 
   const uploadImage = async (imgFile: File): Promise<void> => {
-    if (!user.uid) return;
-    setUploading(true);
-    const targetImage = profileImage || imgFile;
+    if (!user.uid) return
+    setUploading(true)
+    const targetImage = profileImage || imgFile
 
     const { data: imageUploadData, error: imageUploadError } =
       await supabase.storage
@@ -75,50 +75,50 @@ export default function Profile() {
           targetImage,
           {
             cacheControl: "0",
-            upsert: true,
+            upsert: true
           }
-        );
+        )
 
     if (imageUploadError) {
-      setUploading(false);
+      setUploading(false)
       showNotification({
         title: "Error",
-        message: "Unexpected error",
-      });
-      return;
+        message: "Unexpected error"
+      })
+      return
     }
 
     const existingImage = user.avatar_url?.split(
       "profile-images/"
-    )[1] as string;
+    )[1]
     if (existingImage) {
-      supabase.storage.from("profile-images").remove([existingImage]);
+      supabase.storage.from("profile-images").remove([existingImage])
     }
 
     const { data: imageUrlData } = supabase.storage
       .from("profile-images")
-      .getPublicUrl(imageUploadData.path);
+      .getPublicUrl(imageUploadData.path)
 
-    const IMAGE_URL = imageUrlData.publicUrl;
+    const IMAGE_URL = imageUrlData.publicUrl
 
     await supabase
       .from("accounts")
       .update({
-        avatar_url: IMAGE_URL,
+        avatar_url: IMAGE_URL
       })
-      .eq("id", user.uid);
+      .eq("id", user.uid)
 
     setUser({
       ...user,
-      avatar_url: IMAGE_URL,
-    });
-    setProfileImage(null);
-    setUploading(false);
-  };
+      avatar_url: IMAGE_URL
+    })
+    setProfileImage(null)
+    setUploading(false)
+  }
 
   const back = () => {
-    navigate("/");
-  };
+    navigate("/")
+  }
 
   return (
     <div>
@@ -129,7 +129,7 @@ export default function Profile() {
         className={roomClasses.messagesContainer}
         style={{
           alignItems: "center",
-          display: "flex",
+          display: "flex"
         }}
       >
         <Paper
@@ -156,16 +156,16 @@ export default function Profile() {
                 <CountryDropdown
                   value={country}
                   onChange={(val) => {
-                    setCountry(val);
-                    saveLocation(`${val}, ${region}`);
+                    setCountry(val)
+                    saveLocation(`${val}, ${region}`)
                   }}
                 />
                 <RegionDropdown
                   country={country}
                   value={region}
                   onChange={(val) => {
-                    setRegion(val);
-                    saveLocation(`${country}, ${val}`);
+                    setRegion(val)
+                    saveLocation(`${country}, ${val}`)
                   }}
                 />
               </div>
@@ -182,8 +182,8 @@ export default function Profile() {
                           border: "none",
                           backgroundColor: "#232627",
                           padding: "1.5rem 1rem",
-                          color: "white",
-                        },
+                          color: "white"
+                        }
                       }}
                       style={{ marginRight: "1rem" }}
                     />
@@ -199,12 +199,12 @@ export default function Profile() {
                           border: "none",
                           backgroundColor: "#232627",
                           padding: "1.5rem 1rem",
-                          color: "white",
-                        },
+                          color: "white"
+                        }
                       }}
                       data={[
                         { value: "He/Him", label: "He/Him" },
-                        { value: "She/Her", label: "She/Her" },
+                        { value: "She/Her", label: "She/Her" }
                       ]}
                     />
                   </Paper>
@@ -215,8 +215,8 @@ export default function Profile() {
                 <UploadProfileImage
                   image={profileImage}
                   setImage={(e: React.SetStateAction<File | null>) => {
-                    setProfileImage(e as File);
-                    if (e) uploadImage(e as File);
+                    setProfileImage(e as File)
+                    if (e) uploadImage(e as File)
                   }}
                 />
               </Input.Wrapper>
@@ -226,7 +226,7 @@ export default function Profile() {
             mb={"lg"}
             mt={"4xl"}
             style={{
-              gap: theme.spacing.xs,
+              gap: theme.spacing.xs
             }}
           >
             <Button
@@ -235,7 +235,7 @@ export default function Profile() {
               variant="transparent"
               size="md"
               onClick={async () => {
-                if (profileImage) await uploadImage(profileImage);
+                if (profileImage) await uploadImage(profileImage)
               }}
               disabled={!profileImage}
             >
@@ -253,5 +253,5 @@ export default function Profile() {
         </Paper>
       </div>
     </div>
-  );
+  )
 }
