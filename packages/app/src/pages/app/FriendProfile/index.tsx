@@ -100,6 +100,19 @@ export default function Profile () {
               <Text>Pronouns: {friend.pronouns || "Not specified"}</Text>
             </Group>
             </>}
+            <>
+              <Group>
+                <Text>Location: {friend.location || "Not specified"}</Text>
+              </Group>
+              <Group>
+                <Text>Age: {friend.details?.age || "Not specified"}</Text>
+              </Group>
+              <Group>
+                <Text>
+                  Pronouns: {friend.details?.pronouns || "Not specified"}
+                </Text>
+              </Group>
+            </>
           </Container>
           {!friend?.is_agent &&
             <Group
