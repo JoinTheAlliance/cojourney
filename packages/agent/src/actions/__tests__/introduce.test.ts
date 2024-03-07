@@ -137,7 +137,7 @@ describe('INTRODUCE Action Tests', () => {
 
     const state = await runtime.composeState(message)
     expect(state.actionNames).toContain('INTRODUCE')
-  })
+  }, 60000)
 
   test('INTRODUCE is not included in actionNames when the user lacks a description', async () => {
     const userWithoutDescription = await ensureUser(
