@@ -19,6 +19,7 @@ export interface IUser {
   uid: string | null
   location: string | null
   details: Json | null
+  signed_tos: boolean
 }
 
 interface IPreferences {
