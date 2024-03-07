@@ -204,6 +204,7 @@ function Index({}: Props) {
 	const { classes } = useRootStyles();
 
 	const completeAgreement = async () => {
+		await supabase.from("users").update({ signed_tos: true }).eq("id", user.id);
 		// Your completeAgreement function logic
 	};
 

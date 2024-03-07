@@ -139,6 +139,7 @@ export interface Database {
           name?: string | null
           location?: string | null
           details?: Json | null
+          signed_tos?: boolean
         }
       }
     }
