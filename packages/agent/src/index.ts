@@ -34,28 +34,28 @@ async function handleMessage (
 ) {
   console.log('**** handling message')
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, senderId, userIds, room_id } = message
+    const { content: senderContent, /* senderId, userIds, room_id */ } = message
 
     // we run evaluation here since some evals could be modulo based, and we should run on every message
     if ((senderContent as Content).content) {
-      const { data: data2, error } = await runtime.supabase.from('messages').select('*').eq('user_id', message.senderId)
-        .eq('room_id', room_id)
-        .order('created_at', { ascending: false })
+      // const { data: data2, error } = await runtime.supabase.from('messages').select('*').eq('user_id', message.senderId)
+      //   .eq('room_id', room_id)
+      //   .order('created_at', { ascending: false })
 
-      if (error) {
-        console.log('error', error)
-        // TODO: dont need this recall
-      } else if (data2.length > 0 && data2[0].content === message.content) {
-        console.log('already saved', data2)
-      } else {
-        await runtime.messageManager.createMemory({
-          user_ids: userIds!,
-          user_id: senderId!,
-          content: senderContent,
-          room_id,
-          embedding: embeddingZeroVector
-        })
-      }
+      // if (error) {
+      //   console.log('error', error)
+      //   // TODO: dont need this recall
+      // } else if (data2.length > 0 && data2[0].content === message.content) {
+      //   console.log('already saved', data2)
+      // } else {
+      //   await runtime.messageManager.createMemory({
+      //     user_ids: userIds!,
+      //     user_id: senderId!,
+      //     content: senderContent,
+      //     room_id,
+      //     embedding: embeddingZeroVector
+      //   })
+      // }
       await runtime.evaluate(message, state)
     }
   }
@@ -176,26 +176,6 @@ export function shouldSkipMessage (state: State, agentId: string): boolean {
   return false
 }
 
-const onMessage = async (
-  message: Message,
-  runtime: BgentRuntime,
-  state?: State
-) => {
-  const { content: senderContent, senderId, agentId } = message
-
-  if (!message.userIds) {
-    message.userIds = [senderId!, agentId!]
-  }
-
-  if (!senderContent) {
-    console.warn('Sender content null, skipping')
-    return
-  }
-
-  const data = (await handleMessage(runtime, message, state)) as Content
-  return data
-}
-
 interface HandlerArgs {
   event: { request: Request, waitUntil: (promise: Promise<unknown>) => void }
   env: {
@@ -303,7 +283,7 @@ const routes: Route[] = [
       }
 
       try {
-        await onMessage(message as Message, runtime)
+        event.waitUntil(handleMessage(runtime, message as Message))
       } catch (error) {
         console.error('error', error)
         return new Response(error as string, { status: 500 })
@@ -396,13 +376,21 @@ const routes: Route[] = [
       const userName = accountData[0].name || 'the user'
 
       const newGoal: Goal = {
-        name: 'First Time User Goal',
+        name: 'First Time User Introduction (HIGH PRIORITY)',
         status: GoalStatus.IN_PROGRESS,
         user_ids: [message.user_id as UUID, zeroUuid],
         user_id: zeroUuid as UUID,
         objectives: [
           {
-            description: `Welcome ${userName} to Cojourney. Greet them and ask them what is on their mind.`,
+            description: `${userName} just joined Cojourney. Greet them and ask them if they are ready to get started.`,
+            completed: false
+          },
+          {
+            description: `Get basic details about ${userName}'s age and gender`,
+            completed: false
+          },
+          {
+            description: `Get details about ${userName}'s location-- where they live and how far they'd go to meet someone`,
             completed: false
           },
           {
@@ -414,19 +402,15 @@ const routes: Route[] = [
             completed: false
           },
           {
-            description: `Get details about ${userName}'s location-- where they live and how far they'd go to meet someone`,
-            completed: false
-          },
-          {
             description: `Get details about ${userName}'s goals for meeting new people: friendly, professional, romantic, personal growth oriented, etc`,
             completed: false
           },
           {
-            description: `Introduce ${userName} to another user`,
+            description: `Let ${userName} know that they can can always chat with CJ to get help with something-- anything!`,
             completed: false
           },
           {
-            description: `Let ${userName} know that they can can always chat with CJ to get help with something-- anything!`,
+            description: 'Let the user know that CJ has enough information to start making introductions, but they more information they give, the more accurate the introductions will be.',
             completed: false
           }
         ]
@@ -522,9 +506,7 @@ async function handleEvent (event) {
       // @ts-expect-error - wrangler env variables
       SUPABASE_SERVICE_API_KEY,
       // @ts-expect-error - wrangler env variables
-      OPENAI_API_KEY,
-      // @ts-expect-error - wrangler env variables
-      NODE_ENV
+      OPENAI_API_KEY
     } as Record<string, string>)
 
     // Return the immediate response to the user

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react"
 
-import { useNavigate } from "react-router-dom";
 import {
+  Button,
   Container,
   Flex,
   Grid,
@@ -10,32 +10,32 @@ import {
   Paper,
   Select,
   Text,
-  Button,
-  useMantineTheme,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { type Database } from "../../../../types/database.types";
-import useRoomStyles from "../Room/useRoomStyles";
-import ProfileHeader from "../../../components/ProfileHeader";
-import UserAvatar from "../../../components/UserAvatar";
-import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage";
-import { showNotification } from "@mantine/notifications";
-import useGlobalStore from "../../../store/useGlobalStore";
+  useMantineTheme
+} from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import { showNotification } from "@mantine/notifications"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { CountryDropdown, RegionDropdown } from "react-country-region-selector"
+import { useNavigate } from "react-router-dom"
+import { type Database } from "../../../../types/database.types"
+import ProfileHeader from "../../../components/ProfileHeader"
+import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
+import UserAvatar from "../../../components/UserAvatar"
+import useGlobalStore from "../../../store/useGlobalStore"
+import useRoomStyles from "../Room/useRoomStyles"
 
-export default function Profile() {
-  const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 900px)");
-  const supabase = useSupabaseClient<Database>();
-  const { classes: roomClasses } = useRoomStyles();
-  const theme = useMantineTheme();
-  const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const { user, setUser, clearState } = useGlobalStore();
-  const [location, setLocation] = useState("");
-  const [settingLocation, setSettingLocation] = useState(false);
-  const [age, setAge] = useState(26);
-  const [pronouns, setPronouns] = useState("He/Him");
+export default function Profile () {
+  const navigate = useNavigate()
+  const isMobile = useMediaQuery("(max-width: 900px)")
+  const supabase = useSupabaseClient<Database>()
+  const { classes: roomClasses } = useRoomStyles()
+  const theme = useMantineTheme()
+  const [profileImage, setProfileImage] = useState<File | null>(null)
+  const [uploading, setUploading] = useState<boolean>(false)
+  const { user, setUser, clearState } = useGlobalStore()
+  const [location, setLocation] = useState("")
+  const [country, setCountry] = useState("Canada")
+  const [region, setRegion] = useState("Ontario")
 
   const saveLocation = async (newLocation: string) => {
     const oldLocation = location;
@@ -45,14 +45,14 @@ export default function Profile() {
       await supabase
         .from("accounts")
         .update({
-          location: newLocation,
+          location: newLocation
         })
-        .eq("id", user.uid as string);
+        .eq("id", user.uid!)
 
       setUser({
         ...user,
-        location: newLocation,
-      });
+        location: newLocation
+      })
     }
   };
 
@@ -100,48 +100,6 @@ export default function Profile() {
     }
   };
 
-  const getAutoLocation = async () => {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        setSettingLocation(true);
-
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        const resp = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`
-        );
-        const data = await resp.json();
-        const country = data.address.country;
-        const province = data.address.province;
-        saveLocation(`${province}, ${country}`);
-        setSettingLocation(false);
-      },
-      (error) => {
-        alert(error.message);
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-    );
-  };
-
-  useEffect(() => {
-    console.log("user:", user);
-    const location = user.location;
-    const age = user.age;
-    const pronouns = user.pronouns;
-    if (location) {
-      setLocation(location);
-    } else {
-      getAutoLocation();
-    }
-    if (age) {
-      setAge(age);
-    }
-    if (pronouns) {
-      setPronouns(pronouns);
-    }
-  }, []);
-
   const signOut = async () => {
     await supabase.auth.signOut();
     clearState();
@@ -176,7 +134,7 @@ export default function Profile() {
 
     const existingImage = user.avatar_url?.split(
       "profile-images/"
-    )[1] as string;
+    )[1]
     if (existingImage) {
       supabase.storage.from("profile-images").remove([existingImage]);
     }
@@ -238,35 +196,23 @@ export default function Profile() {
             </Text>
 
             <Flex direction="column" gap={16}>
-              <Input.Wrapper style={{ color: "white" }}>
-                <label>Location</label>
-                <Input
-                  value={location}
-                  onChange={(e) => {
-                    saveLocation(e.target.value as string);
-                  }}
-                  // p={"sm"}
-                  styles={{
-                    input: {
-                      padding: "1.5rem",
-                      border: "1px solid #232627",
-                      borderRadius: "0.8rem",
-                      backgroundColor: "#141414",
-                      color: "white",
-                    },
+              <div>
+                <CountryDropdown
+                  value={country}
+                  onChange={(val) => {
+                    setCountry(val)
+                    saveLocation(`${val}, ${region}`)
                   }}
                 />
-                <br />
-                <Button
-                  fullWidth
-                  variant="transparent"
-                  size="md"
-                  onClick={getAutoLocation}
-                  disabled={settingLocation}
-                >
-                  <Text color={theme.white}>Get Location</Text>
-                </Button>
-              </Input.Wrapper>
+                <RegionDropdown
+                  country={country}
+                  value={region}
+                  onChange={(val) => {
+                    setRegion(val)
+                    saveLocation(`${country}, ${val}`)
+                  }}
+                />
+              </div>
               <Grid gutter={"xs"}>
                 <Grid.Col span={6}>
                   <Input.Wrapper style={{ color: theme.white }}>
@@ -337,7 +283,7 @@ export default function Profile() {
               variant="transparent"
               size="md"
               onClick={async () => {
-                if (profileImage) await uploadImage(profileImage);
+                if (profileImage) await uploadImage(profileImage)
               }}
               disabled={!profileImage}
             >

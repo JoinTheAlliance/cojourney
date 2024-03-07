@@ -1,26 +1,18 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  Group,
-  Paper,
-  Text,
-  Button,
-  useMantineTheme,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { Button, Container, Group, Text, useMantineTheme } from "@mantine/core";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { type Database } from "../../../../types/database.types";
-import useRoomStyles from "../Room/useRoomStyles";
+import { useNavigate } from "react-router-dom";
+import { Database } from "../../../../types/database.types";
+import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests";
 import ProfileHeader from "../../../components/ProfileHeader";
 import UserAvatar from "../../../components/UserAvatar";
-import useGlobalStore from "../../../store/useGlobalStore";
-import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests";
 import { getAvatarImage } from "../../../helpers/getAvatarImage";
+import useGlobalStore from "../../../store/useGlobalStore";
+import useRoomStyles from "../Room/useRoomStyles";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 900px)");
+  // const isMobile = useMediaQuery("(max-width: 900px)");
   const supabase = useSupabaseClient<Database>();
   const { classes: roomClasses } = useRoomStyles();
 
@@ -75,7 +67,23 @@ export default function Profile() {
                 size="sm"
                 color={theme.colors.gray[4]}
                 mt={"2xl"}
-                // mb={"sm"}
+                weight={"600"}
+                italic={false}
+                style={{
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                Cojourney Guide
+              </Text>
+            </Group>
+          )}
+          {!friend?.is_agent && (
+            <Group>
+              <Text
+                size="sm"
+                color={theme.colors.gray[4]}
+                mt={"2xl"}
                 weight={"600"}
                 italic={false}
                 style={{

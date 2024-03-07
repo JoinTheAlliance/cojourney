@@ -1,20 +1,20 @@
-import { getRelationship, type BgentRuntime, type Message } from 'bgent'
+import { createRuntime, getRelationship, type BgentRuntime, type Message } from 'bgent'
+import { type UUID } from 'crypto'
+import { config } from 'dotenv'
+import {
+  getCachedEmbedding,
+  writeCachedEmbedding
+} from '../../../test/cache'
+import { zeroUuid } from '../../../test/constants'
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
-  GetTellMeAboutYourselfConversation3,
-  createRuntime,
-  getCachedEmbedding,
-  writeCachedEmbedding
-} from 'bgent/src/test'
-import { type UUID } from 'crypto'
-import { config } from 'dotenv'
+  GetTellMeAboutYourselfConversation3
+} from '../../../test/data'
 import evaluator from '../details'
 
-const zeroUuid = '00000000-0000-0000-0000-000000000000' as UUID
-
 // use .dev.vars for local testing
-config({ path: '../../.dev.vars' })
+config({ path: '../../.env' })
 
 describe('User Details', () => {
   test('Get user details', async () => {
@@ -51,7 +51,7 @@ describe('User Details', () => {
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
-        const embedding = getCachedEmbedding(c.content.content)
+        const embedding = getCachedEmbedding(c.content.content as string)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],

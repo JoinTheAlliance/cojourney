@@ -9,25 +9,24 @@ import Message from "./Message/Message"
 const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Element => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
   const {
     user,
     currentRoom: { messages, isLoadingMessages }
   } = useGlobalStore()
 
-  
   useEffect(() => {
     setTimeout(() => {
-      scrollToBottom();
-    }, 1000);
-  }, []);
+      scrollToBottom()
+    }, 1000)
+  }, [])
 
   useEffect(() => {
     setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-  }, [messages?.length, userMessage]);
+      scrollToBottom()
+    }, 100)
+  }, [messages?.length, userMessage])
 
   if (isLoadingMessages) {
     return (
@@ -84,7 +83,7 @@ const Messages = ({ userMessage }: { userMessage: IDatabaseMessage }): JSX.Eleme
     )
     .sort(
       // sort by created_at
-      (a, b) => new Date(a.created_at as string).getTime() - new Date(b.created_at as string).getTime()
+      (a, b) => new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime()
     )
 
   return (

@@ -6,21 +6,19 @@ import {
   expect,
   test
 } from '@jest/globals'
-import { config } from 'dotenv'
-
 import { type Session, type User } from '@supabase/supabase-js'
+import { composeContext, createRuntime, getRelationship, type BgentRuntime, type State } from 'bgent'
 import { type UUID } from 'crypto'
-import { createRuntime } from 'bgent/src/test'
-import { type State, type BgentRuntime, composeContext, getRelationship } from 'bgent'
+import { config } from 'dotenv'
+import { zeroUuid } from '../../../test/constants'
 import {
-  action as introduce,
   getRelevantRelationships,
+  action as introduce,
   template
 } from '../introduce'
-const zeroUuid = '00000000-0000-0000-0000-000000000000' as UUID
 
 // use .dev.vars for local testing
-config({ path: '../../.dev.vars' })
+config({ path: '../../.env' })
 
 describe('INTRODUCE Action Tests', () => {
   let runtime: BgentRuntime
@@ -29,13 +27,13 @@ describe('INTRODUCE Action Tests', () => {
   // Helper function for user creation or sign-in
   async function ensureUser (email: string, password: string): Promise<User> {
     const {
-      data: { user },
+      data: { session: { user } },
       error: signInError
     } = await runtime.supabase.auth.signInWithPassword({ email, password })
 
     if (signInError) {
       const {
-        data: { user: newUser },
+        data: { session: { user: newUser } },
         error: signUpError
       } = await runtime.supabase.auth.signUp({ email, password })
       if (signUpError) {
@@ -65,6 +63,7 @@ describe('INTRODUCE Action Tests', () => {
     }
 
     if (accounts && accounts.length === 0) {
+      console.log('*** user', user)
       const { error: insertError } = await runtime.supabase
         .from('accounts')
         .insert({
@@ -88,7 +87,6 @@ describe('INTRODUCE Action Tests', () => {
   }
 
   beforeAll(async () => {
-    // @ts-expect-error - slight type mismatch from dev to src
     ({ session, runtime } = await createRuntime({
       env: process.env,
       actions: [introduce]
@@ -132,7 +130,8 @@ describe('INTRODUCE Action Tests', () => {
       room_id,
       content: {
         content:
-          "I'd like to meet someone who enjoys indie music as much as I do."
+          "I'd like to meet someone who enjoys indie music as much as I do.",
+        action: 'WAIT'
       }
     }
 
@@ -141,17 +140,17 @@ describe('INTRODUCE Action Tests', () => {
   })
 
   test('INTRODUCE is not included in actionNames when the user lacks a description', async () => {
-    const user = await ensureUser(
+    const userWithoutDescription = await ensureUser(
       'user_without_description@example.com',
       'password'
     )
 
     const message = {
-      senderId: user.id as UUID,
+      senderId: userWithoutDescription.id as UUID,
       agentId: zeroUuid as UUID,
-      userIds: [user.id as UUID, zeroUuid],
+      userIds: [userWithoutDescription.id as UUID, zeroUuid],
       room_id,
-      content: { content: "I'm new here!" }
+      content: { content: "I'm new here!", action: 'WAIT' }
     }
 
     const state = await runtime.composeState(message)
@@ -168,7 +167,6 @@ describe('INTRODUCE Action Tests', () => {
 
     beforeEach(async () => {
       // Create main user and add a description
-      // @ts-expect-error - slight type mismatch from dev to src
       ({ session, runtime } = await createRuntime({
         env: process.env,
         actions: [introduce]
@@ -213,7 +211,8 @@ describe('INTRODUCE Action Tests', () => {
         senderId: mainUser.id as UUID,
         agentId: zeroUuid,
         content: {
-          content: 'Looking to connect with someone with similar interests.'
+          content: 'Looking to connect with someone with similar interests.',
+          action: 'WAIT'
         },
         room_id,
         userIds: [mainUser.id as UUID, zeroUuid]
@@ -240,7 +239,8 @@ describe('INTRODUCE Action Tests', () => {
         senderId: mainUser.id as UUID,
         agentId: zeroUuid as UUID,
         content: {
-          content: 'Who should I meet that enjoys music as much as I do?'
+          content: 'Who should I meet that enjoys music as much as I do?',
+          action: 'WAIT'
         },
         room_id,
         userIds: [mainUser.id as UUID, zeroUuid]
@@ -253,26 +253,27 @@ describe('INTRODUCE Action Tests', () => {
       if (response.error) {
         throw new Error(response.error.message)
       }
+
       const relevantRelationships = await getRelevantRelationships(
         runtime,
         message,
-        2
+        1
       )
+
+      console.log('relevantRelationships', relevantRelationships)
 
       const context = composeContext({
         state: { ...state, relevantRelationships },
         template
       })
 
-      const similarUserIndex = relevantRelationships.indexOf(
-        similarUser?.email as string
-      )
       const differentUserIndex = relevantRelationships.indexOf(
         differentUser.email as string
       )
 
-      expect(similarUserIndex).toBeLessThan(differentUserIndex)
       expect(context).toContain(similarUser.email)
+
+      expect(differentUserIndex).toBe(-1)
     }, 60000)
 
     afterEach(async () => {

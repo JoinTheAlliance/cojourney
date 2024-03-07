@@ -1,11 +1,12 @@
 import { type UUID } from 'crypto'
 import {
- type BgentRuntime, composeContext, formatActors, getActorDetails, createRelationship, type Action,
+  type BgentRuntime, composeContext, formatActors, getActorDetails, createRelationship, type Action,
   type ActionExample,
   type Memory,
   type Message,
   type State,
-  parseJSONObjectFromText
+  parseJSONObjectFromText,
+  addHeader
 } from 'bgent'
 
 export const template = `TASK: Introduce {{senderName}} to someone from {{agentName}}'s rolodex.
@@ -50,9 +51,8 @@ The response format should include userA, userB and explanation fields, and shou
 export const getRelevantRelationships = async (
   runtime: BgentRuntime,
   message: Message,
-  count?: number
+  count: number = 5
 ) => {
-  console.log('message.senderId', message.senderId, count)
   // Check if the user has a profile
   const descriptions = await runtime.descriptionManager.getMemoriesByIds({
     userIds: [message.senderId, message.agentId]
@@ -69,12 +69,14 @@ export const getRelevantRelationships = async (
     await runtime.descriptionManager.searchMemoriesByEmbedding(
       searchEmbedding,
       {
-        count: 5
+        match_threshold: 0,
+        count: count + 1,
+        unique: true
       }
     )
   )
-    .filter((d: Memory) => d.user_id !== message.senderId)
-    .slice(0, count)
+    .filter((d: Memory) => d.user_id !== message.senderId && d.user_id !== message.agentId)
+    // .slice(0, count)
 
   // get all the userIds from the user_ids of the otherPeopleDescriptions, make sure unique
   const userIds = Array.from(
@@ -88,8 +90,7 @@ export const getRelevantRelationships = async (
 
   const formattedActorData = formatActors({ actors: actorsData })
 
-  const header = '## ROLODEX\n'
-  return header + formattedActorData
+  return addHeader('## ROLODEX', formattedActorData)
 }
 
 const handler = async (runtime: BgentRuntime, message: Message) => {
@@ -161,7 +162,8 @@ export const action = {
         user: '{{user1}}',
         content: {
           content:
-            "I've been wanting to meet someone who's into indie music like I am."
+            "I've been wanting to meet someone who's into indie music like I am.",
+          action: 'WAIT'
         }
       },
       {
@@ -186,7 +188,8 @@ export const action = {
         user: '{{user1}}',
         content: {
           content:
-            "I'm trying to expand my professional network in the graphic design field."
+            "I'm trying to expand my professional network in the graphic design field.",
+          action: 'WAIT'
         }
       },
       {
@@ -212,7 +215,8 @@ export const action = {
         user: '{{user1}}',
         content: {
           content:
-            "I'm quite busy these days with work and barely have time for hobbies."
+            "I'm quite busy these days with work and barely have time for hobbies.",
+          action: 'WAIT'
         }
       },
       {
@@ -220,7 +224,7 @@ export const action = {
         content: {
           content:
             'Understood. If you ever want to meet someone with similar interests, let me know!',
-          action: 'IGNORE'
+          action: 'WAIT'
         }
       }
     ],
@@ -228,7 +232,8 @@ export const action = {
       {
         user: '{{user1}}',
         content: {
-          content: "I've heard that chess is becoming popular again."
+          content: "I've heard that chess is becoming popular again.",
+          action: 'WAIT'
         }
       },
       {
@@ -236,7 +241,7 @@ export const action = {
         content: {
           content:
             "Yes, it's quite fascinating how it's regained popularity. If you're ever interested in meeting fellow chess enthusiasts, feel free to tell me!",
-          action: 'IGNORE'
+          action: 'WAIT'
         }
       }
     ],
@@ -245,7 +250,8 @@ export const action = {
       {
         user: '{{user1}}',
         content: {
-          content: "I'm not sure if I'm ready to meet new people yet."
+          content: "I'm not sure if I'm ready to meet new people yet.",
+          action: 'WAIT'
         }
       },
       {
@@ -253,7 +259,7 @@ export const action = {
         content: {
           content:
             "No worries at all. Take your time, and I'm here when you're ready.",
-          action: 'IGNORE'
+          action: 'WAIT'
         }
       }
     ],
@@ -262,7 +268,8 @@ export const action = {
         user: '{{user1}}',
         content: {
           content:
-            'Maybe meeting someone new would be nice. Oh, did you see the latest football match?'
+            'Maybe meeting someone new would be nice. Oh, did you see the latest football match?',
+          action: 'WAIT'
         }
       },
       {
@@ -270,7 +277,7 @@ export const action = {
         content: {
           content:
             "I did catch the highlights! If you decide you'd like to meet someone from the community, just let me know.",
-          action: 'IGNORE'
+          action: 'WAIT'
         }
       }
     ]

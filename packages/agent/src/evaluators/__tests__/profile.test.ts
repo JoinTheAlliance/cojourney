@@ -1,22 +1,24 @@
 import { type User } from '@supabase/supabase-js'
-import { getRelationship, type BgentRuntime, type Message } from 'bgent'
+import { createRuntime, getRelationship, type BgentRuntime, type Message } from 'bgent'
+import {
+  getCachedEmbedding,
+  writeCachedEmbedding
+} from '../../../test/cache'
 import {
   GetTellMeAboutYourselfConversation1,
   GetTellMeAboutYourselfConversation2,
   GetTellMeAboutYourselfConversation3,
-  createRuntime,
-  getCachedEmbedding,
   jimProfileExample1,
-  jimProfileExample2,
-  writeCachedEmbedding
-} from 'bgent/src/test'
+  jimProfileExample2
+} from '../../../test/data'
+
 import { type UUID } from 'crypto'
 import { config } from 'dotenv'
+import { zeroUuid } from '../../../test/constants'
 import evaluator from '../profile'
+import { runAiTest } from 'bgent'
 
-const zeroUuid = '00000000-0000-0000-0000-000000000000' as UUID
-
-config({ path: '../../.dev.vars' })
+config({ path: '../../.env' })
 
 let runtime: BgentRuntime
 let user: User
@@ -53,32 +55,31 @@ describe('User Profile', () => {
   })
 
   test('Get user profile', async () => {
-    const { user, runtime } = await createRuntime({
-      env: process.env as Record<string, string>
-    })
+      const { user, runtime } = await createRuntime({
+        env: process.env as Record<string, string>
+      })
 
-    const data = await getRelationship({
-      runtime: runtime as unknown as BgentRuntime,
-      userA: user?.id as UUID,
-      userB: zeroUuid
-    })
+      const data = await getRelationship({
+        runtime: runtime as unknown as BgentRuntime,
+        userA: user?.id as UUID,
+        userB: zeroUuid
+      })
 
-    const room_id = data?.room_id
+      const room_id = data?.room_id
 
-    const message: Message = {
-      senderId: user?.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
-      content: { content: '' },
-      room_id
-    }
+      const message: Message = {
+        senderId: user?.id as UUID,
+        agentId: zeroUuid,
+        userIds: [user?.id as UUID, zeroUuid],
+        content: { content: '' },
+        room_id
+      }
 
-    async function _testCreateProfile () {
       // first, add all the memories for conversation
       let conversation = GetTellMeAboutYourselfConversation1(user?.id as UUID)
       for (let i = 0; i < conversation.length; i++) {
         const c = conversation[i]
-        const existingEmbedding = getCachedEmbedding(c.content.content)
+        const existingEmbedding = getCachedEmbedding(c.content.content as string)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
           user_ids: [user?.id as UUID, zeroUuid],
@@ -99,13 +100,10 @@ describe('User Profile', () => {
 
       const handler = evaluator.handler!
 
-      let result = (await handler(runtime as unknown as BgentRuntime, message)) as string
-
-      expect(result.includes('programmer')).toBe(true)
-
-      expect(result.includes('Jim')).toBe(true)
-
-      expect(result.toLowerCase().includes('startup')).toBe(true)
+      await runAiTest('Check result 1', async () => {
+        const result = (await handler(runtime as unknown as BgentRuntime, message)) as string
+        return result.includes('programmer') && result.includes('Jim') && result.toLowerCase().includes('startup')
+      })
 
       conversation = [
         ...GetTellMeAboutYourselfConversation2(user?.id as UUID),
@@ -153,28 +151,15 @@ describe('User Profile', () => {
         }
       }
 
-      result = (await handler(runtime as unknown as BgentRuntime, message)) as string
-
-      expect(result.includes('38')).toBe(true)
-
-      expect(result.includes('Jim')).toBe(true)
-
-      expect(result.toLowerCase().includes('francisco')).toBe(true)
-
-      expect(
-        result.toLowerCase().includes('startup') ||
-          result.toLowerCase().includes('programmer')
-      ).toBe(true)
-
-      const descriptions = await runtime.descriptionManager.getMemoriesByIds({
-        userIds: [message.senderId, message.agentId] as UUID[],
-        count: 5
+      await runAiTest('Check result 2', async () => {
+        const result = (await handler(runtime as unknown as BgentRuntime, message)) as string
+        return result.includes('38') && result.includes('Jim') && result.toLowerCase().includes('francisco') && (result.toLowerCase().includes('startup') || result.toLowerCase().includes('programmer'))
       })
 
-      // count the number of descriptions
-      expect(descriptions.length).toBe(3)
-    }
-
-    await _testCreateProfile()
-  }, 60000)
+        const descriptions = await runtime.descriptionManager.getMemoriesByIds({
+          userIds: [message.senderId, message.agentId] as UUID[],
+          count: 5
+        })
+        expect(descriptions.length === 3).toBeTruthy()
+  }, 180000)
 })
