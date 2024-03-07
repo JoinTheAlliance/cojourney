@@ -19,7 +19,6 @@ import { CountryDropdown, RegionDropdown } from "react-country-region-selector"
 import { useNavigate } from "react-router-dom"
 import { type Database } from "../../../../types/database.types"
 import ProfileHeader from "../../../components/ProfileHeader"
-import UploadProfileImage from "../../../components/RegisterUser/helpers/UploadProfileImage.tsx/UploadProfileImage"
 import UserAvatar from "../../../components/UserAvatar"
 import useGlobalStore from "../../../store/useGlobalStore"
 import useRoomStyles from "../Room/useRoomStyles"
@@ -30,7 +29,6 @@ export default function Profile () {
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
   const theme = useMantineTheme()
-  const [profileImage, setProfileImage] = useState<File | null>(null)
   const [uploading, setUploading] = useState<boolean>(false)
   const { user, setUser, clearState } = useGlobalStore()
   const [location, setLocation] = useState("")
@@ -115,7 +113,7 @@ export default function Profile () {
   const uploadImage = async (imgFile: File): Promise<void> => {
     if (!user.uid) return
     setUploading(true)
-    const targetImage = profileImage || imgFile
+    const targetImage = imgFile
 
     const { data: imageUploadData, error: imageUploadError } =
       await supabase.storage
@@ -162,12 +160,28 @@ export default function Profile () {
       ...user,
       avatar_url: IMAGE_URL
     })
-    setProfileImage(null)
     setUploading(false)
   }
 
   const back = () => {
     navigate("/")
+  }
+
+  const openImagePicker = () => {
+    if (uploading) {
+      return;
+    }
+    
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files
+      if (files) {
+        uploadImage(files[0])
+      }
+    }
+    input.click()
   }
 
   return (
@@ -190,7 +204,9 @@ export default function Profile () {
           mx={isMobile ? "0" : "8xl"}
         >
           <Container maw={"100%"} p={"xxl"} style={{}}>
-            <UserAvatar src={user.avatar_url || ""} online={true} size="lg" />
+            <div onClick={openImagePicker}>
+              <UserAvatar src={user.avatar_url || ""} online={true} size="lg" />
+            </div>
             <Text
               align="center"
               size="xl"
@@ -267,16 +283,6 @@ export default function Profile () {
                   </Paper>
                 </Grid.Col>
               </Grid>
-              <Input.Wrapper style={{ color: "white" }}>
-                <label>Profile Picture</label>
-                <UploadProfileImage
-                  image={profileImage}
-                  setImage={(e: React.SetStateAction<File | null>) => {
-                    setProfileImage(e as File)
-                    if (e) uploadImage(e as File)
-                  }}
-                />
-              </Input.Wrapper>
             </Flex>
           </Container>
           <Group
@@ -286,18 +292,6 @@ export default function Profile () {
               gap: theme.spacing.xs
             }}
           >
-            <Button
-              loading={uploading}
-              fullWidth
-              variant="transparent"
-              size="md"
-              onClick={async () => {
-                if (profileImage) await uploadImage(profileImage)
-              }}
-              disabled={!profileImage}
-            >
-              <Text color={theme.white}>Update</Text>
-            </Button>
             {isMobile && (
               <Button fullWidth variant="transparent" size="md" onClick={back}>
                 <Text color={theme.white}>Back</Text>
