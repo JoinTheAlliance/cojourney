@@ -36,6 +36,56 @@ export default function Profile () {
   const [location, setLocation] = useState("")
   const [country, setCountry] = useState("Canada")
   const [region, setRegion] = useState("Ontario")
+  const [age, setAge] = useState(26);
+  const [pronouns, setPronouns] = useState("He/Him");
+
+  const saveAge = async (newAge: number) => {
+    const oldAge = age
+    setAge(newAge)
+
+    if (oldAge != newAge) {
+      user.avatar_url
+      const newDetails = user.details ? { ...user.details } : {};
+      newDetails.age = newAge;
+
+      await supabase
+        .from("accounts")
+        .update({
+          details: newDetails,
+        })
+        .eq("id", user.uid);
+
+      setUser({
+        ...user,
+        details: newDetails,
+      });
+    }
+  };
+
+  const savePronouns = async (newPronouns: string) => {
+    const oldPronouns = pronouns
+    setPronouns(newPronouns)
+
+    if (oldPronouns != newPronouns) {
+      if (oldPronouns != newPronouns) {
+        user.avatar_url
+        const newDetails = user.details ? { ...user.details } : {};
+        newDetails.pronouns = newPronouns;
+  
+        await supabase
+          .from("accounts")
+          .update({
+            details: newDetails,
+          })
+          .eq("id", user.uid);
+  
+        setUser({
+          ...user,
+          details: newDetails,
+        });
+      }
+    }
+  }
 
   const saveLocation = async (newLocation: string) => {
     const oldLocation = location
@@ -171,29 +221,36 @@ export default function Profile () {
               </div>
               <Grid gutter={"xs"}>
                 <Grid.Col span={6}>
-                  <Input.Wrapper style={{ color: theme.white }}>
-                    <label>Age</label>
-                    <Input
-                      placeholder="Your Age"
-                      value={26}
-                      type="Number"
-                      styles={{
-                        input: {
-                          border: "none",
-                          backgroundColor: "#232627",
-                          padding: "1.5rem 1rem",
-                          color: "white"
-                        }
-                      }}
-                      style={{ marginRight: "1rem" }}
-                    />
-                  </Input.Wrapper>
+                <Input.Wrapper style={{ color: theme.white }}>
+                <label>Age </label>
+                <select
+                  value={age}
+                  onChange={(e) => saveAge(parseInt(e.target.value))} 
+                  style={{
+                    backgroundColor: "#232627",
+                    color: "white",
+                    padding: "1.5rem 1rem",
+                    border: "none",
+                    marginRight: "1rem",
+                  }}
+                >
+                  {[...Array(83)].map((_, index) => (
+                    <option key={index + 18} value={index + 18}>
+                      {index + 18}
+                    </option>
+                  ))}
+                </select>
+              </Input.Wrapper>
                 </Grid.Col>
                 <Grid.Col span={6}>
                   <Paper bg={"transparent"} style={{ color: "white" }}>
                     <label>Pronouns</label>
                     <Select
                       placeholder="He/Him"
+                      value={pronouns}
+                      onChange={(value) => {
+                        savePronouns(value as string)
+                      }}
                       styles={{
                         input: {
                           border: "none",

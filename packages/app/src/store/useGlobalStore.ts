@@ -1,7 +1,7 @@
 import { type RealtimePresenceState, type SupabaseClient } from "@supabase/supabase-js"
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
-import { type Database } from "../../types/database.types"
+import { Json, type Database } from "../../types/database.types"
 
 export type IDatabaseRoom = Database["public"]["Tables"]["rooms"]["Row"]
 type IDatabaseParticipantsWithoutUsers =
@@ -18,6 +18,7 @@ export interface IUser {
   registerComplete: boolean | null
   uid: string | null
   location: string | null
+  details: Json | null
 }
 
 interface IPreferences {

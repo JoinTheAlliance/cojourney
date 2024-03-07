@@ -16,7 +16,7 @@ import RoomLayout from "./pages/app/Room/index";
 import Root from "./pages/app/root";
 import UserPreferences from "./pages/app/UserPreferences/UserPreferences";
 import UserProfile from "./pages/app/UserProfile";
-import Tos from "./pages/app/Tos";
+import Tos from "./pages/app/TOS";
 
 const supabase = createClient(
 	constants.supabaseUrl || "",
