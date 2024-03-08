@@ -64,6 +64,8 @@ const useRoomStyles = createStyles((theme) => ({
 		width: "100%",
 		maxWidth: "100%",
 		height: "100%",
+		backgroundSize: "cover",
+		backgroundPosition: "center",
 	},
 	chatContainer: {
 		display: "flex",
@@ -97,7 +99,7 @@ const useRoomStyles = createStyles((theme) => ({
 		},
 	},
 	room_loader: {
-		marginLeft: "auto",
+		marginLeft: "20px",
 		marginRight: "auto",
 		"@media (min-width: 1024px)": {
 			paddingLeft: "380px",

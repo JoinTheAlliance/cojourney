@@ -14,8 +14,6 @@ const useRootStyles = createStyles((theme) => ({
 	content: {
 		height: "100%",
 		width: "100%",
-		backgroundSize: "cover",
-		backgroundPosition: "center",
 		paddingTop: 0,
 	},
 	header: {

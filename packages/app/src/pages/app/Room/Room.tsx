@@ -12,6 +12,7 @@ import Messages from "./Messages/Messages";
 import MessagesTextInput from "./MessagesTextInput/MessagesTextInput";
 import RoomHeader from "./RoomHeader/RoomHeader";
 import useRoomStyles from "./useRoomStyles";
+import { getAvatarImage } from "../../../helpers/getAvatarImage";
 
 interface Props {
 	getRoomData: () => Promise<void>;
@@ -45,9 +46,24 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 	}, [roomData]);
 
 	const [userMessage, setUserMessage] = useState("" as unknown);
+	const { currentRoom } = useGlobalStore();
+
+	// @ts-expect-error
+	const friend = currentRoom
+		? currentRoom?.roomData?.relationships[0]?.userData2
+		: null;
 
 	return (
-		<div className={classes.chatLayout}>
+		<div
+			className={classes.chatLayout}
+			style={{
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${
+					friend?.avatar_url ||
+					getAvatarImage(friend?.name || friend?.email || "")
+				})`,
+			}}
+		>
 			<div className={classes.chatContainer}>
 				<div className={classes.chat}>
 					<div className={classes.headerContainer}>
