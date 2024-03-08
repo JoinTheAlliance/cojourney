@@ -3,25 +3,21 @@ import { isSmartphone } from "../../helpers/functions";
 
 const useRootStyles = createStyles((theme) => ({
 	container: {
-		marginLeft: 400,
+		// marginLeft: 400,
 		height: "100vh",
+		position: "relative",
+		display: "flex",
+		flexDirection: "row",
 		"@media (max-width: 900px)": {
-			marginLeft: 0,
+			flexDirection: "column",
 		},
 	},
 	content: {
 		height: "100%",
+		width: "100%",
 		backgroundSize: "cover",
 		backgroundPosition: "center",
-		maxWidth: "calc(100%)",
 		paddingTop: 0,
-		"@media (max-width: 900px)": {
-			// marginTop: 60,
-			height: isSmartphone ? "calc(100vh - 130px)" : "calc(100vh - 60px)",
-		},
-		"@media (max-width: 1200px)": {
-			maxWidth: "calc(100%)",
-		},
 	},
 	header: {
 		// position: "fixed",

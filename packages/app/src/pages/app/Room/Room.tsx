@@ -47,23 +47,27 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 	const [userMessage, setUserMessage] = useState("" as unknown);
 
 	return (
-		<div className={classes.chatContainer}>
-			<div className={classes.headerContainer}>
-				<RoomHeader />
-			</div>
-			<div className={classes.messagesContainer}>
-				<Messages userMessage={userMessage as IDatabaseMessage} />
-			</div>
-			{isRoomMember && (
-				<div className={classes.textInputContainer}>
-					<MessagesTextInput
-						roomChannel={roomChannel}
-						onMessageSent={(message) => {
-							setUserMessage(message);
-						}}
-					/>
+		<div className={classes.chatLayout}>
+			<div className={classes.chatContainer}>
+				<div className={classes.chat}>
+					<div className={classes.headerContainer}>
+						<RoomHeader />
+					</div>
+					<div className={classes.messagesContainer}>
+						<Messages userMessage={userMessage as IDatabaseMessage} />
+					</div>
+					{isRoomMember && (
+						<div className={classes.textInputContainer}>
+							<MessagesTextInput
+								roomChannel={roomChannel}
+								onMessageSent={(message) => {
+									setUserMessage(message);
+								}}
+							/>
+						</div>
+					)}
 				</div>
-			)}
+			</div>
 		</div>
 	);
 };
