@@ -15,12 +15,14 @@ import UserAvatar from "../../../components/UserAvatar"
 import { getAvatarImage } from "../../../helpers/getAvatarImage"
 import useGlobalStore from "../../../store/useGlobalStore"
 import useRoomStyles from "../Room/useRoomStyles"
+import { showNotification } from "@mantine/notifications"
 
 export default function Profile () {
   const navigate = useNavigate()
   // const isMobile = useMediaQuery("(max-width: 900px)")
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
+  const { user } = useGlobalStore();
 
   const {
     currentRoom: {
@@ -47,6 +49,30 @@ export default function Profile () {
     supabase.auth.signOut()
     navigate("/login")
   }
+
+  const resetMemories = async () => {
+    const userId = user.uid;
+    const agentId = friend.id;
+    const userIdsArray = `{${userId},${agentId}}`;
+
+    const { msgsError } = await supabase.from("messages").delete().eq("user_ids", userIdsArray);
+    if (msgsError) console.error(msgsError);
+    
+    const { descriptionsError } = await supabase.from("descriptions").delete().eq("user_ids", userIdsArray);
+    if (descriptionsError) console.error(descriptionsError);
+    
+    const { factsError } = await supabase.from("facts").delete().eq("user_ids", userIdsArray);
+    if (factsError) console.error(factsError);
+    
+    const { goalsError } = await supabase.from("goals").delete().eq("user_ids", userIdsArray);
+    if (goalsError) console.error(goalsError);
+
+    showNotification({
+      title: "Memories reset",
+      message: "Memories have been reset successfully",
+      color: "green",
+    })
+  };
 
   const theme = useMantineTheme()
 
@@ -87,19 +113,6 @@ export default function Profile () {
             </Text>
           </Group>
             }
-            {!friend?.is_agent &&
-            <>
-
-            <Group>
-              <Text>Location: {friend.location || "Not specified"}</Text>
-            </Group>
-            <Group>
-              <Text>Age: {friend.age || "Not specified"}</Text>
-            </Group>
-            <Group>
-              <Text>Pronouns: {friend.pronouns || "Not specified"}</Text>
-            </Group>
-            </>}
             <>
               <Group>
                 <Text>Location: {friend.location || "Not specified"}</Text>
@@ -114,27 +127,44 @@ export default function Profile () {
               </Group>
             </>
           </Container>
-          {!friend?.is_agent &&
-            <Group
-              mb={"lg"}
-              mt={"4xl"}
-              style={{
-                gap: theme.spacing.xs
-              }}
+          {!friend?.is_agent ? (
+          <Group
+            mb={"lg"}
+            mt={"4xl"}
+            style={{
+              gap: theme.spacing.xs,
+            }}
+          >
+            <Button
+              fullWidth
+              variant="transparent"
+              size="md"
+              onClick={unfriend}
             >
-              <Button
-                fullWidth
-                variant="transparent"
-                size="md"
-                onClick={unfriend}
-              >
-                <Text color={theme.white}>Unfriend</Text>
-              </Button>
-              <Button fullWidth variant="transparent" size="md" onClick={logout}>
-                <Text color={theme.colors.red[8]}>Block</Text>
-              </Button>
-            </Group>
-          }
+              <Text color={theme.white}>Unfriend</Text>
+            </Button>
+            <Button fullWidth variant="transparent" size="md" onClick={logout}>
+              <Text color={theme.colors.red[8]}>Block</Text>
+            </Button>
+          </Group>
+        ) : (
+          <Group
+            mb={"lg"}
+            mt={"4xl"}
+            style={{
+              gap: theme.spacing.xs,
+            }}
+          >
+            <Button
+              fullWidth
+              variant="transparent"
+              size="md"
+              onClick={resetMemories}
+            >
+              <Text color={theme.colors.red[8]}>Reset Memories</Text>
+            </Button>
+          </Group>
+        )}
       </div>
     </div>
   )
