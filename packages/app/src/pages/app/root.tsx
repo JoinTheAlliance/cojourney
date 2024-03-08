@@ -15,6 +15,7 @@ import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingInd
 import useGlobalStore, { initialState } from "../../store/useGlobalStore";
 import OAuthUser from "./../../components/OAuthUser";
 import useRootStyles from "./useRootStyles";
+import MobileSideMenu from "../../components/SideMenu/MobileSideMenu/MobileSideMenu";
 
 const Root = (): JSX.Element => {
 	const { getUserFriends, getUserRoomData } = useLoadUserData();
@@ -153,9 +154,16 @@ const Root = (): JSX.Element => {
 								marginTop: isSmartphone ? "4rem" : "",
 								backgroundColor: "transparent",
 							},
+							body: {
+								padding: "0 !important",
+								height: "94%",
+							},
+							content: {
+								backgroundColor: "#141414",
+							},
 						}}
 					>
-						<SideMenu
+						<MobileSideMenu
 							closeMenu={(): void => {
 								setApp({ isMobileMenuOpen: false });
 							}}
