@@ -21,14 +21,14 @@ import { type Database } from "../../../../types/database.types";
 import ProfileHeader from "../../../components/ProfileHeader";
 import UserAvatar from "../../../components/UserAvatar";
 import useGlobalStore from "../../../store/useGlobalStore";
-import useRoomStyles from "../Room/useRoomStyles";
+import useRoomStyles from "./index.styles";
 import MainLayout from "../MainLayout.tsx";
 
 export default function Profile() {
 	const navigate = useNavigate();
 	const isMobile = useMediaQuery("(max-width: 900px)");
 	const supabase = useSupabaseClient<Database>();
-	const { classes: roomClasses } = useRoomStyles();
+	const { classes } = useRoomStyles();
 	const theme = useMantineTheme();
 	const [uploading, setUploading] = useState<boolean>(false);
 	const { user, setUser, clearState } = useGlobalStore();
@@ -185,116 +185,129 @@ export default function Profile() {
 
 	return (
 		<MainLayout>
-			<div className={roomClasses.headerContainer}>
+			<div className={classes.headerContainer}>
 				<ProfileHeader title={"My Account"} />
 			</div>
 			<div
-				className={roomClasses.messagesContainer}
+				className={classes.profile_container}
 				style={{
 					alignItems: "center",
 					display: "flex",
 				}}
 			>
-				<Paper shadow="xs" radius="lg" p="xl" w={"100%"} mx={"0"}>
-					<Container maw={"100%"} p={"xxl"} style={{}}>
-						<div onClick={openImagePicker}>
-							<UserAvatar src={user.avatar_url || ""} online={true} size="lg" />
-						</div>
-						<Text
-							align="center"
-							size="xl"
-							color={theme.colors.gray[4]}
-							mt={"xl"}
-							weight={"500"}
-						>
-							{user.name}
-						</Text>
+				{/* <Paper shadow="xs" radius="lg" p="xl" w={"100%"} mx={"0"}> */}
+				<Container maw={"100%"} p={"xxl"} style={{}}>
+					<div onClick={openImagePicker}>
+						<UserAvatar src={user.avatar_url || ""} online={true} size="lg" />
+					</div>
+					<Text
+						align="center"
+						size="xl"
+						color={theme.colors.gray[4]}
+						mt={"xl"}
+						weight={"500"}
+					>
+						{user.name}
+					</Text>
 
-						<Flex direction="column" gap={16}>
-							<div>
+					<Flex direction="column" gap={16}>
+						<label>Location</label>
+						<Grid gutter={"xs"}>
+							<Grid.Col span={6}>
+								<label>Country </label>
 								<CountryDropdown
 									value={country}
 									onChange={(val) => {
 										setCountry(val);
 										saveLocation(`${val}, ${region}`);
 									}}
+									classes={classes.select}
 								/>
-								<RegionDropdown
-									country={country}
-									value={region}
-									onChange={(val) => {
-										setRegion(val);
-										saveLocation(`${country}, ${val}`);
-									}}
-								/>
-							</div>
-							<Grid gutter={"xs"}>
-								<Grid.Col span={6}>
-									<Input.Wrapper style={{ color: theme.white }}>
-										<label>Age </label>
-										<select
-											value={age}
-											onChange={(e) => saveAge(parseInt(e.target.value))}
-											style={{
-												backgroundColor: "#232627",
-												color: "white",
-												padding: "1.5rem 1rem",
+							</Grid.Col>
+							<Grid.Col span={6}>
+								<Paper bg={"transparent"} style={{ color: "white" }}>
+									<label>City </label>
+									<RegionDropdown
+										country={country}
+										value={region}
+										onChange={(val) => {
+											setRegion(val);
+											saveLocation(`${country}, ${val}`);
+										}}
+										classes={classes.select}
+									/>
+								</Paper>
+							</Grid.Col>
+						</Grid>
+						<Grid gutter={"xs"}>
+							<Grid.Col span={6}>
+								<Paper bg={"transparent"} style={{ color: "white" }}>
+									<label>Age </label>
+									<select
+										value={age}
+										onChange={(e) => saveAge(parseInt(e.target.value))}
+										style={{
+											backgroundColor: "#232627",
+											color: "white",
+											padding: "1rem 1rem",
+											border: "none",
+											borderRadius: "10px",
+											marginRight: "1rem",
+											width: "100%",
+										}}
+									>
+										{[...Array(83)].map((_, index) => (
+											<option key={index + 18} value={index + 18}>
+												{index + 18}
+											</option>
+										))}
+									</select>
+								</Paper>
+							</Grid.Col>
+							<Grid.Col span={6}>
+								<Paper bg={"transparent"} style={{ color: "white" }}>
+									<label>Pronouns</label>
+									<Select
+										placeholder="He/Him"
+										value={pronouns}
+										onChange={(value) => {
+											savePronouns(value as string);
+										}}
+										styles={{
+											input: {
 												border: "none",
-												marginRight: "1rem",
-											}}
-										>
-											{[...Array(83)].map((_, index) => (
-												<option key={index + 18} value={index + 18}>
-													{index + 18}
-												</option>
-											))}
-										</select>
-									</Input.Wrapper>
-								</Grid.Col>
-								<Grid.Col span={6}>
-									<Paper bg={"transparent"} style={{ color: "white" }}>
-										<label>Pronouns</label>
-										<Select
-											placeholder="He/Him"
-											value={pronouns}
-											onChange={(value) => {
-												savePronouns(value as string);
-											}}
-											styles={{
-												input: {
-													border: "none",
-													backgroundColor: "#232627",
-													padding: "1.5rem 1rem",
-													color: "white",
-												},
-											}}
-											data={[
-												{ value: "He/Him", label: "He/Him" },
-												{ value: "She/Her", label: "She/Her" },
-											]}
-										/>
-									</Paper>
-								</Grid.Col>
-							</Grid>
-						</Flex>
-					</Container>
-					<Group
-						mb={"lg"}
-						mt={"4xl"}
-						style={{
-							gap: theme.spacing.xs,
-						}}
-					>
-						{isMobile && (
-							<Button fullWidth variant="transparent" size="md" onClick={back}>
-								<Text color={theme.white}>Back</Text>
-							</Button>
-						)}
-						<Button fullWidth variant="transparent" size="md" onClick={signOut}>
-							<Text color={theme.colors.red[8]}>Logout</Text>
+												backgroundColor: "#232627",
+												padding: "1.5rem 1rem",
+												color: "white",
+											},
+										}}
+										data={[
+											{ value: "He/Him", label: "He/Him" },
+											{ value: "She/Her", label: "She/Her" },
+										]}
+									/>
+								</Paper>
+							</Grid.Col>
+						</Grid>
+					</Flex>
+				</Container>
+				<Group
+					mb={"lg"}
+					mt={"4xl"}
+					style={{
+						gap: theme.spacing.xs,
+					}}
+				>
+					{isMobile && (
+						<Button fullWidth variant="transparent" size="md" onClick={back}>
+							<Text color={theme.white}>Back</Text>
 						</Button>
-					</Group>
-				</Paper>
+					)}
+					<Button fullWidth variant="transparent" size="md" onClick={signOut}>
+						<Text className={classes.logoutButton}>Logout</Text>
+					</Button>
+				</Group>
+				{/* </Paper> */}
 			</div>
 		</MainLayout>
 	);
