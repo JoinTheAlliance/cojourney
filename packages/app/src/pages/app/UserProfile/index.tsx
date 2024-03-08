@@ -184,10 +184,7 @@ export default function Profile() {
 	};
 
 	return (
-		<MainLayout>
-			<div className={classes.headerContainer}>
-				<ProfileHeader title={"My Account"} />
-			</div>
+		<MainLayout title={"My Account"}>
 			<div
 				className={classes.profile_container}
 				style={{

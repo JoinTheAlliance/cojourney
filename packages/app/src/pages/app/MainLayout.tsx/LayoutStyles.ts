@@ -17,6 +17,16 @@ const useRoomStyles = createStyles((theme) => ({
 			paddingLeft: "380px",
 		},
 	},
+	header: {
+		padding: "1rem",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	headerContainer: {
+		position: "relative",
+		borderBottom: "0.0625rem solid #2A2A2A",
+	},
 }));
 
 export default useRoomStyles;
