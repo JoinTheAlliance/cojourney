@@ -18,7 +18,6 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 import { useNavigate } from "react-router-dom";
 import { type Database } from "../../../../types/database.types";
-import ProfileHeader from "../../../components/ProfileHeader";
 import UserAvatar from "../../../components/UserAvatar";
 import useGlobalStore from "../../../store/useGlobalStore";
 import useRoomStyles from "./index.styles";
