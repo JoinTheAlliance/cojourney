@@ -284,6 +284,7 @@ export default function Profile() {
 										data={[
 											{ value: "He/Him", label: "He/Him" },
 											{ value: "She/Her", label: "She/Her" },
+											{ value: "Non-Binary", label: "Non-Binary" },
 										]}
 									/>
 								</Paper>
