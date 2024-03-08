@@ -39,6 +39,7 @@ export default function Profile () {
 
   const { handleDeleteFriendship } = useHandleFriendsRequests()
 
+  console.log("friend:", friend);
   const unfriend = () => {
     handleDeleteFriendship({ friendship })
   }
@@ -94,10 +95,10 @@ export default function Profile () {
               <Text>Location: {friend.location || "Not specified"}</Text>
             </Group>
             <Group>
-              <Text>Age: {friend.age || "Not specified"}</Text>
+              <Text>Age: {friend.details.age || "Not specified"}</Text>
             </Group>
             <Group>
-              <Text>Pronouns: {friend.pronouns || "Not specified"}</Text>
+              <Text>Pronouns: {friend.details.pronouns || "Not specified"}</Text>
             </Group>
             </>}
             <>
