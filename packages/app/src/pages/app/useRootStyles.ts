@@ -3,7 +3,6 @@ import { isSmartphone } from "../../helpers/functions";
 
 const useRootStyles = createStyles((theme) => ({
 	container: {
-		// marginLeft: 400,
 		height: "100vh",
 		position: "relative",
 		display: "flex",
@@ -20,9 +19,6 @@ const useRootStyles = createStyles((theme) => ({
 		paddingTop: 0,
 	},
 	header: {
-		// position: "fixed",
-		// top: 0,
-		// left: 0,
 		width: "100vw",
 		padding: 15,
 		display: "flex",

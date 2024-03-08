@@ -1,5 +1,4 @@
 import { createStyles } from "@mantine/core";
-import { isSmartphone } from "../../../helpers/functions";
 
 const useRoomStyles = createStyles((theme) => ({
 	headerContainer: {
@@ -26,29 +25,10 @@ const useRoomStyles = createStyles((theme) => ({
 		"@media (min-width: 1024px)": {
 			maxWidth: "80rem",
 		},
-
-		// padding: "1rem",
-		// paddingTop: 20,
-		// position: "relative",
-		// width: "100%",
-		// flex: "1",
-		// height: "calc(100% - 50px)",
-
-		// "@media (min-width: 901px)": {
-		// 	minHeight: "calc(100vh - 120px)",
-		// 	position: "relative",
-		// 	height: "calc(100vh - 200px)",
-		// },
-		// "@media (max-width: 900px)": {
-		// 	height: isSmartphone ? "" : "calc(100vh - 160px)",
-		// 	position: "relative",
-		// },
 	},
 	textInputContainer: {
 		padding: "1rem",
-		// position: "absolute",
-		// bottom: "0",
-		width: "fill-available",
+		width: "100%",
 	},
 	desktopSideMenu: {
 		position: "fixed",
@@ -88,14 +68,12 @@ const useRoomStyles = createStyles((theme) => ({
 	chatContainer: {
 		display: "flex",
 		overflow: "hidden",
-		// paddingTop: "3rem",
 		flexDirection: "row",
 		width: "100%",
 		height: "100%",
 		flexGrow: 1,
 		marginLeft: "auto",
 		marginRight: "auto",
-		// backgroundColor: "red",
 		"@media (min-width: 768px)": {
 			paddingTop: 0,
 		},
@@ -107,7 +85,6 @@ const useRoomStyles = createStyles((theme) => ({
 		display: "flex",
 		overflow: "hidden",
 		position: "relative",
-		// paddingBottom: "6rem",
 		flexBasis: "100%",
 		flexGrow: 1,
 		flexDirection: "column",
@@ -117,6 +94,13 @@ const useRoomStyles = createStyles((theme) => ({
 		"@media (min-width: 1024px)": {
 			paddingLeft: 0,
 			paddingRight: 0,
+		},
+	},
+	room_loader: {
+		marginLeft: "auto",
+		marginRight: "auto",
+		"@media (min-width: 1024px)": {
+			paddingLeft: "380px",
 		},
 	},
 }));
