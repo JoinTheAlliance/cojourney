@@ -60,7 +60,7 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${
 					friend?.avatar_url ||
-					getAvatarImage((friend?.name ?? friend?.email) as string)
+					getAvatarImage((friend?.name ?? friend?.email ?? "") as string)
 				})`
 			}}
 		>
