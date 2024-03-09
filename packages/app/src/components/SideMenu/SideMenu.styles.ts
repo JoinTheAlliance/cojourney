@@ -1,9 +1,9 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/core"
 
 const useSideMenuStyles = createStyles((theme) => ({
 	wrapper: {
 		display: "flex",
-		width: "100%",
+		width: "100%"
 	},
 
 	aside: {
@@ -15,7 +15,7 @@ const useSideMenuStyles = createStyles((theme) => ({
 		borderRight: `1px solid ${
 			theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[3]
 		}`,
-		padding: 5,
+		padding: 5
 	},
 	container: {
 		boxSizing: "border-box",
@@ -41,8 +41,8 @@ const useSideMenuStyles = createStyles((theme) => ({
 			position: "fixed",
 			top: 0,
 			bottom: 0,
-			zIndex: 50,
-		},
+			zIndex: 50
+		}
 	},
 	main: {
 		flex: 1,
@@ -51,12 +51,12 @@ const useSideMenuStyles = createStyles((theme) => ({
 				? theme.colors.dark[8]
 				: theme.colors.gray[0],
 		"@media (max-width: 900px)": {
-			marginTop: "4rem",
-		},
+			marginTop: "4rem"
+		}
 	},
 	linkContainer: {
 		maxHeight: "calc(100vh - 100px)",
-		overflowY: "auto",
+		overflowY: "auto"
 	},
 	mainLink: {
 		width: 44,
@@ -74,19 +74,19 @@ const useSideMenuStyles = createStyles((theme) => ({
 			backgroundColor:
 				theme.colorScheme === "dark"
 					? theme.colors.dark[5]
-					: theme.colors.gray[0],
-		},
+					: theme.colors.gray[0]
+		}
 	},
 
 	mainLinkActive: {
 		"&, &:hover": {
 			backgroundColor: theme.fn.variant({
 				variant: "light",
-				color: theme.primaryColor,
+				color: theme.primaryColor
 			}).background,
 			color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-				.color,
-		},
+				.color
+		}
 	},
 
 	title: {
@@ -103,7 +103,7 @@ const useSideMenuStyles = createStyles((theme) => ({
 		height: 60,
 		borderBottom: `1px solid ${
 			theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[3]
-		}`,
+		}`
 	},
 
 	logo: {
@@ -116,13 +116,13 @@ const useSideMenuStyles = createStyles((theme) => ({
 		borderBottom: `1px solid ${
 			theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[3]
 		}`,
-		marginBottom: theme.spacing.xl,
+		marginBottom: theme.spacing.xl
 	},
 	newRoomButton: {
 		width: "calc(100% - 20px)",
 		margin: 10,
 		marginTop: 0,
-		marginBottom: 20,
+		marginBottom: 20
 	},
 	link: {
 		boxSizing: "border-box",
@@ -145,23 +145,23 @@ const useSideMenuStyles = createStyles((theme) => ({
 				theme.colorScheme === "dark"
 					? theme.colors.dark[5]
 					: theme.colors.gray[1],
-			color: theme.colorScheme === "dark" ? theme.white : theme.black,
-		},
+			color: theme.colorScheme === "dark" ? theme.white : theme.black
+		}
 	},
 
 	linkActive: {
 		"&, &:hover": {
 			borderLeftColor: theme.fn.variant({
 				variant: "filled",
-				color: theme.primaryColor,
+				color: theme.primaryColor
 			}).background,
 			backgroundColor: theme.fn.variant({
 				variant: "filled",
-				color: theme.primaryColor,
+				color: theme.primaryColor
 			}).background,
-			color: theme.white,
-		},
-	},
-}));
+			color: theme.white
+		}
+	}
+}))
 
-export default useSideMenuStyles;
+export default useSideMenuStyles

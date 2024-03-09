@@ -1,9 +1,9 @@
-import { Flex, Skeleton } from "@mantine/core";
-import React from "react";
-import useRoomStyles from "../useRoomStyles";
+import { Flex, Skeleton } from "@mantine/core"
+import React from "react"
+import useRoomStyles from "../useRoomStyles"
 
 const LoadingRoomData = (): JSX.Element => {
-	const { classes } = useRoomStyles();
+	const { classes } = useRoomStyles()
 	return (
 		<div className={classes.room_loader}>
 			<Skeleton mt={20} height={50} width="100%" />
@@ -24,7 +24,7 @@ const LoadingRoomData = (): JSX.Element => {
 				<Skeleton height={30} ml={10} width="50%" />
 			</Flex>
 		</div>
-	);
-};
+	)
+}
 
-export default LoadingRoomData;
+export default LoadingRoomData

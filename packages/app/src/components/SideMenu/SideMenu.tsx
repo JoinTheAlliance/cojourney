@@ -6,22 +6,22 @@ import {
 	Text,
 	rem,
 	Box,
-	useMantineTheme,
-} from "@mantine/core";
-import React from "react";
-import { useNavigate } from "react-router";
-import iconImgSrc from "../../../public/icons/account.svg";
-import { getAvatarImage } from "../../helpers/getAvatarImage";
-import useGlobalStore from "../../store/useGlobalStore";
-import UserAvatar from "../UserAvatar";
-import useSideMenuStyles from "./SideMenu.styles";
-import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen";
+	useMantineTheme
+} from "@mantine/core"
+import React from "react"
+import { useNavigate } from "react-router"
+import iconImgSrc from "../../../public/icons/account.svg"
+import { getAvatarImage } from "../../helpers/getAvatarImage"
+import useGlobalStore from "../../store/useGlobalStore"
+import UserAvatar from "../UserAvatar"
+import useSideMenuStyles from "./SideMenu.styles"
+import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen"
 
 const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
-	const { classes } = useSideMenuStyles();
-	const theme = useMantineTheme();
-	const navigate = useNavigate();
-	const { user } = useGlobalStore();
+	const { classes } = useSideMenuStyles()
+	const theme = useMantineTheme()
+	const navigate = useNavigate()
+	const { user } = useGlobalStore()
 
 	return (
 		<Navbar className={classes.container}>
@@ -35,7 +35,7 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 						color={theme.colors.gray[0]}
 						style={{
 							textShadow: "0 0 10px #00000045",
-							lineHeight: "initial",
+							lineHeight: "initial"
 						}}
 					>
 						COJOURNEY
@@ -53,7 +53,7 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 							align={"center"}
 							justify="space-between"
 							style={{
-								borderTop: "0.0625rem solid #2A2A2A",
+								borderTop: "0.0625rem solid #2A2A2A"
 							}}
 						>
 							<Group>
@@ -75,7 +75,7 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 							</Group>
 							<Group
 								style={{
-									textAlign: "center",
+									textAlign: "center"
 								}}
 							>
 								<Button
@@ -86,11 +86,11 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 										alignItems: "center",
 										backgroundColor: "#292929",
 										paddingLeft: rem(20),
-										color: "#757474",
+										color: "#757474"
 									}}
 									onClick={() => {
-										navigate("/profile");
-										closeMenu();
+										navigate("/profile")
+										closeMenu()
 									}}
 								>
 									<Text mr={"md"}>My Account</Text>
@@ -107,7 +107,7 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 				</div>
 			</Navbar.Section>
 		</Navbar>
-	);
-};
+	)
+}
 
-export default SideMenu;
+export default SideMenu

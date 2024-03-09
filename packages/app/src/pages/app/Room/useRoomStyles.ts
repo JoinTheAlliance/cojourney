@@ -1,9 +1,9 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/core"
 
 const useRoomStyles = createStyles((theme) => ({
 	headerContainer: {
 		position: "relative",
-		borderBottom: "0.0625rem solid #2A2A2A",
+		borderBottom: "0.0625rem solid #2A2A2A"
 	},
 	messagesContainer: {
 		display: "flex",
@@ -20,15 +20,15 @@ const useRoomStyles = createStyles((theme) => ({
 		"@media (min-width: 768px)": {
 			paddingLeft: "1.25rem",
 			paddingRight: "1.25rem",
-			paddingTop: "2.5rem",
+			paddingTop: "2.5rem"
 		},
 		"@media (min-width: 1024px)": {
-			maxWidth: "80rem",
-		},
+			maxWidth: "80rem"
+		}
 	},
 	textInputContainer: {
 		padding: "1rem",
-		width: "100%",
+		width: "100%"
 	},
 	desktopSideMenu: {
 		position: "fixed",
@@ -45,15 +45,15 @@ const useRoomStyles = createStyles((theme) => ({
 		height: "100%",
 		padding: 20,
 		"@media (max-width: 1200px)": {
-			display: "none",
-		},
+			display: "none"
+		}
 	},
 	join_room_container: {
 		position: "absolute",
 		zIndex: 100,
 		width: "100%",
 		left: 0,
-		top: 0,
+		top: 0
 	},
 	chatLayout: {
 		boxSizing: "border-box",
@@ -65,7 +65,7 @@ const useRoomStyles = createStyles((theme) => ({
 		maxWidth: "100%",
 		height: "100%",
 		backgroundSize: "cover",
-		backgroundPosition: "center",
+		backgroundPosition: "center"
 	},
 	chatContainer: {
 		display: "flex",
@@ -77,11 +77,11 @@ const useRoomStyles = createStyles((theme) => ({
 		marginLeft: "auto",
 		marginRight: "auto",
 		"@media (min-width: 768px)": {
-			paddingTop: 0,
+			paddingTop: 0
 		},
 		"@media (min-width: 1024px)": {
-			paddingLeft: "380px",
-		},
+			paddingLeft: "380px"
+		}
 	},
 	chat: {
 		display: "flex",
@@ -95,16 +95,16 @@ const useRoomStyles = createStyles((theme) => ({
 
 		"@media (min-width: 1024px)": {
 			paddingLeft: 0,
-			paddingRight: 0,
-		},
+			paddingRight: 0
+		}
 	},
 	room_loader: {
 		marginLeft: "20px",
 		marginRight: "auto",
 		"@media (min-width: 1024px)": {
-			paddingLeft: "380px",
-		},
-	},
-}));
+			paddingLeft: "380px"
+		}
+	}
+}))
 
-export default useRoomStyles;
+export default useRoomStyles

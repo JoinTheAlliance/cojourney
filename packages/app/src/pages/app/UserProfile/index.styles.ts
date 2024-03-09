@@ -1,4 +1,4 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/core"
 
 const useProfileStyles = createStyles(() => ({
 	container: {
@@ -7,13 +7,13 @@ const useProfileStyles = createStyles(() => ({
 		overflow: "auto",
 		width: "100%",
 		height:
-			"calc(100vh - var(--mantine-header-height, 0rem) - var(--mantine-footer-height, 0rem))",
+			"calc(100vh - var(--mantine-header-height, 0rem) - var(--mantine-footer-height, 0rem))"
 	},
 	titleContainer: {
-		flexGrow: 1,
+		flexGrow: 1
 	},
 	content: {
-		height: "100%",
+		height: "100%"
 	},
 	select: {
 		border: "none",
@@ -22,18 +22,18 @@ const useProfileStyles = createStyles(() => ({
 		display: "block",
 		width: "100%",
 		borderRadius: "10px",
-		paddingx: "20px",
+		paddingx: "20px"
 	},
 	input: {
 		padding: "1.5rem",
 		border: "1px solid #232627",
 		borderRadius: "0.8rem",
-		background: "transparent",
+		background: "transparent"
 	},
 	logoutButton: {
 		color: "#f00",
 		cursor: "pointer",
-		textAlign: "center",
+		textAlign: "center"
 	},
 	profile_container: {
 		display: "flex",
@@ -50,13 +50,13 @@ const useProfileStyles = createStyles(() => ({
 		"@media (min-width: 768px)": {
 			paddingLeft: "1.25rem",
 			paddingRight: "1.25rem",
-			paddingTop: "2.5rem",
-		},
+			paddingTop: "2.5rem"
+		}
 	},
 	headerContainer: {
 		position: "relative",
-		borderBottom: "0.0625rem solid #2A2A2A",
-	},
-}));
+		borderBottom: "0.0625rem solid #2A2A2A"
+	}
+}))
 
-export default useProfileStyles;
+export default useProfileStyles

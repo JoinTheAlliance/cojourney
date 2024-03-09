@@ -1,6 +1,6 @@
-import { createStyles } from "@mantine/core";
+import { createStyles } from "@mantine/core"
 
-const useRoomStyles = createStyles((theme) => ({
+const useRoomStyles = createStyles(() => ({
 	layout: {
 		display: "flex",
 		overflowY: "auto",
@@ -11,22 +11,22 @@ const useRoomStyles = createStyles((theme) => ({
 		height: "100%",
 
 		"@media (min-width: 768px)": {
-			paddingTop: 0,
+			paddingTop: 0
 		},
 		"@media (min-width: 1024px)": {
-			paddingLeft: "380px",
-		},
+			paddingLeft: "380px"
+		}
 	},
 	header: {
 		padding: "1rem",
 		display: "flex",
 		alignItems: "center",
-		justifyContent: "center",
+		justifyContent: "center"
 	},
 	headerContainer: {
 		position: "relative",
-		borderBottom: "0.0625rem solid #2A2A2A",
-	},
-}));
+		borderBottom: "0.0625rem solid #2A2A2A"
+	}
+}))
 
-export default useRoomStyles;
+export default useRoomStyles

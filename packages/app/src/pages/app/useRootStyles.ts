@@ -1,5 +1,4 @@
-import { createStyles } from "@mantine/core";
-import { isSmartphone } from "../../helpers/functions";
+import { createStyles } from "@mantine/core"
 
 const useRootStyles = createStyles((theme) => ({
 	container: {
@@ -8,13 +7,13 @@ const useRootStyles = createStyles((theme) => ({
 		display: "flex",
 		flexDirection: "row",
 		"@media (max-width: 900px)": {
-			flexDirection: "column",
-		},
+			flexDirection: "column"
+		}
 	},
 	content: {
 		height: "100%",
 		width: "100%",
-		paddingTop: 0,
+		paddingTop: 0
 	},
 	header: {
 		width: "100vw",
@@ -28,8 +27,8 @@ const useRootStyles = createStyles((theme) => ({
 
 		borderBottom: `1px solid ${
 			theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[3]
-		}`,
-	},
-}));
+		}`
+	}
+}))
 
-export default useRootStyles;
+export default useRootStyles

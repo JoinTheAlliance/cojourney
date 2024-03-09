@@ -48,7 +48,7 @@ export default function Profile () {
 				.update({
 					details: newDetails as Json
 				})
-				.eq("id", user.uid as string)
+				.eq("id", user.uid!)
 
 			setUser({
 				...user,
@@ -71,7 +71,7 @@ export default function Profile () {
 					.update({
 						details: newDetails as Json
 					})
-					.eq("id", user.uid as string)
+					.eq("id", user.uid!)
 
 				setUser({
 					...user,
@@ -263,7 +263,7 @@ export default function Profile () {
 										placeholder="He/Him"
 										value={pronouns}
 										onChange={(value) => {
-											savePronouns(value as string)
+											savePronouns(value!)
 										}}
 										styles={{
 											input: {

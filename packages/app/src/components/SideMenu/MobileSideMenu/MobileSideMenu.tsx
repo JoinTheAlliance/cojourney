@@ -6,26 +6,26 @@ import {
 	Text,
 	rem,
 	Box,
-	useMantineTheme,
-} from "@mantine/core";
-import React from "react";
-import { useNavigate } from "react-router";
-import iconImgSrc from "../../../../public/icons/account.svg";
-import { getAvatarImage } from "../../../helpers/getAvatarImage";
-import useGlobalStore from "../../../store/useGlobalStore";
-import UserAvatar from "../../UserAvatar";
-import useSideMenuStyles from "./MobileSideMenustyles";
-import FriendsSideMenuScreen from "../SideMenuScreens/FriendsSideMenuScreen";
+	useMantineTheme
+} from "@mantine/core"
+import React from "react"
+import { useNavigate } from "react-router"
+import iconImgSrc from "../../../../public/icons/account.svg"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
+import useGlobalStore from "../../../store/useGlobalStore"
+import UserAvatar from "../../UserAvatar"
+import useSideMenuStyles from "./MobileSideMenustyles"
+import FriendsSideMenuScreen from "../SideMenuScreens/FriendsSideMenuScreen"
 
 const MobileSideMenu = ({
-	closeMenu,
+	closeMenu
 }: {
-	closeMenu: () => void;
+	closeMenu: () => void
 }): JSX.Element => {
-	const { classes } = useSideMenuStyles();
-	const theme = useMantineTheme();
-	const navigate = useNavigate();
-	const { user } = useGlobalStore();
+	const { classes } = useSideMenuStyles()
+	const theme = useMantineTheme()
+	const navigate = useNavigate()
+	const { user } = useGlobalStore()
 
 	return (
 		<Navbar className={classes.container}>
@@ -61,7 +61,7 @@ const MobileSideMenu = ({
 							</Group>
 							<Group
 								style={{
-									textAlign: "center",
+									textAlign: "center"
 								}}
 							>
 								<Button
@@ -72,11 +72,11 @@ const MobileSideMenu = ({
 										alignItems: "center",
 										backgroundColor: "#292929",
 										paddingLeft: rem(20),
-										color: "#757474",
+										color: "#757474"
 									}}
 									onClick={() => {
-										navigate("/profile");
-										closeMenu();
+										navigate("/profile")
+										closeMenu()
 									}}
 								>
 									<Text mr={"md"}>My Account</Text>
@@ -94,7 +94,7 @@ const MobileSideMenu = ({
 				</div>
 			</Navbar.Section>
 		</Navbar>
-	);
-};
+	)
+}
 
-export default MobileSideMenu;
+export default MobileSideMenu

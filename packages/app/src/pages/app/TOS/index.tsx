@@ -199,7 +199,7 @@ function Index () {
 	const { classes } = useRootStyles()
 
 	const completeAgreement = async () => {
-		await supabase.from("users").update({ signed_tos: true }).eq("id", session?.user.id as string)
+		await supabase.from("users").update({ signed_tos: true }).eq("id", session?.user.id)
 		// Your completeAgreement function logic
 	}
 
