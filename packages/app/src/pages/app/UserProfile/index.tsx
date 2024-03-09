@@ -21,7 +21,7 @@ import useGlobalStore from "../../../store/useGlobalStore"
 import MainLayout from "../MainLayout.tsx"
 import useRoomStyles from "./index.styles"
 
-export default function Profile () {
+export default function Profile() {
 	const navigate = useNavigate()
 	const isMobile = useMediaQuery("(max-width: 900px)")
 	const supabase = useSupabaseClient<Database>()
@@ -237,7 +237,9 @@ export default function Profile () {
 									<label>Age</label>
 									<select
 										value={age}
-										onChange={async (e) => { await saveAge(parseInt(e.target.value)) }}
+										onChange={async (e) => {
+											await saveAge(parseInt(e.target.value))
+										}}
 										style={{
 											backgroundColor: "#232627",
 											color: "white",
@@ -264,7 +266,7 @@ export default function Profile () {
 										placeholder="He/Him"
 										value={pronouns}
 										onChange={(value) => {
-											savePronouns(value as string)
+											savePronouns(value!)
 										}}
 										styles={{
 											input: {
@@ -292,11 +294,6 @@ export default function Profile () {
 						gap: theme.spacing.xs
 					}}
 				>
-					{isMobile && (
-						<Button fullWidth variant="transparent" size="md" onClick={back}>
-							<Text color={theme.white}>Back</Text>
-						</Button>
-					)}
 					<Button fullWidth variant="transparent" size="md" onClick={signOut}>
 						<Text className={classes.logoutButton}>Logout</Text>
 					</Button>

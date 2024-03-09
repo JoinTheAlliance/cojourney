@@ -4,9 +4,8 @@ import useSideMenuStyles from "./LayoutStyles"
 import iconImgSrc from "../../../../public/icons/arrow_left.svg"
 import { useMediaQuery } from "@mantine/hooks"
 import { useNavigate } from "react-router-dom" // Import the hook
-import MobileSideMenu from "../../../components/SideMenu/MobileSideMenu/MobileSideMenu"
 
-function index({
+function index ({
 	children,
 	title
 }: {
