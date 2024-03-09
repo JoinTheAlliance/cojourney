@@ -10,14 +10,18 @@ import {
 } from "@mantine/core";
 import React from "react";
 import { useNavigate } from "react-router";
-import iconImgSrc from "../../../public/icons/account.svg";
-import { getAvatarImage } from "../../helpers/getAvatarImage";
-import useGlobalStore from "../../store/useGlobalStore";
-import UserAvatar from "../UserAvatar";
-import useSideMenuStyles from "./SideMenu.styles";
-import FriendsSideMenuScreen from "./SideMenuScreens/FriendsSideMenuScreen";
+import iconImgSrc from "../../../../public/icons/account.svg";
+import { getAvatarImage } from "../../../helpers/getAvatarImage";
+import useGlobalStore from "../../../store/useGlobalStore";
+import UserAvatar from "../../UserAvatar";
+import useSideMenuStyles from "./MobileSideMenustyles";
+import FriendsSideMenuScreen from "../SideMenuScreens/FriendsSideMenuScreen";
 
-const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
+const MobileSideMenu = ({
+	closeMenu,
+}: {
+	closeMenu: () => void;
+}): JSX.Element => {
 	const { classes } = useSideMenuStyles();
 	const theme = useMantineTheme();
 	const navigate = useNavigate();
@@ -27,22 +31,7 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 		<Navbar className={classes.container}>
 			<Navbar.Section className={classes.wrapper} grow>
 				<div className={classes.main}>
-					<Text
-						p={"lg"}
-						size={"xl"}
-						weight={700}
-						mb={6}
-						color={theme.colors.gray[0]}
-						style={{
-							textShadow: "0 0 10px #00000045",
-							lineHeight: "initial",
-						}}
-					>
-						COJOURNEY
-					</Text>
-
 					<Flex direction={"column"} justify={"space-between"}>
-						<FriendsSideMenuScreen />
 						<Flex
 							pos={"absolute"}
 							bottom={"0"}
@@ -52,9 +41,6 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 							gap={"xl"}
 							align={"center"}
 							justify="space-between"
-							style={{
-								borderTop: "0.0625rem solid #2A2A2A",
-							}}
 						>
 							<Group>
 								<UserAvatar
@@ -103,6 +89,7 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 								</Button>
 							</Group>
 						</Flex>
+						<FriendsSideMenuScreen />
 					</Flex>
 				</div>
 			</Navbar.Section>
@@ -110,4 +97,4 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 	);
 };
 
-export default SideMenu;
+export default MobileSideMenu;
