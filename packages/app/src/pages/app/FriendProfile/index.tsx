@@ -55,14 +55,23 @@ export default function Profile (): JSX.Element {
     const { error: msgsError } = await supabase.from("messages").delete().eq("user_ids", userIdsArray)
     if (msgsError) console.error(msgsError)
 
+	const { error: memoriesError } = await supabase.from("memories").delete().eq("user_ids", userIdsArray)
+	if (memoriesError) console.error(memoriesError)
+
     const { error: descriptionsError } = await supabase.from("descriptions").delete().eq("user_ids", userIdsArray)
     if (descriptionsError) console.error(descriptionsError)
+
+	const { error: memoriesError2 } = await supabase.from("memories").delete().eq("user_id", userId)
+	if (memoriesError2) console.error(memoriesError2)
 
     const { error: factsError } = await supabase.from("facts").delete().eq("user_ids", userIdsArray)
     if (factsError) console.error(factsError)
 
     const { error: goalsError } = await supabase.from("goals").delete().eq("user_ids", userIdsArray)
-    if (goalsError) console.error(goalsError)
+	if (goalsError) console.error(goalsError)
+	// delete all goals where user_id is the current user
+	const { error: goalsError2 } = await supabase.from("goals").delete().eq("user_id", userId)
+	if (goalsError2) console.error(goalsError2)
 
 	const serverUrl = import.meta?.env?.REACT_APP_SERVER_URL || import.meta?.env?.VITE_SERVER_URL || "https://cojourney.shawmakesmagic.workers.dev/"
 
