@@ -141,7 +141,7 @@ async function handleMessage (
   }
 
   await _saveResponseMessage(message, state, responseContent)
-  runtime.processActions(message, responseContent, state)
+  await runtime.processActions(message, responseContent, state)
 
   return responseContent
 }
