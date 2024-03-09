@@ -20,6 +20,8 @@ import {
 import { type UUID } from 'crypto'
 import actions from './actions'
 import evaluators from './evaluators'
+import time from './providers/time'
+import directions from './providers/directions'
 
 /**
  * Handle an incoming message, processing it and returning a response.
@@ -249,7 +251,8 @@ const routes: Route[] = [
         ),
         token: env.OPENAI_API_KEY,
         actions: [...actions, ...defaultActions],
-        evaluators: [...evaluators, ...defaultEvaluators]
+        evaluators: [...evaluators, ...defaultEvaluators],
+        providers: [time, directions]
       })
 
       if (!(message as Message).agentId) {
@@ -321,7 +324,8 @@ const routes: Route[] = [
         ),
         token: env.OPENAI_API_KEY,
         actions: [...actions, ...defaultActions],
-        evaluators: [...evaluators, ...defaultEvaluators]
+        evaluators: [...evaluators, ...defaultEvaluators],
+        providers: [time, directions]
       })
 
       const zeroUuid = '00000000-0000-0000-0000-000000000000' as UUID
