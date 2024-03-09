@@ -64,9 +64,9 @@ export default function Profile (): JSX.Element {
     const { error: goalsError } = await supabase.from("goals").delete().eq("user_ids", userIdsArray)
     if (goalsError) console.error(goalsError)
 
-	const serverUrl = import.meta?.env?.REACT_APP_SERVER_URL || import.meta?.env?.VITE_SERVER_URL || "https://cojourney.shawmakesmagic.workers.dev/api/agents/newuser"
+	const serverUrl = import.meta?.env?.REACT_APP_SERVER_URL || import.meta?.env?.VITE_SERVER_URL || "https://cojourney.shawmakesmagic.workers.dev/"
 
-	await fetch(serverUrl as string, {
+	await fetch((serverUrl + "api/agents/newuser") as string, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
