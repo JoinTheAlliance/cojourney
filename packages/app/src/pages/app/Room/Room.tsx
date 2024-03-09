@@ -6,7 +6,7 @@ import useListenToMessagesChanges from "../../../Hooks/rooms/useListenToMessages
 import useLoadUnreadMessages from "../../../Hooks/rooms/useLoadUnreadMessages"
 import useTypingStatus from "../../../Hooks/rooms/useTypingStatus"
 import useGlobalStore, {
-	type IDatabaseMessage
+	type IDatabaseMessage,
 } from "../../../store/useGlobalStore"
 import Messages from "./Messages/Messages"
 import MessagesTextInput from "./MessagesTextInput/MessagesTextInput"
@@ -23,7 +23,7 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 	const supabase = useSupabaseClient<Database>()
 	const { classes } = useRoomStyles()
 	const {
-		currentRoom: { roomData, isRoomMember }
+		currentRoom: { roomData, isRoomMember },
 	} = useGlobalStore()
 
 	const { getRoomMessages } = useGetRoomMessages()
@@ -49,8 +49,8 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 	const { currentRoom } = useGlobalStore()
 
 	const friend = currentRoom
-	// @ts-expect-error
-		? currentRoom?.roomData?.relationships[0]?.userData2
+		? // @ts-expect-error
+		  currentRoom?.roomData?.relationships[0]?.userData2
 		: null
 
 	return (
@@ -61,7 +61,7 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 				backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${
 					friend?.avatar_url ||
 					getAvatarImage((friend?.name ?? friend?.email ?? "") as string)
-				})`
+				})`,
 			}}
 		>
 			<div className={classes.chatContainer}>
