@@ -1,8 +1,9 @@
 import { Button, Container, Group, Text, useMantineTheme } from "@mantine/core"
 import { showNotification } from "@mantine/notifications"
-import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
 import React from "react"
 import { useNavigate } from "react-router-dom"
+import { type JSX } from "react/jsx-runtime"
 import { type Database } from "../../../../types/database.types"
 import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests"
 import UserAvatar from "../../../components/UserAvatar"
@@ -10,7 +11,6 @@ import { getAvatarImage } from "../../../helpers/getAvatarImage"
 import useGlobalStore from "../../../store/useGlobalStore"
 import MainLayout from "../MainLayout.tsx"
 import useRoomStyles from "../Room/useRoomStyles"
-import { type JSX } from "react/jsx-runtime"
 
 export default function Profile (): JSX.Element {
   const navigate = useNavigate()
@@ -18,6 +18,7 @@ export default function Profile (): JSX.Element {
   const supabase = useSupabaseClient<Database>()
   const { classes: roomClasses } = useRoomStyles()
   const { user } = useGlobalStore()
+  const session = useSession()
 
 	const {
 		currentRoom: {
@@ -62,6 +63,20 @@ export default function Profile (): JSX.Element {
 
     const { error: goalsError } = await supabase.from("goals").delete().eq("user_ids", userIdsArray)
     if (goalsError) console.error(goalsError)
+
+	const serverUrl = import.meta?.env?.REACT_APP_SERVER_URL || import.meta?.env?.VITE_SERVER_URL || "https://cojourney.shawmakesmagic.workers.dev/api/agents/newuser"
+
+	await fetch(serverUrl as string, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: "Bearer " + session?.access_token
+		},
+		body: JSON.stringify({
+		user_id: userId,
+		token: session?.access_token
+		})
+	})
 
     showNotification({
       title: "Memories reset",

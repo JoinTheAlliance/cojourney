@@ -343,11 +343,15 @@ const routes: Route[] = [
 
       const accountData = await runtime.databaseAdapter.getAccountById(message.user_id)
 
+      console.log('accountData', accountData)
+
       if (!accountData) {
         return new Response('Account not found', { status: 404 })
       }
 
-      const userName = accountData[0].name || 'the user'
+      const userName = accountData.name || 'the user'
+
+      console.log('userName', userName)
 
       const newGoal: Goal = {
         name: 'First Time User Introduction (HIGH PRIORITY)',
@@ -401,6 +405,8 @@ const routes: Route[] = [
         content: newMessage.content,
         room_id
       })
+
+      console.log('handling message', newMessage)
 
       event.waitUntil(handleMessage(runtime, newMessage))
 
