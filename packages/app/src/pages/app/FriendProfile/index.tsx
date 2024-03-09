@@ -1,52 +1,78 @@
-import { Button, Container, Group, Text, useMantineTheme } from "@mantine/core";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { type Database } from "../../../../types/database.types";
-import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests";
-import UserAvatar from "../../../components/UserAvatar";
-import { getAvatarImage } from "../../../helpers/getAvatarImage";
-import useGlobalStore from "../../../store/useGlobalStore";
-import useRoomStyles from "../Room/useRoomStyles";
-import MainLayout from "../MainLayout.tsx";
+import { Button, Container, Group, Text, useMantineTheme } from "@mantine/core"
+import { showNotification } from "@mantine/notifications"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import React from "react"
+import { useNavigate } from "react-router-dom"
+import { type Database } from "../../../../types/database.types"
+import useHandleFriendsRequests from "../../../Hooks/relationships/useHandleFriendRequests"
+import UserAvatar from "../../../components/UserAvatar"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
+import useGlobalStore from "../../../store/useGlobalStore"
+import MainLayout from "../MainLayout.tsx"
+import useRoomStyles from "../Room/useRoomStyles"
+import { type JSX } from "react/jsx-runtime"
 
-export default function Profile() {
-	const navigate = useNavigate();
-	// const isMobile = useMediaQuery("(max-width: 900px)")
-	const supabase = useSupabaseClient<Database>();
-	const { classes: roomClasses } = useRoomStyles();
+export default function Profile (): JSX.Element {
+  const navigate = useNavigate()
+  // const isMobile = useMediaQuery("(max-width: 900px)")
+  const supabase = useSupabaseClient<Database>()
+  const { classes: roomClasses } = useRoomStyles()
+  const { user } = useGlobalStore()
 
 	const {
 		currentRoom: {
 			roomData: {
 				// @ts-expect-error
-				relationships: [friendship],
-			},
+				relationships: [friendship]
+			}
 		},
 		currentRoom: {
 			roomData: {
 				// @ts-expect-error
-				relationships: [{ userData2: friend }],
-			},
-		},
-	} = useGlobalStore();
+				relationships: [{ userData2: friend }]
+			}
+		}
+	} = useGlobalStore()
 
-	const { handleDeleteFriendship } = useHandleFriendsRequests();
+	const { handleDeleteFriendship } = useHandleFriendsRequests()
 
 	const unfriend = () => {
-		handleDeleteFriendship({ friendship });
-	};
+		handleDeleteFriendship({ friendship })
+	}
 
 	const logout = () => {
-		supabase.auth.signOut();
-		navigate("/login");
-	};
+		supabase.auth.signOut()
+		navigate("/login")
+	}
 
-	const theme = useMantineTheme();
+  const theme = useMantineTheme()
+  const resetMemories = async () => {
+    const userId = user.uid
+    const agentId = friend.id
+    const userIdsArray = `{${userId},${agentId}}`
+
+    const { error: msgsError } = await supabase.from("messages").delete().eq("user_ids", userIdsArray)
+    if (msgsError) console.error(msgsError)
+
+    const { error: descriptionsError } = await supabase.from("descriptions").delete().eq("user_ids", userIdsArray)
+    if (descriptionsError) console.error(descriptionsError)
+
+    const { error: factsError } = await supabase.from("facts").delete().eq("user_ids", userIdsArray)
+    if (factsError) console.error(factsError)
+
+    const { error: goalsError } = await supabase.from("goals").delete().eq("user_ids", userIdsArray)
+    if (goalsError) console.error(goalsError)
+
+    showNotification({
+      title: "Memories reset",
+      message: "Memories have been reset successfully",
+      color: "green"
+    })
+  }
 
 	return (
 		<MainLayout title={friend.name}>
-			<div className={roomClasses.messagesContainer}>
+      <div className={roomClasses.messagesContainer}>
 				<Container maw={"100%"} p={"xxl"} style={{}}>
 					<UserAvatar
 						src={
@@ -69,7 +95,7 @@ export default function Profile() {
 								italic={false}
 								style={{
 									marginLeft: "auto",
-									marginRight: "auto",
+									marginRight: "auto"
 								}}
 							>
 								Cojourney Guide
@@ -103,12 +129,12 @@ export default function Profile() {
 						</Group>
 					</>
 				</Container>
-				{!friend?.is_agent && (
+				{!friend?.is_agent ? (
 					<Group
 						mb={"lg"}
 						mt={"4xl"}
 						style={{
-							gap: theme.spacing.xs,
+							gap: theme.spacing.xs
 						}}
 					>
 						<Button
@@ -123,8 +149,25 @@ export default function Profile() {
 							<Text color={theme.colors.red[8]}>Block</Text>
 						</Button>
 					</Group>
-				)}
+				) : (
+          <Group
+            mb={"lg"}
+            mt={"4xl"}
+            style={{
+              gap: theme.spacing.xs
+            }}
+          >
+            <Button
+              fullWidth
+              variant="transparent"
+              size="md"
+              onClick={resetMemories}
+            >
+              <Text color={theme.colors.red[8]}>Reset Memories</Text>
+            </Button>
+          </Group>
+        )}
 			</div>
 		</MainLayout>
-	);
+	)
 }
