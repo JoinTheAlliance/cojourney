@@ -1,23 +1,23 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import jwt from '@tsndr/cloudflare-worker-jwt'
-import { type UUID } from 'crypto'
 import {
+  BgentRuntime,
+  GoalStatus,
+  SupabaseDatabaseAdapter,
   composeContext,
+  createGoal,
   defaultActions,
   defaultEvaluators,
   embeddingZeroVector,
-  BgentRuntime,
+  getRelationship,
+  messageHandlerTemplate,
+  parseJSONObjectFromText,
   type Content,
+  type Goal,
   type Memory,
   type Message,
-  type State,
-  parseJSONObjectFromText,
-  messageHandlerTemplate,
-  getRelationship,
-  type Goal,
-  GoalStatus,
-  createGoal
+  type State
 } from 'bgent'
+import { type UUID } from 'crypto'
 import actions from './actions'
 import evaluators from './evaluators'
 
@@ -34,7 +34,7 @@ async function handleMessage (
 ) {
   console.log('**** handling message')
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent, /* senderId, userIds, room_id */ } = message
+    const { content: senderContent /* senderId, userIds, room_id */ } = message
 
     // we run evaluation here since some evals could be modulo based, and we should run on every message
     if ((senderContent as Content).content) {
@@ -84,20 +84,13 @@ async function handleMessage (
       stop: []
     })
 
-    runtime.supabase
-      .from('logs')
-      .insert({
+    runtime.databaseAdapter.log({
         body: { message, context, response },
         user_id: senderId,
         room_id,
         user_ids: user_ids!,
         agent_id: agentId!,
         type: 'main_completion'
-      })
-      .then(({ error }) => {
-        if (error) {
-          console.error('error', error)
-        }
       })
 
     const parsedResponse = parseJSONObjectFromText(
@@ -148,7 +141,7 @@ async function handleMessage (
   }
 
   await _saveResponseMessage(message, state, responseContent)
-  await runtime.processActions(message, responseContent)
+  runtime.processActions(message, responseContent, state)
 
   return responseContent
 }
@@ -186,7 +179,6 @@ interface HandlerArgs {
   }
   match?: RegExpMatchArray
   userId: UUID
-  supabase: SupabaseClient
 }
 
 class Route {
@@ -213,16 +205,6 @@ const routes: Route[] = [
       if (req.method === 'OPTIONS') {
         return
       }
-
-      const supabase = createClient(
-        env.SUPABASE_URL,
-        env.SUPABASE_SERVICE_API_KEY,
-        {
-          auth: {
-            persistSession: false
-          }
-        }
-      )
 
       let token = req.headers.get('Authorization')?.replace('Bearer ', '')
       const message = await req.json()
@@ -261,7 +243,10 @@ const routes: Route[] = [
       const runtime = new BgentRuntime({
         debugMode: env.NODE_ENV === 'development',
         serverUrl: 'https://api.openai.com/v1',
-        supabase,
+        databaseAdapter: new SupabaseDatabaseAdapter(
+          env.SUPABASE_URL,
+          env.SUPABASE_SERVICE_API_KEY
+        ),
         token: env.OPENAI_API_KEY,
         actions: [...actions, ...defaultActions],
         evaluators: [...evaluators, ...defaultEvaluators]
@@ -301,16 +286,6 @@ const routes: Route[] = [
         return
       }
 
-      const supabase = createClient(
-        env.SUPABASE_URL,
-        env.SUPABASE_SERVICE_API_KEY,
-        {
-          auth: {
-            persistSession: false
-          }
-        }
-      )
-
       let token = req.headers.get('Authorization')?.replace('Bearer ', '')
       const message = await req.json() as { user_id: UUID, token: string }
 
@@ -340,7 +315,10 @@ const routes: Route[] = [
       const runtime = new BgentRuntime({
         debugMode: env.NODE_ENV === 'development',
         serverUrl: 'https://api.openai.com/v1',
-        supabase,
+        databaseAdapter: new SupabaseDatabaseAdapter(
+          env.SUPABASE_URL,
+          env.SUPABASE_SERVICE_API_KEY
+        ),
         token: env.OPENAI_API_KEY,
         actions: [...actions, ...defaultActions],
         evaluators: [...evaluators, ...defaultEvaluators]
@@ -363,13 +341,9 @@ const routes: Route[] = [
 
       const room_id = data?.room_id
 
-      const { data: accountData, error: accountError } = await supabase.from('accounts').select('*').eq('id', message.user_id)
+      const accountData = await runtime.databaseAdapter.getAccountById(message.user_id)
 
-      if (accountError) {
-        return new Response(accountError.message, { status: 500 })
-      }
-
-      if (!accountData || accountData.length === 0) {
+      if (!accountData) {
         return new Response('Account not found', { status: 404 })
       }
 
@@ -421,9 +395,9 @@ const routes: Route[] = [
         goal: newGoal
       })
 
-      await supabase.from('messages').insert({
-        user_id: message.user_id,
+      await runtime.messageManager.createMemory({
         user_ids: [message.user_id, zeroUuid],
+        user_id: message.user_id,
         content: newMessage.content,
         room_id
       })

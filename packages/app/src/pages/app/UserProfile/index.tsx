@@ -218,7 +218,7 @@ export default function Profile () {
 							</Grid.Col>
 							<Grid.Col span={6}>
 								<Paper bg={"transparent"} style={{ color: "white" }}>
-									<label>City </label>
+									<label>State</label>
 									<RegionDropdown
 										country={country}
 										value={region}
@@ -234,7 +234,7 @@ export default function Profile () {
 						<Grid gutter={"xs"}>
 							<Grid.Col span={6}>
 								<Paper bg={"transparent"} style={{ color: "white" }}>
-									<label>Age </label>
+									<label>Age</label>
 									<select
 										value={age}
 										onChange={async (e) => { await saveAge(parseInt(e.target.value)) }}
@@ -245,7 +245,8 @@ export default function Profile () {
 											border: "none",
 											borderRadius: "10px",
 											marginRight: "1rem",
-											width: "100%"
+											width: "100%",
+											WebkitAppearance: "none"
 										}}
 									>
 										{[...Array(83)].map((_, index) => (
@@ -263,7 +264,7 @@ export default function Profile () {
 										placeholder="He/Him"
 										value={pronouns}
 										onChange={(value) => {
-											savePronouns(value!)
+											savePronouns(value as string)
 										}}
 										styles={{
 											input: {

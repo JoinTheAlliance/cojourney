@@ -18,11 +18,12 @@ const useProfileStyles = createStyles(() => ({
 	select: {
 		border: "none",
 		backgroundColor: "#232627",
-		padding: "1.5rem 1rem",
+		padding: "1em 1em",
 		display: "block",
 		width: "100%",
 		borderRadius: "10px",
-		paddingx: "20px"
+		// hide the arrow
+		WebkitAppearance: "none"
 	},
 	input: {
 		padding: "1.5rem",
