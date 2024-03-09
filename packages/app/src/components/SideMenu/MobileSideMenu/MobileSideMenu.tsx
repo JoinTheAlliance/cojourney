@@ -35,11 +35,11 @@ const MobileSideMenu = (): JSX.Element => {
 				alt="Icon"
 				width={"20px"}
 				height={"20px"}
+				style={{ cursor: "pointer" }}
 				onClick={() => {
 					setApp({ isMobileMenuOpen: !app.isMobileMenuOpen })
 				}}
 			/>
-			{/* <Burger opened={app.isMobileMenuOpen} /> */}
 			<Drawer
 				onClose={() => {
 					setApp({ isMobileMenuOpen: false })
@@ -51,12 +51,10 @@ const MobileSideMenu = (): JSX.Element => {
 				zIndex={1000}
 				styles={{
 					header: {
-						// marginTop: isSmartphone ? "4rem" : "",
 						backgroundColor: "transparent"
 					},
 					body: {
 						padding: "0 !important"
-						// height: "100%"
 					},
 					content: {
 						backgroundColor: "#141414"

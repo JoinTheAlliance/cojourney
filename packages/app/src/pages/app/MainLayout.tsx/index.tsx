@@ -3,7 +3,7 @@ import { Flex, Text, useMantineTheme } from "@mantine/core"
 import useSideMenuStyles from "./LayoutStyles"
 import iconImgSrc from "../../../../public/icons/arrow_left.svg"
 import { useMediaQuery } from "@mantine/hooks"
-import { useNavigate, useOutletContext } from "react-router-dom" // Import the hook
+import { useNavigate } from "react-router-dom" // Import the hook
 import MobileSideMenu from "../../../components/SideMenu/MobileSideMenu/MobileSideMenu"
 
 function index({
@@ -31,7 +31,13 @@ function index({
 							nav(-1)
 						}}
 					>
-						<img src={iconImgSrc} alt="Icon" width={"20px"} height={"20px"} />
+						<img
+							src={iconImgSrc}
+							alt="Icon"
+							width={"20px"}
+							height={"20px"}
+							style={{ cursor: "pointer" }}
+						/>
 					</div>
 				)}
 				<div className={classes.header}>
@@ -39,11 +45,7 @@ function index({
 						{title}
 					</Text>
 				</div>
-				{isMobile && (
-					<>
-						<MobileSideMenu />
-					</>
-				)}
+				<div></div>
 			</Flex>
 			<div>{children}</div>
 		</div>
