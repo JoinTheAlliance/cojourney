@@ -1,57 +1,57 @@
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import React, { useEffect, useState } from "react";
-import { type Database } from "../../../../types/database.types";
-import useGetRoomMessages from "../../../Hooks/rooms/useGetRoomMessages";
-import useListenToMessagesChanges from "../../../Hooks/rooms/useListenToMessagesChanges";
-import useLoadUnreadMessages from "../../../Hooks/rooms/useLoadUnreadMessages";
-import useTypingStatus from "../../../Hooks/rooms/useTypingStatus";
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useEffect, useState } from "react"
+import { type Database } from "../../../../types/database.types"
+import useGetRoomMessages from "../../../Hooks/rooms/useGetRoomMessages"
+import useListenToMessagesChanges from "../../../Hooks/rooms/useListenToMessagesChanges"
+import useLoadUnreadMessages from "../../../Hooks/rooms/useLoadUnreadMessages"
+import useTypingStatus from "../../../Hooks/rooms/useTypingStatus"
 import useGlobalStore, {
-	type IDatabaseMessage,
-} from "../../../store/useGlobalStore";
-import Messages from "./Messages/Messages";
-import MessagesTextInput from "./MessagesTextInput/MessagesTextInput";
-import RoomHeader from "./RoomHeader/RoomHeader";
-import useRoomStyles from "./useRoomStyles";
-import { getAvatarImage } from "../../../helpers/getAvatarImage";
+	type IDatabaseMessage
+} from "../../../store/useGlobalStore"
+import Messages from "./Messages/Messages"
+import MessagesTextInput from "./MessagesTextInput/MessagesTextInput"
+import RoomHeader from "./RoomHeader/RoomHeader"
+import useRoomStyles from "./useRoomStyles"
+import { getAvatarImage } from "../../../helpers/getAvatarImage"
 
 interface Props {
-	getRoomData: () => Promise<void>;
-	roomId: string;
+	getRoomData: () => Promise<void>
+	roomId: string
 }
 
 const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
-	const supabase = useSupabaseClient<Database>();
-	const { classes } = useRoomStyles();
+	const supabase = useSupabaseClient<Database>()
+	const { classes } = useRoomStyles()
 	const {
-		currentRoom: { roomData, isRoomMember },
-	} = useGlobalStore();
+		currentRoom: { roomData, isRoomMember }
+	} = useGlobalStore()
 
-	const { getRoomMessages } = useGetRoomMessages();
-	const { getUnreadMessages } = useLoadUnreadMessages();
+	const { getRoomMessages } = useGetRoomMessages()
+	const { getUnreadMessages } = useLoadUnreadMessages()
 
-	const roomChannel = supabase.channel(roomId);
+	const roomChannel = supabase.channel(roomId)
 
-	useListenToMessagesChanges({ getRoomData });
-	useTypingStatus({ roomChannel });
+	useListenToMessagesChanges({ getRoomData })
+	useTypingStatus({ roomChannel })
 
 	useEffect(() => {
-		if (!roomData?.id) return;
+		if (!roomData?.id) return
 
 		const fetchData = async () => {
-			getRoomMessages({ roomId: roomData.id });
-			await getUnreadMessages();
-		};
+			getRoomMessages({ roomId: roomData.id })
+			await getUnreadMessages()
+		}
 
-		fetchData();
-	}, [roomData]);
+		fetchData()
+	}, [roomData])
 
-	const [userMessage, setUserMessage] = useState("" as unknown);
-	const { currentRoom } = useGlobalStore();
+	const [userMessage, setUserMessage] = useState("" as unknown)
+	const { currentRoom } = useGlobalStore()
 
-	// @ts-expect-error
 	const friend = currentRoom
+	// @ts-expect-error
 		? currentRoom?.roomData?.relationships[0]?.userData2
-		: null;
+		: null
 
 	return (
 		<div
@@ -60,8 +60,8 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(${
 					friend?.avatar_url ||
-					getAvatarImage(friend?.name || friend?.email || "")
-				})`,
+					getAvatarImage((friend?.name ?? friend?.email) as string)
+				})`
 			}}
 		>
 			<div className={classes.chatContainer}>
@@ -77,7 +77,7 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 							<MessagesTextInput
 								roomChannel={roomChannel}
 								onMessageSent={(message) => {
-									setUserMessage(message);
+									setUserMessage(message)
 								}}
 							/>
 						</div>
@@ -85,7 +85,7 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 				</div>
 			</div>
 		</div>
-	);
-};
+	)
+}
 
-export default Room;
+export default Room

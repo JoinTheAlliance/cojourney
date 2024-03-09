@@ -1,119 +1,115 @@
-import React, { useState } from "react";
-
 import {
 	Button,
 	Container,
 	Flex,
 	Grid,
 	Group,
-	Input,
 	Paper,
 	Select,
 	Text,
-	useMantineTheme,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
-import { useNavigate } from "react-router-dom";
-import { type Database } from "../../../../types/database.types";
-import UserAvatar from "../../../components/UserAvatar";
-import useGlobalStore from "../../../store/useGlobalStore";
-import useRoomStyles from "./index.styles";
-import MainLayout from "../MainLayout.tsx";
+	useMantineTheme
+} from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import { showNotification } from "@mantine/notifications"
+import { useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useState } from "react"
+import { CountryDropdown, RegionDropdown } from "react-country-region-selector"
+import { useNavigate } from "react-router-dom"
+import { type Database, type Json } from "../../../../types/database.types"
+import UserAvatar from "../../../components/UserAvatar"
+import useGlobalStore from "../../../store/useGlobalStore"
+import MainLayout from "../MainLayout.tsx"
+import useRoomStyles from "./index.styles"
 
-export default function Profile() {
-	const navigate = useNavigate();
-	const isMobile = useMediaQuery("(max-width: 900px)");
-	const supabase = useSupabaseClient<Database>();
-	const { classes } = useRoomStyles();
-	const theme = useMantineTheme();
-	const [uploading, setUploading] = useState<boolean>(false);
-	const { user, setUser, clearState } = useGlobalStore();
-	const [location, setLocation] = useState("");
-	const [country, setCountry] = useState("Canada");
-	const [region, setRegion] = useState("Ontario");
-	const [age, setAge] = useState(26);
-	const [pronouns, setPronouns] = useState("He/Him");
+export default function Profile () {
+	const navigate = useNavigate()
+	const isMobile = useMediaQuery("(max-width: 900px)")
+	const supabase = useSupabaseClient<Database>()
+	const { classes } = useRoomStyles()
+	const theme = useMantineTheme()
+	const [uploading, setUploading] = useState<boolean>(false)
+	const { user, setUser, clearState } = useGlobalStore()
+	const [location, setLocation] = useState("")
+	const [country, setCountry] = useState("Canada")
+	const [region, setRegion] = useState("Ontario")
+	const [age, setAge] = useState(26)
+	const [pronouns, setPronouns] = useState("He/Him")
 
 	const saveAge = async (newAge: number) => {
-		const oldAge = age;
-		setAge(newAge);
+		const oldAge = age
+		setAge(newAge)
 
-		if (oldAge != newAge) {
-			user.avatar_url;
-			const newDetails = user.details ? { ...user.details } : {};
-			newDetails.age = newAge;
+		if (oldAge !== newAge) {
+			const newDetails = user.details ? { ...user.details } : {}
+			newDetails.age = newAge
 
 			await supabase
 				.from("accounts")
 				.update({
-					details: newDetails,
+					details: newDetails as Json
 				})
-				.eq("id", user.uid);
+				.eq("id", user.uid as string)
 
 			setUser({
 				...user,
-				details: newDetails,
-			});
+				details: newDetails
+			})
 		}
-	};
+	}
 
 	const savePronouns = async (newPronouns: string) => {
-		const oldPronouns = pronouns;
-		setPronouns(newPronouns);
+		const oldPronouns = pronouns
+		setPronouns(newPronouns)
 
-		if (oldPronouns != newPronouns) {
-			if (oldPronouns != newPronouns) {
-				user.avatar_url;
-				const newDetails = user.details ? { ...user.details } : {};
-				newDetails.pronouns = newPronouns;
+		if (oldPronouns !== newPronouns) {
+			if (oldPronouns !== newPronouns) {
+				const newDetails = user.details ? { ...(user.details ?? {}) } : {}
+				newDetails.pronouns = newPronouns
 
 				await supabase
 					.from("accounts")
 					.update({
-						details: newDetails,
+						details: newDetails as Json
 					})
-					.eq("id", user.uid);
+					.eq("id", user.uid as string)
 
 				setUser({
 					...user,
-					details: newDetails,
-				});
+					details: newDetails
+				})
 			}
 		}
-	};
+	}
 
 	const saveLocation = async (newLocation: string) => {
-		const oldLocation = location;
-		setLocation(newLocation);
+		const oldLocation = location
+		setLocation(newLocation)
 
 		if (oldLocation !== newLocation) {
 			await supabase
 				.from("accounts")
 				.update({
-					location: newLocation,
+					location: newLocation
 				})
-				.eq("id", user.uid!);
+				.eq("id", user.uid!)
 
 			setUser({
 				...user,
-				location: newLocation,
-			});
+				location: newLocation
+			})
 		}
-	};
+	}
 
 	const signOut = async () => {
-		await supabase.auth.signOut();
-		clearState();
-		navigate("/");
-	};
+		await supabase.auth.signOut()
+		clearState()
+		navigate("/")
+	}
 
 	const uploadImage = async (imgFile: File): Promise<void> => {
-		if (!user.uid) return;
-		setUploading(true);
-		const targetImage = imgFile;
+		if (!user.uid) return
+		setUploading(true)
+		const targetImage = imgFile
 
 		const { data: imageUploadData, error: imageUploadError } =
 			await supabase.storage
@@ -123,64 +119,64 @@ export default function Profile() {
 					targetImage,
 					{
 						cacheControl: "0",
-						upsert: true,
+						upsert: true
 					}
-				);
+				)
 
 		if (imageUploadError) {
-			setUploading(false);
+			setUploading(false)
 			showNotification({
 				title: "Error",
-				message: "Unexpected error",
-			});
-			return;
+				message: "Unexpected error"
+			})
+			return
 		}
 
-		const existingImage = user.avatar_url?.split("profile-images/")[1];
+		const existingImage = user.avatar_url?.split("profile-images/")[1]
 		if (existingImage) {
-			supabase.storage.from("profile-images").remove([existingImage]);
+			supabase.storage.from("profile-images").remove([existingImage])
 		}
 
 		const { data: imageUrlData } = supabase.storage
 			.from("profile-images")
-			.getPublicUrl(imageUploadData.path);
+			.getPublicUrl(imageUploadData.path)
 
-		const IMAGE_URL = imageUrlData.publicUrl;
+		const IMAGE_URL = imageUrlData.publicUrl
 
 		await supabase
 			.from("accounts")
 			.update({
-				avatar_url: IMAGE_URL,
+				avatar_url: IMAGE_URL
 			})
-			.eq("id", user.uid);
+			.eq("id", user.uid)
 
 		setUser({
 			...user,
-			avatar_url: IMAGE_URL,
-		});
-		setUploading(false);
-	};
+			avatar_url: IMAGE_URL
+		})
+		setUploading(false)
+	}
 
 	const back = () => {
-		navigate("/");
-	};
+		navigate("/")
+	}
 
 	const openImagePicker = () => {
 		if (uploading) {
-			return;
+			return
 		}
 
-		const input = document.createElement("input");
-		input.type = "file";
-		input.accept = "image/*";
+		const input = document.createElement("input")
+		input.type = "file"
+		input.accept = "image/*"
 		input.onchange = (e) => {
-			const files = (e.target as HTMLInputElement).files;
+			const files = (e.target as HTMLInputElement).files
 			if (files) {
-				uploadImage(files[0]);
+				uploadImage(files[0])
 			}
-		};
-		input.click();
-	};
+		}
+		input.click()
+	}
 
 	return (
 		<MainLayout title={"My Account"}>
@@ -188,7 +184,7 @@ export default function Profile() {
 				className={classes.profile_container}
 				style={{
 					alignItems: "center",
-					display: "flex",
+					display: "flex"
 				}}
 			>
 				{/* <Paper shadow="xs" radius="lg" p="xl" w={"100%"} mx={"0"}> */}
@@ -214,8 +210,8 @@ export default function Profile() {
 								<CountryDropdown
 									value={country}
 									onChange={(val) => {
-										setCountry(val);
-										saveLocation(`${val}, ${region}`);
+										setCountry(val)
+										saveLocation(`${val}, ${region}`)
 									}}
 									classes={classes.select}
 								/>
@@ -227,8 +223,8 @@ export default function Profile() {
 										country={country}
 										value={region}
 										onChange={(val) => {
-											setRegion(val);
-											saveLocation(`${country}, ${val}`);
+											setRegion(val)
+											saveLocation(`${country}, ${val}`)
 										}}
 										classes={classes.select}
 									/>
@@ -241,7 +237,7 @@ export default function Profile() {
 									<label>Age </label>
 									<select
 										value={age}
-										onChange={(e) => saveAge(parseInt(e.target.value))}
+										onChange={async (e) => { await saveAge(parseInt(e.target.value)) }}
 										style={{
 											backgroundColor: "#232627",
 											color: "white",
@@ -249,7 +245,7 @@ export default function Profile() {
 											border: "none",
 											borderRadius: "10px",
 											marginRight: "1rem",
-											width: "100%",
+											width: "100%"
 										}}
 									>
 										{[...Array(83)].map((_, index) => (
@@ -267,20 +263,20 @@ export default function Profile() {
 										placeholder="He/Him"
 										value={pronouns}
 										onChange={(value) => {
-											savePronouns(value as string);
+											savePronouns(value as string)
 										}}
 										styles={{
 											input: {
 												border: "none",
 												backgroundColor: "#232627",
 												padding: "1.5rem 1rem",
-												color: "white",
-											},
+												color: "white"
+											}
 										}}
 										data={[
 											{ value: "He/Him", label: "He/Him" },
 											{ value: "She/Her", label: "She/Her" },
-											{ value: "Non-Binary", label: "Non-Binary" },
+											{ value: "Non-Binary", label: "Non-Binary" }
 										]}
 									/>
 								</Paper>
@@ -292,7 +288,7 @@ export default function Profile() {
 					mb={"lg"}
 					mt={"4xl"}
 					style={{
-						gap: theme.spacing.xs,
+						gap: theme.spacing.xs
 					}}
 				>
 					{isMobile && (
@@ -307,5 +303,5 @@ export default function Profile() {
 				{/* </Paper> */}
 			</div>
 		</MainLayout>
-	);
+	)
 }

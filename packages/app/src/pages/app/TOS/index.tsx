@@ -1,18 +1,15 @@
-import React, { useState } from "react";
-import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
-import useGlobalStore from "../../../store/useGlobalStore";
 import {
-	Button,
-	Container,
-	Text,
-	Checkbox,
-	Flex,
 	Box,
+	Button,
+	Checkbox,
+	Container,
+	Flex,
 	ScrollArea,
-} from "@mantine/core";
-import useRootStyles from "../useRootStyles";
-
-type Props = {};
+	Text
+} from "@mantine/core"
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
+import React, { useState } from "react"
+import useRootStyles from "../useRootStyles"
 
 const TermsOfService = () => {
 	return (
@@ -22,18 +19,18 @@ const TermsOfService = () => {
 					Acceptance of Terms
 				</Text>
 				<Text style={{ marginBottom: "1rem" }}>
-					These Terms of Service ("Terms") form an agreement between you
-					("User", "you") and Cojourney Corporation ("Cojourney", "Company",
-					"we", "us"). They apply to the website available at cojourney.chat
-					(the "Website"), and the Cojourney mobile application (the "App"),
-					collectively referred to as the "Services."
+					These Terms of Service (&quot;Terms&quot;) form an agreement between you
+					(&quot;User&quot;, &quot;you&quot;) and Cojourney Corporation (&quot;Cojourney&quot;, &quot;Company&quot;,
+					&quot;we&quot;, &quot;us&quot;). They apply to the website available at cojourney.chat
+					(the &quot;Website&quot;), and the Cojourney mobile application (the &quot;App&quot;),
+					collectively referred to as the &quot;Services.&quot;
 				</Text>
 				<Text style={{ marginBottom: "1rem" }}>
 					By accessing or using the Services, you agree to these Terms. If you
 					do not understand or agree, please refrain from using the Services.
 				</Text>
 				<Text style={{ marginBottom: "1rem" }}>
-					If the Services are used on behalf of an entity, "you" also includes
+					If the Services are used on behalf of an entity, &quot;you&quot; also includes
 					that entity, with the assurance that you are an authorized
 					representative with the authority to bind the entity to these Terms.
 				</Text>
@@ -48,9 +45,8 @@ const TermsOfService = () => {
 					Registration and Account Management
 				</Text>
 				<Text style={{ marginBottom: "1rem" }}>
-					You must provide accurate and complete information when creating an //
-					account. If you are under 18, or an EU citizen or resident under 16,
-					// you are not permitted to use the Services.
+					You must provide accurate and complete information when creating an {/* account. If you are under 18, or an EU citizen or resident under 16, */}
+					{/* you are not permitted to use the Services. */}
 				</Text>
 				<Text style={{ marginBottom: "1rem" }}>
 					You are responsible for all activities under your account and
@@ -117,7 +113,7 @@ const TermsOfService = () => {
 					Disclaimer of Warranty
 				</Text>
 				<Text style={{ marginBottom: "1rem" }}>
-					The Services are provided "as is" without any warranties. Cojourney
+					The Services are provided &quot;as is&quot; without any warranties. Cojourney
 					disclaims all warranties, express or implied.
 				</Text>
 			</section>
@@ -128,7 +124,7 @@ const TermsOfService = () => {
 					Limitation of Liability
 				</Text>
 				<Text style={{ marginBottom: "1rem" }}>
-					Cojourney's liability is limited under these Terms. You may not claim
+					Cojourney&apos;s liability is limited under these Terms. You may not claim
 					punitive or incidental damages.
 				</Text>
 			</section>
@@ -192,21 +188,20 @@ const TermsOfService = () => {
 				</Text>
 			</section>
 		</Container>
-	);
-};
+	)
+}
 
-function Index({}: Props) {
-	const [oldEnough, setOldEnough] = useState(false);
-	const [agree, setAgree] = useState(false);
-	const { user } = useGlobalStore();
-	const session = useSession();
-	const supabase = useSupabaseClient();
-	const { classes } = useRootStyles();
+function Index () {
+	const [oldEnough, setOldEnough] = useState(false)
+	const [agree, setAgree] = useState(false)
+	const session = useSession()
+	const supabase = useSupabaseClient()
+	const { classes } = useRootStyles()
 
 	const completeAgreement = async () => {
-		await supabase.from("users").update({ signed_tos: true }).eq("id", user.id);
+		await supabase.from("users").update({ signed_tos: true }).eq("id", session?.user.id as string)
 		// Your completeAgreement function logic
-	};
+	}
 
 	return (
 		<section style={{ marginBottom: "5rem" }}>
@@ -220,7 +215,7 @@ function Index({}: Props) {
 						fontWeight: "bold",
 						textAlign: "center",
 						marginTop: "1.5rem",
-						marginBottom: "1.5rem",
+						marginBottom: "1.5rem"
 					}}
 				>
 					Terms of Service
@@ -238,7 +233,7 @@ function Index({}: Props) {
 					overflowY: "auto",
 					padding: "15px",
 					backgroundColor: "rgba(255, 255, 255, 0.1)",
-					borderRadius: "10px",
+					borderRadius: "10px"
 				}}
 			>
 				<TermsOfService />
@@ -249,7 +244,7 @@ function Index({}: Props) {
 					display: "flex",
 					flexDirection: "column",
 					padding: "0 2rem",
-					margin: "2rem 0",
+					margin: "2rem 0"
 				}}
 			>
 				<Flex gap="md" justify="center" align="center" direction="row">
@@ -259,7 +254,7 @@ function Index({}: Props) {
 					<Checkbox
 						checked={oldEnough}
 						onChange={() => {
-							setOldEnough(!oldEnough);
+							setOldEnough(!oldEnough)
 						}}
 						style={{ marginLeft: "0.5rem" }}
 					/>
@@ -271,7 +266,7 @@ function Index({}: Props) {
 					<Checkbox
 						checked={agree}
 						onChange={() => {
-							setAgree(!agree);
+							setAgree(!agree)
 						}}
 						style={{ marginLeft: "0.5rem" }}
 					/>
@@ -279,7 +274,7 @@ function Index({}: Props) {
 				<Flex gap="md" justify="center" align="center" direction="row">
 					<Button
 						onClick={() => {
-							completeAgreement();
+							completeAgreement()
 						}}
 						variant="outline"
 						color="gray"
@@ -287,7 +282,7 @@ function Index({}: Props) {
 						style={{
 							alignSelf: "center",
 							marginTop: "1rem",
-							opacity: agree && oldEnough ? 1 : 0.5,
+							opacity: agree && oldEnough ? 1 : 0.5
 						}}
 					>
 						Complete
@@ -295,7 +290,7 @@ function Index({}: Props) {
 				</Flex>
 			</div>
 		</section>
-	);
+	)
 }
 
-export default Index;
+export default Index

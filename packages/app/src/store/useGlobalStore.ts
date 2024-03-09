@@ -1,7 +1,7 @@
 import { type RealtimePresenceState, type SupabaseClient } from "@supabase/supabase-js"
 import { create } from "zustand"
 import { devtools, persist } from "zustand/middleware"
-import { Json, type Database } from "../../types/database.types"
+import { type Database } from "../../types/database.types"
 
 export type IDatabaseRoom = Database["public"]["Tables"]["rooms"]["Row"]
 type IDatabaseParticipantsWithoutUsers =
@@ -18,7 +18,7 @@ export interface IUser {
   registerComplete: boolean | null
   uid: string | null
   location: string | null
-  details: Json | null
+  details: Record<string, unknown> | null
   signed_tos: boolean
 }
 
@@ -134,7 +134,9 @@ export const initialState: IGlobalStateValues = {
     uid: null,
     avatar_url: null,
     registerComplete: false,
-    location: null
+    location: null,
+    details: {},
+    signed_tos: false
   },
   currentRoom: {
     isLoadingMessages: false,
