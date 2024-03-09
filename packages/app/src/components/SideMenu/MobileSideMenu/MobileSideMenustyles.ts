@@ -19,14 +19,9 @@ const useSideMenuStyles = createStyles((theme) => ({
 	},
 	container: {
 		boxSizing: "border-box",
-		display: "none",
 		overflowY: "auto",
 		overflowX: "hidden",
 		position: "relative",
-		paddingTop: " 0",
-		paddingBottom: " 0",
-		paddingLeft: " 0",
-		paddingRight: " 0",
 		flexDirection: "column",
 		justifyContent: "space-between",
 		alignItems: "flex-start",
@@ -35,13 +30,9 @@ const useSideMenuStyles = createStyles((theme) => ({
 		lineHeight: "1.75rem",
 		textAlign: "center",
 		color: "#ffffff",
-		width: "380px",
+		width: "100%",
 		"@media (min-width: 1024px)": {
-			display: "flex",
-			position: "fixed",
-			top: 0,
-			bottom: 0,
-			zIndex: 50
+			display: "none"
 		}
 	},
 	main: {
@@ -49,10 +40,7 @@ const useSideMenuStyles = createStyles((theme) => ({
 		backgroundColor:
 			theme.colorScheme === "dark"
 				? theme.colors.dark[8]
-				: theme.colors.gray[0],
-		"@media (max-width: 900px)": {
-			marginTop: "4rem"
-		}
+				: theme.colors.gray[0]
 	},
 	linkContainer: {
 		maxHeight: "calc(100vh - 100px)",

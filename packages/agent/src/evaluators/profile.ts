@@ -70,8 +70,8 @@ Respond with a JSON object in a markdown JSON block, formatted like this:
   "quote": string
 }
 \`\`\``
-const handler = async (runtime: BgentRuntime, message: Message) => {
-  const state = (await runtime.composeState(message)) as State
+const handler = async (runtime: BgentRuntime, message: Message, state: State) => {
+  state = state ?? (await runtime.composeState(message)) as State
 
   // read the description for the current user
   const { senderId, agentId } = state

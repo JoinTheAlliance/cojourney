@@ -1,27 +1,27 @@
-import { MantineProvider } from "@mantine/core";
-import { ModalsProvider } from "@mantine/modals";
-import { Notifications } from "@mantine/notifications";
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { createClient } from "@supabase/supabase-js";
-import { PostHogProvider } from "posthog-js/react";
-import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./App.css";
-import LoadingOverlay from "./components/LoadingOverlay/LoadingOverlay";
-import OAuthUser from "./components/OAuthUser";
-import constants from "./constants/constants";
-import Error404 from "./pages/404/Error404";
-import FriendProfile from "./pages/app/FriendProfile";
-import RoomLayout from "./pages/app/Room/index";
-import Root from "./pages/app/root";
-import UserPreferences from "./pages/app/UserPreferences/UserPreferences";
-import UserProfile from "./pages/app/UserProfile";
-import Tos from "./pages/app/TOS";
+import { MantineProvider } from "@mantine/core"
+import { ModalsProvider } from "@mantine/modals"
+import { Notifications } from "@mantine/notifications"
+import { SessionContextProvider } from "@supabase/auth-helpers-react"
+import { createClient } from "@supabase/supabase-js"
+import { PostHogProvider } from "posthog-js/react"
+import React from "react"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import "./App.css"
+import LoadingOverlay from "./components/LoadingOverlay/LoadingOverlay"
+import OAuthUser from "./components/OAuthUser"
+import constants from "./constants/constants"
+import Error404 from "./pages/404/Error404"
+import FriendProfile from "./pages/app/FriendProfile"
+import RoomLayout from "./pages/app/Room/index"
+import Root from "./pages/app/root"
+import UserPreferences from "./pages/app/UserPreferences/UserPreferences"
+import UserProfile from "./pages/app/UserProfile"
+import Tos from "./pages/app/TOS"
 
 const supabase = createClient(
 	constants.supabaseUrl || "",
 	constants.supabaseAnonKey || ""
-);
+)
 
 const router = createBrowserRouter([
 	{
@@ -31,31 +31,31 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: "/chat/:roomId",
-				element: <RoomLayout />,
+				element: <RoomLayout />
 			},
 			{
 				path: "/account",
-				element: <UserPreferences />,
+				element: <UserPreferences />
 			},
 			{
 				path: "/profile",
-				element: <UserProfile />,
+				element: <UserProfile />
 			},
 			{
 				path: "/friend",
-				element: <FriendProfile />,
-			},
-		],
+				element: <FriendProfile />
+			}
+		]
 	},
 	{
 		path: "/tos",
-		element: <Tos />,
+		element: <Tos />
 	},
 	{
 		path: "/login",
-		element: <OAuthUser />,
-	},
-]);
+		element: <OAuthUser />
+	}
+])
 
 const App = (): JSX.Element => {
 	return (
@@ -77,20 +77,20 @@ const App = (): JSX.Element => {
 							"#202020",
 							"#1a1a1a",
 							"#141414",
-							"#111111",
-						],
+							"#111111"
+						]
 					},
 					components: {
 						Button: {
 							defaultProps: {
 								size: "xs",
-								color: "blue",
-							},
-						},
+								color: "blue"
+							}
+						}
 					},
 					fontSizes: {
 						xxl: "1.75rem",
-						"2xl": "2.25rem",
+						"2xl": "2.25rem"
 					},
 					spacing: {
 						xxl: "1.75rem",
@@ -100,15 +100,15 @@ const App = (): JSX.Element => {
 						"5xl": "5rem",
 						"6xl": "6rem",
 						"7xl": "7rem",
-						"8xl": "8rem",
-					},
+						"8xl": "8rem"
+					}
 				}}
 				withGlobalStyles
 			>
 				<PostHogProvider
 					apiKey={constants.posthogApiKey}
 					options={{
-						api_host: "https://app.posthog.com",
+						api_host: "https://app.posthog.com"
 					}}
 				>
 					<Notifications />
@@ -119,7 +119,7 @@ const App = (): JSX.Element => {
 				</PostHogProvider>
 			</MantineProvider>
 		</SessionContextProvider>
-	);
-};
+	)
+}
 
-export default App;
+export default App
