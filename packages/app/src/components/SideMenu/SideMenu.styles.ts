@@ -20,8 +20,8 @@ const useSideMenuStyles = createStyles((theme) => ({
 	container: {
 		boxSizing: "border-box",
 		display: "none",
-		overflowY: "auto",
-		overflowX: "hidden",
+		// overflowY: "auto",
+		// overflowX: "hidden",
 		position: "relative",
 		paddingTop: " 0",
 		paddingBottom: " 0",
@@ -45,7 +45,10 @@ const useSideMenuStyles = createStyles((theme) => ({
 		}
 	},
 	main: {
-		flex: 1,
+		display: "flex",
+		height: "100%",
+		width: "100%",
+		flexDirection: "column",
 		backgroundColor:
 			theme.colorScheme === "dark"
 				? theme.colors.dark[8]
