@@ -23,6 +23,8 @@ import evaluators from './evaluators'
 import time from './providers/time'
 import directions from './providers/directions'
 
+const maxContinuesInARow = 2
+
 /**
  * Handle an incoming message, processing it and returning a response.
  * @param message The message to handle.
@@ -32,7 +34,8 @@ import directions from './providers/directions'
 async function handleMessage (
   runtime: BgentRuntime,
   message: Message,
-  state?: State
+  state?: State,
+  event: { waitUntil: (promise: Promise<unknown>) => void } = self as unknown as { waitUntil: (promise: Promise<unknown>) => void }
 ) {
   console.log('**** handling message')
   const _saveRequestMessage = async (message: Message, state: State) => {
@@ -86,6 +89,8 @@ async function handleMessage (
       stop: []
     })
 
+    if (!room_id) throw new Error('room_id is required')
+
     runtime.databaseAdapter.log({
         body: { message, context, response },
         user_id: senderId,
@@ -127,6 +132,8 @@ async function handleMessage (
     const { agentId, userIds, room_id } = message
 
     responseContent.content = responseContent.content?.trim()
+
+    console.log('*** room_id', room_id)
 
     if (responseContent.content) {
       await runtime.messageManager.createMemory({
@@ -208,6 +215,139 @@ const routes: Route[] = [
         return
       }
 
+      const modifiedDefaultActions = defaultActions.map(action => {
+        console.log('action', action)
+        // if aciton name is ELABORATE, do stuff
+        if (action.name !== 'ELABORATE') return action
+        // modify the elaborate action's handler
+        action.description = 'ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly! DO NOT USE WHEN ASKING A QUESTION, ALWAYS USE WAIT WHEN ASKING A QUESTION.'
+        action.condition = 'Use when there is an intent to elaborate. Do NOT use when asking a question. Use WAIT instead. Use ELABORATE *very* sparingly, only when the message necessitates a follow up or needs to be broken up into multiple messages'
+        action.handler = async (runtime: BgentRuntime, message: Message, state: State) => {
+          state = (await runtime.composeState(message)) as State
+
+          const context = composeContext({
+            state,
+            template: messageHandlerTemplate
+          })
+
+          if (runtime.debugMode) {
+            console.log(context, 'Continued Response Context', 'cyan')
+          }
+
+          let responseContent
+          const { senderId, room_id, userIds: user_ids, agentId } = message
+
+          console.log('*** ELABORATING')
+          console.log(context)
+
+          for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+            const response = await runtime.completion({
+              context,
+              stop: []
+            })
+
+            console.log('RESPONSE')
+
+            runtime.databaseAdapter.log({
+              body: { message, context, response },
+              user_id: senderId,
+              room_id,
+              user_ids: user_ids!,
+              agent_id: agentId!,
+              type: 'elaborate'
+            })
+
+            const parsedResponse = parseJSONObjectFromText(
+              response
+            ) as unknown as Content
+            if (
+              (parsedResponse?.user as string).includes(state.agentName as string)
+            ) {
+              responseContent = parsedResponse
+              break
+            }
+          }
+
+          if (!responseContent) {
+            if (runtime.debugMode) {
+              console.error('No response content')
+            }
+            return
+          }
+
+          // prevent repetition
+          const messageExists = state.recentMessagesData
+            .filter((m) => m.user_id === message.agentId)
+            .slice(0, maxContinuesInARow + 1)
+            .some((m) => m.content === message.content)
+
+          if (messageExists) {
+            if (runtime.debugMode) {
+              console.log(
+                'Message already exists in recentMessagesData',
+                '',
+                'yellow'
+              )
+            }
+
+            await runtime.messageManager.createMemory({
+              user_ids: user_ids!,
+              user_id: agentId!,
+              content: responseContent,
+              room_id,
+              embedding: embeddingZeroVector
+            })
+
+            return responseContent
+          }
+
+          const _saveResponseMessage = async (
+            message: Message,
+            state: State,
+            responseContent: Content
+          ) => {
+            const { agentId, userIds, room_id } = message
+
+            responseContent.content = responseContent.content?.trim()
+
+            if (responseContent.content) {
+              await runtime.messageManager.createMemory({
+                user_ids: userIds!,
+                user_id: agentId!,
+                content: responseContent,
+                room_id,
+                embedding: embeddingZeroVector
+              })
+              await runtime.evaluate(message, { ...state, responseContent })
+            } else {
+              console.warn('Empty response, skipping')
+            }
+          }
+
+          await _saveResponseMessage(message, state, responseContent as Content)
+
+          // if the action is ELABORATE, check if we are over maxContinuesInARow
+          // if so, then we should change the action to WAIT
+          if (responseContent.action === 'ELABORATE') {
+            const agentMessages = state.recentMessagesData
+              .filter((m) => m.user_id === message.agentId)
+              .map((m) => (m.content as Content).action)
+
+            const lastMessages = agentMessages.slice(0, maxContinuesInARow)
+            if (lastMessages.length >= maxContinuesInARow) {
+              const allContinues = lastMessages.every((m) => m === 'ELABORATE')
+              if (allContinues) {
+                responseContent.action = 'WAIT'
+              }
+            }
+          }
+
+          event.waitUntil(runtime.processActions(message, responseContent as Content, state))
+          return responseContent
+        }
+        return action
+      })
+
       let token = req.headers.get('Authorization')?.replace('Bearer ', '')
       const message = await req.json()
 
@@ -250,7 +390,7 @@ const routes: Route[] = [
           env.SUPABASE_SERVICE_API_KEY
         ),
         token: env.OPENAI_API_KEY,
-        actions: [...actions, ...defaultActions],
+        actions: [...actions, ...modifiedDefaultActions],
         evaluators: [...evaluators, ...defaultEvaluators],
         providers: [time, directions]
       })
@@ -271,7 +411,7 @@ const routes: Route[] = [
       }
 
       try {
-        event.waitUntil(handleMessage(runtime, message as Message))
+        event.waitUntil(handleMessage(runtime, message as Message, null, event))
       } catch (error) {
         console.error('error', error)
         return new Response(error as string, { status: 500 })
@@ -315,6 +455,138 @@ const routes: Route[] = [
           )
         }
       }
+      const modifiedDefaultActions = defaultActions.map(action => {
+        console.log('action', action)
+        // if aciton name is ELABORATE, do stuff
+        if (action.name !== 'ELABORATE') return action
+        // modify the elaborate action's handler
+        action.description = 'ONLY use this action when the message necessitates a follow up. Do not use this when asking a question (use WAIT instead). Do not use this action when the conversation is finished or the user does not wish to speak (use IGNORE instead). If the last message action was ELABORATE, and the user has not responded, use WAIT instead. Use sparingly! DO NOT USE WHEN ASKING A QUESTION, ALWAYS USE WAIT WHEN ASKING A QUESTION.'
+        action.condition = 'Use when there is an intent to elaborate. Do NOT use when asking a question. Use WAIT instead. Use ELABORATE *very* sparingly, only when the message necessitates a follow up or needs to be broken up into multiple messages'
+        action.handler = async (runtime: BgentRuntime, message: Message, state: State) => {
+          state = (await runtime.composeState(message)) as State
+
+          const context = composeContext({
+            state,
+            template: messageHandlerTemplate
+          })
+
+          if (runtime.debugMode) {
+            console.log(context, 'Continued Response Context', 'cyan')
+          }
+
+          let responseContent
+          const { senderId, room_id, userIds: user_ids, agentId } = message
+
+          console.log('*** ELABORATING')
+          console.log(context)
+
+          for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
+            const response = await runtime.completion({
+              context,
+              stop: []
+            })
+
+            console.log('RESPONSE')
+
+            runtime.databaseAdapter.log({
+              body: { message, context, response },
+              user_id: senderId,
+              room_id,
+              user_ids: user_ids!,
+              agent_id: agentId!,
+              type: 'elaborate'
+            })
+
+            const parsedResponse = parseJSONObjectFromText(
+              response
+            ) as unknown as Content
+            if (
+              (parsedResponse?.user as string).includes(state.agentName as string)
+            ) {
+              responseContent = parsedResponse
+              break
+            }
+          }
+
+          if (!responseContent) {
+            if (runtime.debugMode) {
+              console.error('No response content')
+            }
+            return
+          }
+
+          // prevent repetition
+          const messageExists = state.recentMessagesData
+            .filter((m) => m.user_id === message.agentId)
+            .slice(0, maxContinuesInARow + 1)
+            .some((m) => m.content === message.content)
+
+          if (messageExists) {
+            if (runtime.debugMode) {
+              console.log(
+                'Message already exists in recentMessagesData',
+                '',
+                'yellow'
+              )
+            }
+
+            await runtime.messageManager.createMemory({
+              user_ids: user_ids!,
+              user_id: agentId!,
+              content: responseContent,
+              room_id,
+              embedding: embeddingZeroVector
+            })
+
+            return responseContent
+          }
+
+          const _saveResponseMessage = async (
+            message: Message,
+            state: State,
+            responseContent: Content
+          ) => {
+            const { agentId, userIds, room_id } = message
+
+            responseContent.content = responseContent.content?.trim()
+
+            if (responseContent.content) {
+              await runtime.messageManager.createMemory({
+                user_ids: userIds!,
+                user_id: agentId!,
+                content: responseContent,
+                room_id,
+                embedding: embeddingZeroVector
+              })
+              await runtime.evaluate(message, { ...state, responseContent })
+            } else {
+              console.warn('Empty response, skipping')
+            }
+          }
+
+          await _saveResponseMessage(message, state, responseContent as Content)
+
+          // if the action is ELABORATE, check if we are over maxContinuesInARow
+          // if so, then we should change the action to WAIT
+          if (responseContent.action === 'ELABORATE') {
+            const agentMessages = state.recentMessagesData
+              .filter((m) => m.user_id === message.agentId)
+              .map((m) => (m.content as Content).action)
+
+            const lastMessages = agentMessages.slice(0, maxContinuesInARow)
+            if (lastMessages.length >= maxContinuesInARow) {
+              const allContinues = lastMessages.every((m) => m === 'ELABORATE')
+              if (allContinues) {
+                responseContent.action = 'WAIT'
+              }
+            }
+          }
+
+          event.waitUntil(runtime.processActions(message, responseContent as Content, state))
+          return responseContent
+        }
+        return action
+      })
       const runtime = new BgentRuntime({
         debugMode: env.NODE_ENV === 'development',
         serverUrl: 'https://api.openai.com/v1',
@@ -323,7 +595,7 @@ const routes: Route[] = [
           env.SUPABASE_SERVICE_API_KEY
         ),
         token: env.OPENAI_API_KEY,
-        actions: [...actions, ...defaultActions],
+        actions: [...actions, ...modifiedDefaultActions],
         evaluators: [...evaluators, ...defaultEvaluators],
         providers: [time, directions]
       })
@@ -361,7 +633,7 @@ const routes: Route[] = [
         name: 'First Time User Introduction (HIGH PRIORITY)',
         status: GoalStatus.IN_PROGRESS,
         user_ids: [message.user_id as UUID, zeroUuid],
-        user_id: zeroUuid as UUID,
+        user_id: message.user_id as UUID,
         objectives: [
           {
             description: `${userName} just joined Cojourney. Greet them and ask them if they are ready to get started.`,
@@ -407,12 +679,13 @@ const routes: Route[] = [
         user_ids: [message.user_id, zeroUuid],
         user_id: message.user_id,
         content: newMessage.content,
-        room_id
+        room_id,
+        embedding: embeddingZeroVector
       })
 
       console.log('handling message', newMessage)
 
-      event.waitUntil(handleMessage(runtime, newMessage))
+      event.waitUntil(handleMessage(runtime, newMessage, null, event))
 
       return new Response('ok', { status: 200 })
     }
