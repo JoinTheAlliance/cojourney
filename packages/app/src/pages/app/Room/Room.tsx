@@ -48,9 +48,9 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 	const [userMessage, setUserMessage] = useState("" as unknown)
 	const { currentRoom } = useGlobalStore()
 
+	// @ts-nocheck
 	const friend = currentRoom
-		? // @ts-expect-error
-		  currentRoom?.roomData?.relationships[0]?.userData2
+		? currentRoom?.roomData?.relationships[0]?.userData2
 		: null
 
 	return (

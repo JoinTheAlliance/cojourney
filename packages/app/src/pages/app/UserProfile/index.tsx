@@ -9,7 +9,6 @@ import {
 	Text,
 	useMantineTheme
 } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
 import { showNotification } from "@mantine/notifications"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import React, { useState } from "react"
@@ -21,9 +20,8 @@ import useGlobalStore from "../../../store/useGlobalStore"
 import MainLayout from "../MainLayout.tsx"
 import useRoomStyles from "./index.styles"
 
-export default function Profile() {
+export default function Profile () {
 	const navigate = useNavigate()
-	const isMobile = useMediaQuery("(max-width: 900px)")
 	const supabase = useSupabaseClient<Database>()
 	const { classes } = useRoomStyles()
 	const theme = useMantineTheme()
@@ -155,10 +153,6 @@ export default function Profile() {
 			avatar_url: IMAGE_URL
 		})
 		setUploading(false)
-	}
-
-	const back = () => {
-		navigate("/")
 	}
 
 	const openImagePicker = () => {
