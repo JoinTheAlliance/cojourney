@@ -1,4 +1,3 @@
-import { Burger, Drawer } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react"
 import React, { useEffect } from "react"
@@ -15,7 +14,6 @@ import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingInd
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import OAuthUser from "./../../components/OAuthUser"
 import useRootStyles from "./useRootStyles"
-import MobileSideMenu from "../../components/SideMenu/MobileSideMenu/MobileSideMenu"
 
 const Root = (): JSX.Element => {
 	const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -32,7 +30,6 @@ const Root = (): JSX.Element => {
 	const session = useSession()
 	const supabase = useSupabaseClient<Database>()
 	const {
-		app,
 		setApp,
 		currentRoom: { usersTyping },
 		setCurrentRoom,
@@ -63,8 +60,8 @@ const Root = (): JSX.Element => {
 	}, [location, session])
 
 	useEffect(() => {
-		if (!session) return;
-		(async () => {
+		if (!session) return
+		;(async () => {
 			getUnreadMessages()
 		})()
 	}, [session])
@@ -124,55 +121,7 @@ const Root = (): JSX.Element => {
 				marginTop: isSmartphone ? "8rem" : "0"
 			}}
 		>
-			{isMobile ? (
-				<>
-					<div
-						className={classes.header}
-						style={{
-							marginTop: isSmartphone ? "4rem" : "0"
-						}}
-					>
-						<h3>COJOURNEY</h3>
-						<Burger
-							opened={app.isMobileMenuOpen}
-							onClick={(): void => {
-								setApp({ isMobileMenuOpen: true })
-							}}
-						/>
-					</div>
-					<Drawer
-						onClose={(): void => {
-							setApp({ isMobileMenuOpen: false })
-						}}
-						opened={app.isMobileMenuOpen}
-						overlayProps={{ blur: 5 }}
-						position="right"
-						withCloseButton
-						zIndex={100}
-						styles={{
-							header: {
-								marginTop: isSmartphone ? "4rem" : "",
-								backgroundColor: "transparent"
-							},
-							body: {
-								padding: "0 !important",
-								height: "94%"
-							},
-							content: {
-								backgroundColor: "#141414"
-							}
-						}}
-					>
-						<MobileSideMenu
-							closeMenu={(): void => {
-								setApp({ isMobileMenuOpen: false })
-							}}
-						/>
-					</Drawer>
-				</>
-			) : (
-				<SideMenu closeMenu={(): void => {}} />
-			)}
+			{!isMobile && <SideMenu closeMenu={(): void => {}} />}
 			<div className={classes.content}>
 				<Outlet />
 			</div>

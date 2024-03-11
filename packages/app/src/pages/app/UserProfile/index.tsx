@@ -9,7 +9,6 @@ import {
 	Text,
 	useMantineTheme
 } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
 import { showNotification } from "@mantine/notifications"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import React, { useState } from "react"
@@ -23,7 +22,6 @@ import useRoomStyles from "./index.styles"
 
 export default function Profile () {
 	const navigate = useNavigate()
-	const isMobile = useMediaQuery("(max-width: 900px)")
 	const supabase = useSupabaseClient<Database>()
 	const { classes } = useRoomStyles()
 	const theme = useMantineTheme()
@@ -157,10 +155,6 @@ export default function Profile () {
 		setUploading(false)
 	}
 
-	const back = () => {
-		navigate("/")
-	}
-
 	const openImagePicker = () => {
 		if (uploading) {
 			return
@@ -237,7 +231,9 @@ export default function Profile () {
 									<label>Age</label>
 									<select
 										value={age}
-										onChange={async (e) => { await saveAge(parseInt(e.target.value)) }}
+										onChange={async (e) => {
+											await saveAge(parseInt(e.target.value))
+										}}
 										style={{
 											backgroundColor: "#232627",
 											color: "white",
@@ -264,7 +260,7 @@ export default function Profile () {
 										placeholder="He/Him"
 										value={pronouns}
 										onChange={(value) => {
-											savePronouns(value as string)
+											savePronouns(value!)
 										}}
 										styles={{
 											input: {
@@ -292,11 +288,6 @@ export default function Profile () {
 						gap: theme.spacing.xs
 					}}
 				>
-					{isMobile && (
-						<Button fullWidth variant="transparent" size="md" onClick={back}>
-							<Text color={theme.white}>Back</Text>
-						</Button>
-					)}
 					<Button fullWidth variant="transparent" size="md" onClick={signOut}>
 						<Text className={classes.logoutButton}>Logout</Text>
 					</Button>

@@ -45,7 +45,10 @@ const useSideMenuStyles = createStyles((theme) => ({
 		}
 	},
 	main: {
-		flex: 1,
+		display: "flex",
+		height: "100%",
+		width: "100%",
+		flexDirection: "column",
 		backgroundColor:
 			theme.colorScheme === "dark"
 				? theme.colors.dark[8]
