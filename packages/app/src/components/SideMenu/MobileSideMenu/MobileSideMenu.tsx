@@ -4,10 +4,8 @@ import {
 	Drawer,
 	Button,
 	Flex,
-	Group,
 	Navbar,
 	Text,
-	rem,
 	Box,
 	useMantineTheme
 } from "@mantine/core" // Import Drawer from Mantine
@@ -18,7 +16,6 @@ import UserAvatar from "../../UserAvatar"
 import useSideMenuStyles from "./MobileSideMenustyles"
 import FriendsSideMenuScreen from "../SideMenuScreens/FriendsSideMenuScreen"
 import menuImgSrc from "../../../../public/icons/menu.svg"
-// import { isSmartphone } from "../../../helpers/functions"
 
 const MobileSideMenu = (): JSX.Element => {
 	const { classes } = useSideMenuStyles()
@@ -64,10 +61,8 @@ const MobileSideMenu = (): JSX.Element => {
 				<Navbar className={classes.container}>
 					<Navbar.Section className={classes.wrapper} grow>
 						<div className={classes.main}>
-							<Flex direction={"column"} justify={"space-between"}>
+							<Flex direction={"column"}>
 								<Flex
-									pos={"absolute"}
-									bottom={"0"}
 									w={"100%"}
 									p={"xl"}
 									direction={"row"}
@@ -75,7 +70,7 @@ const MobileSideMenu = (): JSX.Element => {
 									align={"center"}
 									justify="space-between"
 								>
-									<Group>
+									<Flex align={"center"} gap={5}>
 										<UserAvatar
 											src={
 												user.avatar_url ||
@@ -84,45 +79,48 @@ const MobileSideMenu = (): JSX.Element => {
 											online={true}
 										/>
 										<Box w={96.5}>
-											<Text color={theme.white} weight={500} truncate="end">
+											<Text color={theme.white} weight={300} truncate="end">
 												{user.name}
 											</Text>
 											<Text size="xs" color="dimmed">
 												Online
 											</Text>
 										</Box>
-									</Group>
-									<Group
+									</Flex>
+
+									<Button
+										bg={"#292929"}
 										style={{
-											textAlign: "center"
+											backgroundColor: "#292929",
+											color: "#757474",
+											width: "100%"
 										}}
-									>
-										<Button
-											size={"sm"}
-											bg={"#292929"}
-											style={{
-												display: "flex",
-												alignItems: "center",
-												backgroundColor: "#292929",
-												paddingLeft: rem(20),
-												color: "#757474"
-											}}
-											onClick={() => {
-												navigate("/profile")
-												closeMenu()
-											}}
-										>
-											<Text mr={"md"}>My Account</Text>
+										onClick={() => {
+											navigate("/profile")
+											closeMenu()
+										}}
+										rightIcon={
 											<img
 												src={iconImgSrc}
 												alt="Icon"
-												width={"20px"}
-												height={"20px"}
+												width={"15px"}
+												height={"15px"}
 											/>
-										</Button>
-									</Group>
+										}
+									>
+										My Account
+									</Button>
 								</Flex>
-								<FriendsSideMenuScreen />
+								<Flex
+									direction={"column"}
+									justify={"space-between"}
+									style={{
+										flex: "1 1 0%",
+										overflowY: "auto"
+									}}
+								>
+									<FriendsSideMenuScreen />
+								</Flex>
 							</Flex>
 						</div>
 					</Navbar.Section>

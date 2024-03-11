@@ -57,7 +57,7 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 						w={"100%"}
 						p={"lg"}
 						direction={"row"}
-						gap={5}
+						gap={20}
 						align={"center"}
 						justify="space-between"
 						style={{

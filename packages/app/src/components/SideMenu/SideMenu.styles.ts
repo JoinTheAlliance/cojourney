@@ -20,8 +20,8 @@ const useSideMenuStyles = createStyles((theme) => ({
 	container: {
 		boxSizing: "border-box",
 		display: "none",
-		// overflowY: "auto",
-		// overflowX: "hidden",
+		overflowY: "auto",
+		overflowX: "hidden",
 		position: "relative",
 		paddingTop: " 0",
 		paddingBottom: " 0",
