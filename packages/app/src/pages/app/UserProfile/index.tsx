@@ -20,7 +20,7 @@ import useGlobalStore from "../../../store/useGlobalStore"
 import MainLayout from "../MainLayout.tsx"
 import useRoomStyles from "./index.styles"
 
-export default function Profile () {
+export default function Profile() {
 	const navigate = useNavigate()
 	const supabase = useSupabaseClient<Database>()
 	const { classes } = useRoomStyles()
@@ -183,8 +183,13 @@ export default function Profile () {
 			>
 				{/* <Paper shadow="xs" radius="lg" p="xl" w={"100%"} mx={"0"}> */}
 				<Container maw={"100%"} p={"xxl"} style={{}}>
-					<div onClick={openImagePicker}>
-						<UserAvatar src={user.avatar_url || ""} online={true} size="lg" />
+					<div>
+						<UserAvatar
+							handleOnClick={openImagePicker}
+							src={user.avatar_url || ""}
+							online={true}
+							size="lg"
+						/>
 					</div>
 					<Text
 						align="center"
@@ -259,7 +264,7 @@ export default function Profile () {
 									<Select
 										placeholder="He/Him"
 										value={pronouns}
-										onChange={(value) => {
+										onChange={(value: string) => {
 											savePronouns(value!)
 										}}
 										styles={{
