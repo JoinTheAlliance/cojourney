@@ -20,7 +20,7 @@ import useGlobalStore from "../../../store/useGlobalStore"
 import MainLayout from "../MainLayout.tsx"
 import useRoomStyles from "./index.styles"
 
-export default function Profile() {
+export default function Profile () {
 	const navigate = useNavigate()
 	const supabase = useSupabaseClient<Database>()
 	const { classes } = useRoomStyles()
