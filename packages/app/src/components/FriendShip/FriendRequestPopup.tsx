@@ -6,9 +6,10 @@ import {
 	Paper,
 	CheckIcon,
 	Flex
-	// PhoneIcon,
 	// UserPlusIcon
 } from "@mantine/core"
+import { FaUserPlus } from "react-icons/fa6"
+import { IoMdClose } from "react-icons/io"
 
 const ContactPopup = () => {
 	return (
@@ -40,47 +41,37 @@ const ContactPopup = () => {
 						Moon
 					</Text>
 				</div>
-				<div className="flex items-center justify-center gap-2 lg:gap-4 place-items-baseline">
+				<Flex gap="md" justify="space-between" align="center">
 					<Button
-						variant="outline"
-						color="blue"
-						style={{
-							transform: "scale(1)",
-							transition: "transform 500ms",
-							":hover": { transform: "scale(1.1)" }
-						}}
+						variant="light"
+						color="green"
+						leftIcon={
+							<FaUserPlus
+								style={{
+									fontSize: "24px",
+									color: "white"
+								}}
+							/>
+						}
 					>
-						<CheckIcon
-							style={{ width: "28.58px", height: "32.5px", color: "white" }}
-						/>
-					</Button>
-					<Button
-						variant="outline"
-						color="blue"
-						style={{
-							transform: "scale(1)",
-							transition: "transform 500ms",
-							":hover": { transform: "scale(1.1)" }
-						}}
-					>
-						{/* <UserPlusIcon style={{ fontSize: "24px", color: "white" }} /> */}
+						Accept
 					</Button>
 					<Button
 						variant="outline"
 						color="red"
-						style={{
-							transform: "scale(1)",
-							transition: "transform 500ms",
-							":hover": { transform: "scale(1.1)" }
-						}}
+						leftIcon={
+							<IoMdClose
+								style={{
+									width: "28.58px",
+									height: "32.5px",
+									color: "red"
+								}}
+							/>
+						}
 					>
-						<img
-							src="/icons/Close.svg"
-							alt="close"
-							style={{ width: "23.5px", height: "20px" }}
-						/>
+						Decline
 					</Button>
-				</div>
+				</Flex>
 			</Flex>
 		</Paper>
 	)
