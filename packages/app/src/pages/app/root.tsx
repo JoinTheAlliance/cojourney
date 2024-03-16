@@ -109,9 +109,9 @@ const Root = (): JSX.Element => {
 		}
 	}, [session])
 
-	if (!session) {
-		return <OAuthUser />
-	}
+	// if (!session) {
+	// 	return <OAuthUser />
+	// }
 
 	// const hasMoreThanOneFriend = friends.length > 0 || requests.length > 0 || pending.length > 0;
 	return (

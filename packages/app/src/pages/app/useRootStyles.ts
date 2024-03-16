@@ -2,7 +2,7 @@ import { createStyles } from "@mantine/core"
 
 const useRootStyles = createStyles((theme) => ({
 	container: {
-		height: "100vh",
+		height: "100dvh",
 		position: "relative",
 		display: "flex",
 		flexDirection: "row",
@@ -13,7 +13,8 @@ const useRootStyles = createStyles((theme) => ({
 	content: {
 		height: "100%",
 		width: "100%",
-		paddingTop: 0
+		paddingTop: 0,
+		overflow: "hidden"
 	},
 	header: {
 		width: "100vw",

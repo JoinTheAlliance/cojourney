@@ -16,6 +16,8 @@ const useRoomStyles = createStyles((theme) => ({
 		width: "100%",
 		maxWidth: "100%",
 		height: "0",
+		overflowY: "auto",
+		backgroundColor: "red",
 
 		"@media (min-width: 768px)": {
 			paddingLeft: "1.25rem",
