@@ -4,7 +4,7 @@
 **/node_modules
 **/.dev.vars
 .wrangler
-.env.*
+.env
 .env
 embedding-cache.json
 test-report.json
