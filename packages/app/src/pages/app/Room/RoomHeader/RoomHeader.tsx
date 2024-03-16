@@ -13,8 +13,8 @@ const RoomHeader = (): JSX.Element => {
 	const { classes } = useRoomHeaderStyles()
 	const { currentRoom } = useGlobalStore()
 
-	// @ts-nocheck
 	const friend = currentRoom
+	// @ts-expect-error
 		? currentRoom?.roomData?.relationships[0]?.userData2
 		: null
 	const navigate = useNavigate()

@@ -184,7 +184,7 @@ export default function Profile () {
 				{/* <Paper shadow="xs" radius="lg" p="xl" w={"100%"} mx={"0"}> */}
 				<Container maw={"100%"} p={"xxl"} style={{}}>
 					<div onClick={openImagePicker}>
-						<UserAvatar src={user.avatar_url || ""} online={true} size="lg" />
+						<UserAvatar loading={uploading} src={user.avatar_url || ""} online={true} size="lg" />
 					</div>
 					<Text
 						align="center"
@@ -259,7 +259,7 @@ export default function Profile () {
 									<Select
 										placeholder="He/Him"
 										value={pronouns}
-										onChange={(value) => {
+										onChange={(value: string) => {
 											savePronouns(value!)
 										}}
 										styles={{
