@@ -126,7 +126,7 @@ export default function Profile (): JSX.Element {
 					{!friend?.is_agent && (
 						<>
 							<Group>
-								<Text>Location: {friend.location || "Not specified"}</Text>
+								<Text>Location: {friend.details?.location || "Not specified"}</Text>
 							</Group>
 							<Group>
 								<Text>Age: {friend.age || "Not specified"}</Text>
@@ -138,7 +138,7 @@ export default function Profile (): JSX.Element {
 					)}
 					<>
 						<Group>
-							<Text>Location: {friend.location || "Not specified"}</Text>
+							<Text>Location: {friend.details?.location || "Not specified"}</Text>
 						</Group>
 						<Group>
 							<Text>Age: {friend.details?.age || "Not specified"}</Text>
