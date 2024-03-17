@@ -47,5 +47,11 @@
     "clsx": "^2.1.0",
     "dotenv": "^16.4.1",
     "inquirer": "^9.2.14"
+  },  
+  "optionalDependencies": {
+    "@nx/nx-darwin-arm64": "18.0.4",
+    "@nx/nx-darwin-x64": "18.0.4",
+    "@nx/nx-linux-x64-gnu": "18.0.4",
+    "@nx/nx-win32-x64-msvc": "18.0.4"
   }
 }
