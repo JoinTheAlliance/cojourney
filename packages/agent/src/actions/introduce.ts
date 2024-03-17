@@ -63,7 +63,7 @@ export const getRelevantRelationships = async (
   const userDetails = userData?.details;
   let searchEmbeddings: number[][] = [];
   if (userDetails) {
-    const jsonDetails = JSON.parse(userDetails);
+    const jsonDetails = userDetails;
     const userLocation = jsonDetails.location;
     const embedding = await runtime.embed(userLocation);
     searchEmbeddings.push(embedding);
