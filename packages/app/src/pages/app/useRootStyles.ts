@@ -3,18 +3,27 @@ import { createStyles } from "@mantine/core"
 const useRootStyles = createStyles((theme) => ({
 	container: {
 		height: "100dvh",
+		width: "100%",
 		position: "relative",
 		display: "flex",
 		flexDirection: "row",
+		overflow: "hidden",
 		"@media (max-width: 900px)": {
 			flexDirection: "column"
 		}
 	},
 	content: {
-		height: "100%",
-		width: "100%",
-		paddingTop: 0,
-		overflow: "hidden"
+		display: "flex",
+		overflow: "hidden",
+		position: "relative",
+		flexDirection: "column",
+		flex: "1 1 0%",
+		maxWidth: "100%",
+		height: "100%"
+	},
+	sidebar: {
+		flexShrink: 0,
+		width: "380px"
 	},
 	header: {
 		width: "100vw",

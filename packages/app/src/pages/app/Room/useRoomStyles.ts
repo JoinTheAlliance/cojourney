@@ -17,7 +17,6 @@ const useRoomStyles = createStyles((theme) => ({
 		maxWidth: "100%",
 		height: "0",
 		overflowY: "auto",
-		backgroundColor: "red",
 
 		"@media (min-width: 768px)": {
 			paddingLeft: "1.25rem",
@@ -60,14 +59,15 @@ const useRoomStyles = createStyles((theme) => ({
 	chatLayout: {
 		boxSizing: "border-box",
 		display: "flex",
-		overflow: "hidden",
+		overflow: "auto",
 		position: "relative",
 		flexDirection: "column",
 		width: "100%",
 		maxWidth: "100%",
 		height: "100%",
 		backgroundSize: "cover",
-		backgroundPosition: "center"
+		backgroundPosition: "center",
+		flex: "1 1 0%"
 	},
 	chatContainer: {
 		display: "flex",
@@ -80,10 +80,10 @@ const useRoomStyles = createStyles((theme) => ({
 		marginRight: "auto",
 		"@media (min-width: 768px)": {
 			paddingTop: 0
-		},
-		"@media (min-width: 1024px)": {
-			paddingLeft: "380px"
 		}
+		// "@media (min-width: 1024px)": {
+		// 	paddingLeft: "380px"
+		// }
 	},
 	chat: {
 		display: "flex",
@@ -102,10 +102,10 @@ const useRoomStyles = createStyles((theme) => ({
 	},
 	room_loader: {
 		marginLeft: "20px",
-		marginRight: "auto",
-		"@media (min-width: 1024px)": {
-			paddingLeft: "380px"
-		}
+		marginRight: "auto"
+		// "@media (min-width: 1024px)": {
+		// 	paddingLeft: "380px"
+		// }
 	}
 }))
 

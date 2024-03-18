@@ -121,7 +121,9 @@ const Root = (): JSX.Element => {
 				marginTop: isSmartphone ? "8rem" : "0"
 			}}
 		>
-			{!isMobile && <SideMenu closeMenu={(): void => {}} />}
+			<div className={classes.sidebar}>
+				{!isMobile && <SideMenu closeMenu={(): void => {}} />}
+			</div>
 			<div className={classes.content}>
 				<Outlet />
 			</div>

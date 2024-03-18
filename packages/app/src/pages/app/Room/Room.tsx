@@ -69,9 +69,9 @@ const Room = ({ roomId, getRoomData }: Props): JSX.Element => {
 					<div className={classes.headerContainer}>
 						<RoomHeader />
 					</div>
-					{/* <div className={classes.messagesContainer}>
+					<div className={classes.messagesContainer}>
 						<Messages userMessage={userMessage as IDatabaseMessage} />
-					</div> */}
+					</div>
 					{isRoomMember && (
 						<div className={classes.textInputContainer}>
 							<MessagesTextInput
