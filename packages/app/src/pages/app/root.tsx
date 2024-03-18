@@ -109,9 +109,9 @@ const Root = (): JSX.Element => {
 		}
 	}, [session])
 
-	if (!session) {
-		return <OAuthUser />
-	}
+	// if (!session) {
+	// 	return <OAuthUser />
+	// }
 
 	// const hasMoreThanOneFriend = friends.length > 0 || requests.length > 0 || pending.length > 0;
 	return (
@@ -121,7 +121,9 @@ const Root = (): JSX.Element => {
 				marginTop: isSmartphone ? "8rem" : "0"
 			}}
 		>
-			{!isMobile && <SideMenu closeMenu={(): void => {}} />}
+			<div className={classes.sidebar}>
+				{!isMobile && <SideMenu closeMenu={(): void => {}} />}
+			</div>
 			<div className={classes.content}>
 				<Outlet />
 			</div>
