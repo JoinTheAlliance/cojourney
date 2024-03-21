@@ -8,7 +8,6 @@ import {
   defaultActions,
   defaultEvaluators,
   embeddingZeroVector,
-  getRelationship,
   messageHandlerTemplate,
   parseJSONObjectFromText,
   type Content,
@@ -20,8 +19,8 @@ import {
 import { type UUID } from 'crypto'
 import actions from './actions'
 import evaluators from './evaluators'
-import time from './providers/time'
 import directions from './providers/directions'
+import time from './providers/time'
 
 const maxContinuesInARow = 2
 
@@ -39,11 +38,11 @@ async function handleMessage (
 ) {
   console.log('**** handling message')
   const _saveRequestMessage = async (message: Message, state: State) => {
-    const { content: senderContent /* senderId, userIds, room_id */ } = message
+    const { content: senderContent /* userId, userIds, room_id */ } = message
 
     // we run evaluation here since some evals could be modulo based, and we should run on every message
     if ((senderContent as Content).content) {
-      // const { data: data2, error } = await runtime.supabase.from('messages').select('*').eq('user_id', message.senderId)
+      // const { data: data2, error } = await runtime.supabase.from('messages').select('*').eq('user_id', message.userId)
       //   .eq('room_id', room_id)
       //   .order('created_at', { ascending: false })
 
@@ -55,7 +54,7 @@ async function handleMessage (
       // } else {
       //   await runtime.messageManager.createMemory({
       //     user_ids: userIds!,
-      //     user_id: senderId!,
+      //     user_id: userId!,
       //     content: senderContent,
       //     room_id,
       //     embedding: embeddingZeroVector
@@ -80,7 +79,7 @@ async function handleMessage (
   }
 
   let responseContent: Content | null = null
-  const { senderId, room_id, userIds: user_ids, agentId } = message
+  const { userId, room_id } = message
 
   for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
     console.log(context)
@@ -93,10 +92,8 @@ async function handleMessage (
 
     runtime.databaseAdapter.log({
         body: { message, context, response },
-        user_id: senderId,
+        user_id: userId,
         room_id,
-        user_ids: user_ids!,
-        agent_id: agentId!,
         type: 'main_completion'
       })
 
@@ -129,7 +126,7 @@ async function handleMessage (
     state: State,
     responseContent: Content
   ) => {
-    const { agentId, userIds, room_id } = message
+    const { room_id } = message
 
     responseContent.content = responseContent.content?.trim()
 
@@ -137,8 +134,7 @@ async function handleMessage (
 
     if (responseContent.content) {
       await runtime.messageManager.createMemory({
-        user_ids: userIds!,
-        user_id: agentId!,
+        user_id: runtime.agentId!,
         content: responseContent,
         room_id,
         embedding: embeddingZeroVector
@@ -235,7 +231,7 @@ const routes: Route[] = [
           }
 
           let responseContent
-          const { senderId, room_id, userIds: user_ids, agentId } = message
+          const { userId, room_id } = message
 
           console.log('*** ELABORATING')
           console.log(context)
@@ -250,10 +246,8 @@ const routes: Route[] = [
 
             runtime.databaseAdapter.log({
               body: { message, context, response },
-              user_id: senderId,
+              user_id: userId,
               room_id,
-              user_ids: user_ids!,
-              agent_id: agentId!,
               type: 'elaborate'
             })
 
@@ -277,7 +271,7 @@ const routes: Route[] = [
 
           // prevent repetition
           const messageExists = state.recentMessagesData
-            .filter((m) => m.user_id === message.agentId)
+            .filter((m) => m.user_id === runtime.agentId)
             .slice(0, maxContinuesInARow + 1)
             .some((m) => m.content === message.content)
 
@@ -291,8 +285,7 @@ const routes: Route[] = [
             }
 
             await runtime.messageManager.createMemory({
-              user_ids: user_ids!,
-              user_id: agentId!,
+              user_id: runtime.agentId,
               content: responseContent,
               room_id,
               embedding: embeddingZeroVector
@@ -306,14 +299,13 @@ const routes: Route[] = [
             state: State,
             responseContent: Content
           ) => {
-            const { agentId, userIds, room_id } = message
+            const { room_id } = message
 
             responseContent.content = responseContent.content?.trim()
 
             if (responseContent.content) {
               await runtime.messageManager.createMemory({
-                user_ids: userIds!,
-                user_id: agentId!,
+                user_id: runtime.agentId!,
                 content: responseContent,
                 room_id,
                 embedding: embeddingZeroVector
@@ -330,7 +322,7 @@ const routes: Route[] = [
           // if so, then we should change the action to WAIT
           if (responseContent.action === 'ELABORATE') {
             const agentMessages = state.recentMessagesData
-              .filter((m) => m.user_id === message.agentId)
+              .filter((m) => m.user_id === runtime.agentId)
               .map((m) => (m.content as Content).action)
 
             const lastMessages = agentMessages.slice(0, maxContinuesInARow)
@@ -350,13 +342,6 @@ const routes: Route[] = [
 
       let token = req.headers.get('Authorization')?.replace('Bearer ', '')
       const message = await req.json()
-
-      // if message.userIds is a string, parse it from json
-      if (typeof (message as Message).userIds === 'string') {
-        (message as Message).userIds = JSON.parse(
-          (message as Message).userIds as unknown as string
-        )
-      }
 
       if (!token && (message as { token: string }).token) {
         token = (message as { token: string }).token
@@ -395,19 +380,8 @@ const routes: Route[] = [
         providers: [time, directions]
       })
 
-      if (!(message as Message).agentId) {
-        return new Response('agentId is required', { status: 400 })
-      }
-
-      if (!(message as Message).senderId && userId) {
-        (message as Message).senderId = userId as UUID
-      }
-
-      if (!(message as Message).userIds) {
-        (message as Message).userIds = [
-          (message as Message).senderId!,
-          (message as Message).agentId!
-        ]
+      if (!(message as Message).userId && userId) {
+        (message as Message).userId = userId as UUID
       }
 
       try {
@@ -430,7 +404,7 @@ const routes: Route[] = [
       }
 
       let token = req.headers.get('Authorization')?.replace('Bearer ', '')
-      const message = await req.json() as { user_id: UUID, token: string }
+      const message = await req.json() as { user_id: UUID, token: string, room_id: UUID }
 
       if (!token && (message as unknown as { token: string }).token) {
         token = (message as unknown as { token: string }).token
@@ -475,10 +449,7 @@ const routes: Route[] = [
           }
 
           let responseContent
-          const { senderId, room_id, userIds: user_ids, agentId } = message
-
-          console.log('*** ELABORATING')
-          console.log(context)
+          const { userId, room_id } = message
 
           for (let triesLeft = 3; triesLeft > 0; triesLeft--) {
             const response = await runtime.completion({
@@ -490,10 +461,8 @@ const routes: Route[] = [
 
             runtime.databaseAdapter.log({
               body: { message, context, response },
-              user_id: senderId,
+              user_id: userId,
               room_id,
-              user_ids: user_ids!,
-              agent_id: agentId!,
               type: 'elaborate'
             })
 
@@ -517,7 +486,7 @@ const routes: Route[] = [
 
           // prevent repetition
           const messageExists = state.recentMessagesData
-            .filter((m) => m.user_id === message.agentId)
+            .filter((m) => m.user_id === runtime.agentId)
             .slice(0, maxContinuesInARow + 1)
             .some((m) => m.content === message.content)
 
@@ -531,8 +500,7 @@ const routes: Route[] = [
             }
 
             await runtime.messageManager.createMemory({
-              user_ids: user_ids!,
-              user_id: agentId!,
+              user_id: runtime.agentId!,
               content: responseContent,
               room_id,
               embedding: embeddingZeroVector
@@ -546,14 +514,13 @@ const routes: Route[] = [
             state: State,
             responseContent: Content
           ) => {
-            const { agentId, userIds, room_id } = message
+            const { room_id } = message
 
             responseContent.content = responseContent.content?.trim()
 
             if (responseContent.content) {
               await runtime.messageManager.createMemory({
-                user_ids: userIds!,
-                user_id: agentId!,
+                user_id: runtime.agentId!,
                 content: responseContent,
                 room_id,
                 embedding: embeddingZeroVector
@@ -570,7 +537,7 @@ const routes: Route[] = [
           // if so, then we should change the action to WAIT
           if (responseContent.action === 'ELABORATE') {
             const agentMessages = state.recentMessagesData
-              .filter((m) => m.user_id === message.agentId)
+              .filter((m) => m.user_id === runtime.agentId)
               .map((m) => (m.content as Content).action)
 
             const lastMessages = agentMessages.slice(0, maxContinuesInARow)
@@ -603,19 +570,17 @@ const routes: Route[] = [
       const zeroUuid = '00000000-0000-0000-0000-000000000000' as UUID
 
       const newMessage = {
-        senderId: message.user_id,
-        agentId: zeroUuid,
-        userIds: [message.user_id, zeroUuid],
+        userId: message.user_id,
+        room_id: message.room_id,
         content: { content: '*User has joined Cojourney. Greet them!*', action: 'NEW_USER' }
       } as Message
 
-      const data = await getRelationship({
-        runtime,
-        userA: message.user_id as UUID,
-        userB: zeroUuid
-      })
+      const data = await runtime.databaseAdapter.getRoomsByParticipants([
+        message.user_id as UUID,
+        zeroUuid
+  ])
 
-      const room_id = data?.room_id
+      const room_id = data[0] as UUID
 
       const accountData = await runtime.databaseAdapter.getAccountById(message.user_id)
 
@@ -632,7 +597,7 @@ const routes: Route[] = [
       const newGoal: Goal = {
         name: 'First Time User Introduction (HIGH PRIORITY)',
         status: GoalStatus.IN_PROGRESS,
-        user_ids: [message.user_id as UUID, zeroUuid],
+        room_id: room_id as UUID,
         user_id: message.user_id as UUID,
         objectives: [
           {
@@ -676,7 +641,6 @@ const routes: Route[] = [
       })
 
       await runtime.messageManager.createMemory({
-        user_ids: [message.user_id, zeroUuid],
         user_id: message.user_id,
         content: newMessage.content,
         room_id,

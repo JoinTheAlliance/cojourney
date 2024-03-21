@@ -31,9 +31,7 @@ describe('User Details', () => {
     const room_id = data?.room_id
 
     const message: Message = {
-      senderId: user?.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
+      userId: user?.id as UUID,
       content: { content: '' },
       room_id
     }
@@ -54,7 +52,6 @@ describe('User Details', () => {
         const embedding = getCachedEmbedding(c.content.content as string)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
           content: c.content,
           room_id,
           embedding
@@ -88,7 +85,6 @@ describe('User Details', () => {
         const embedding = getCachedEmbedding(c.content.content)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
           content: {
             content: c.content.content
           },

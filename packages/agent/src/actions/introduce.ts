@@ -1,12 +1,14 @@
-import { type UUID } from 'crypto'
 import {
-  type BgentRuntime, composeContext, formatActors, getActorDetails, createRelationship, type Action,
-  type ActionExample,
-  type Memory,
-  type Message,
-  type State,
+  addHeader,
+  composeContext,
+  createRelationship,
+  formatActors, getActorDetails,
   parseJSONObjectFromText,
-  addHeader
+  type Action,
+  type ActionExample,
+  type BgentRuntime,
+  type Message,
+  type State
 } from 'bgent'
 
 export const template = `TASK: Introduce {{senderName}} to someone from {{agentName}}'s rolodex.
@@ -54,38 +56,19 @@ export const getRelevantRelationships = async (
   count: number = 5
 ) => {
   // Check if the user has a profile
-  const descriptions = await runtime.descriptionManager.getMemoriesByIds({
-    userIds: [message.senderId, message.agentId]
+  const descriptions = await runtime.descriptionManager.getMemories({
+    room_id: message.room_id
   })
   // if they dont, return empty string
   if (descriptions.length === 0) {
     throw new Error('User does not have a profile')
   }
   // if they do, run the rolodex match and return a list of good matches for them
-  const description = descriptions[0] as Memory
-  const searchEmbedding = description.embedding as number[]
-
-  const otherPeopleDescriptions = (
-    await runtime.descriptionManager.searchMemoriesByEmbedding(
-      searchEmbedding,
-      {
-        match_threshold: 0,
-        count: count + 1,
-        unique: true
-      }
-    )
-  )
-    .filter((d: Memory) => d.user_id !== message.senderId && d.user_id !== message.agentId)
-    // .slice(0, count)
-
-  // get all the userIds from the user_ids of the otherPeopleDescriptions, make sure unique
-  const userIds = Array.from(
-    new Set(otherPeopleDescriptions.map((d: Memory) => d.user_id as UUID))
-  )
+  // const description = descriptions[0] as Memory
 
   const actorsData = await getActorDetails({
     runtime,
-    userIds
+    room_id: message.room_id
   })
 
   const formattedActorData = formatActors({ actors: actorsData })
@@ -144,8 +127,8 @@ export const action = {
     message: Message
   ): Promise<boolean> => {
     // Retrieve descriptions for the message sender
-    const descriptions = await runtime.descriptionManager.getMemoriesByIds({
-      userIds: [message.senderId]
+    const descriptions = await runtime.descriptionManager.getMemories({
+      room_id: message.room_id
     })
 
     // If the sender has at least one description, return true to indicate the action is valid

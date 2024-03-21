@@ -7,7 +7,7 @@ import {
   test
 } from '@jest/globals'
 import { type Session, type User } from '@supabase/supabase-js'
-import { composeContext, createRuntime, getRelationship, type BgentRuntime, type State } from 'bgent'
+import { composeContext, createRuntime, getRelationship, type BgentRuntime, type State, SupabaseDatabaseAdapter } from 'bgent'
 import { type UUID } from 'crypto'
 import { config } from 'dotenv'
 import { zeroUuid } from '../../../test/constants'
@@ -117,16 +117,13 @@ describe('INTRODUCE Action Tests', () => {
     await runtime.descriptionManager.createMemory(
       await runtime.descriptionManager.addEmbeddingToMemory({
         user_id: user?.id as UUID,
-        user_ids: [user?.id as UUID, zeroUuid],
         content: { content: 'Likes indie music' },
         room_id
       })
     )
 
     const message = {
-      senderId: user?.id as UUID,
-      agentId: zeroUuid,
-      userIds: [user?.id as UUID, zeroUuid],
+      userId: user?.id as UUID,
       room_id,
       content: {
         content:
@@ -146,9 +143,7 @@ describe('INTRODUCE Action Tests', () => {
     )
 
     const message = {
-      senderId: userWithoutDescription.id as UUID,
-      agentId: zeroUuid as UUID,
-      userIds: [userWithoutDescription.id as UUID, zeroUuid],
+      userId: userWithoutDescription.id as UUID,
       room_id,
       content: { content: "I'm new here!", action: 'WAIT' }
     }
@@ -177,7 +172,6 @@ describe('INTRODUCE Action Tests', () => {
       await runtime.descriptionManager.createMemory(
         await runtime.descriptionManager.addEmbeddingToMemory({
           user_id: mainUser.id as UUID,
-          user_ids: [mainUser.id as UUID, zeroUuid],
           content: { content: 'Enjoys playing Guitar Hero' },
           room_id: zeroUuid
         })
@@ -188,7 +182,6 @@ describe('INTRODUCE Action Tests', () => {
       await runtime.descriptionManager.createMemory(
         await runtime.descriptionManager.addEmbeddingToMemory({
           user_id: similarUser.id as UUID,
-          user_ids: [similarUser.id as UUID, zeroUuid],
           content: { content: 'Loves music and Guitar Hero' },
           room_id: zeroUuid
         })
@@ -199,7 +192,6 @@ describe('INTRODUCE Action Tests', () => {
       await runtime.descriptionManager.createMemory(
         await runtime.descriptionManager.addEmbeddingToMemory({
           user_id: differentUser.id as UUID,
-          user_ids: [differentUser.id as UUID, zeroUuid],
           content: { content: 'Enjoys outdoor activities' },
           room_id: zeroUuid
         })
@@ -208,8 +200,7 @@ describe('INTRODUCE Action Tests', () => {
 
     test('Rolodex returns potential connections based on user descriptions', async () => {
       const message = {
-        senderId: mainUser.id as UUID,
-        agentId: zeroUuid,
+        userId: mainUser.id as UUID,
         content: {
           content: 'Looking to connect with someone with similar interests.',
           action: 'WAIT'
@@ -219,9 +210,10 @@ describe('INTRODUCE Action Tests', () => {
       }
 
       // select all from descriptions
-      const response = await runtime.supabase.from('descriptions').select('*')
+      // @ts-expect-error - supabase is private atm
+      const response = await (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase.from('descriptions').select('*')
       if (response.error) {
-        throw new Error(response.error.message)
+        throw new Error(response.error.message as string)
       }
 
       const relevantRelationships = await getRelevantRelationships(
@@ -236,14 +228,12 @@ describe('INTRODUCE Action Tests', () => {
 
     test('More similar user is higher in the rolodex list than the less similar user', async () => {
       const message = {
-        senderId: mainUser.id as UUID,
-        agentId: zeroUuid as UUID,
+        userId: mainUser.id as UUID,
         content: {
           content: 'Who should I meet that enjoys music as much as I do?',
           action: 'WAIT'
         },
-        room_id,
-        userIds: [mainUser.id as UUID, zeroUuid]
+        room_id
       }
 
       const state = (await runtime.composeState(message)) as State
