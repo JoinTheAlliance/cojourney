@@ -112,10 +112,7 @@ const questionAnswerPairs = [
 
     `How do I know that the algorithm is good?
     The algorithm is open source, and we are actively improving it. If you are interested in helping us to improve the matching algorithm, join us on Discord.`,
-
-    `What is the Twitter?
-    Our Twitter account is https://twitter.com/WeWillBuildIt`,
-
+    
     `What is the Discord?
     Our Discord account is https://discord.gg/jointhealliance`,
 
