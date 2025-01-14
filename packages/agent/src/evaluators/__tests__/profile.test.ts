@@ -68,9 +68,7 @@ describe('User Profile', () => {
       const room_id = data?.room_id
 
       const message: Message = {
-        senderId: user?.id as UUID,
-        agentId: zeroUuid,
-        userIds: [user?.id as UUID, zeroUuid],
+        userId: user?.id as UUID,
         content: { content: '' },
         room_id
       }
@@ -82,7 +80,6 @@ describe('User Profile', () => {
         const existingEmbedding = getCachedEmbedding(c.content.content as string)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
           content: c.content,
           room_id,
           embedding: existingEmbedding
@@ -114,7 +111,6 @@ describe('User Profile', () => {
         const existingEmbedding = getCachedEmbedding(c.content.content)
         const bakedMemory = await runtime.messageManager.addEmbeddingToMemory({
           user_id: c.user_id as UUID,
-          user_ids: [user?.id as UUID, zeroUuid],
           content: c.content,
           room_id,
           embedding: existingEmbedding
@@ -138,7 +134,6 @@ describe('User Profile', () => {
         const bakedMemory =
           await runtime.descriptionManager.addEmbeddingToMemory({
             user_id: user?.id as UUID,
-            user_ids: [user?.id as UUID, zeroUuid],
             content: { content: c },
             room_id,
             embedding: existingEmbedding
@@ -157,7 +152,7 @@ describe('User Profile', () => {
       })
 
         const descriptions = await runtime.descriptionManager.getMemoriesByIds({
-          userIds: [message.senderId, message.agentId] as UUID[],
+          userIds: [message.userId, message.agentId] as UUID[],
           count: 5
         })
         expect(descriptions.length === 3).toBeTruthy()

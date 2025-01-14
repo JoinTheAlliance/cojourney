@@ -91,37 +91,15 @@ const MessagesTextInput = ({
 
       return
     }
-
-    setIsSendingMessage(true)
-
-    console.log("roomData", roomData)
-    console.log("user_id", session.user.id)
-
-    const userIds: string[] = []
-
-    const roomDataRelationships = (roomData as unknown as { relationships: { user_a: string, user_b: string } }).relationships as unknown as Array<{ user_a: string, user_b: string }>
-
-    // add all userIds from the roomData.relationships array, check user_a or user_b
-    roomDataRelationships.forEach((relationship) => {
-      if (!userIds.includes(relationship.user_a)) {
-        userIds.push(relationship.user_a)
-      }
-
-      if (!userIds.includes(relationship.user_b)) {
-        userIds.push(relationship.user_b)
-      }
-    })
-
-    setIsSendingMessage(false)
     setMessage("")
+    setIsSendingMessage(true)
 
     const messageObject = {
       id: uuidv4(),
       content: { content: message, action: "WAIT" },
       room_id: roomData.id,
       created_at: new Date().toISOString(),
-      user_id: session.user.id,
-      user_ids: userIds
+      user_id: session.user.id
     }
     onMessageSent(messageObject)
 
@@ -129,6 +107,8 @@ const MessagesTextInput = ({
       .from("messages")
       // @ts-expect-error - we are adding id to the messageObject
       .insert(messageObject)
+
+    setIsSendingMessage(false)
 
     if (error) {
       setIsSendingMessage(false)

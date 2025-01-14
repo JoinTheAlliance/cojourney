@@ -1,4 +1,4 @@
-import { type BgentRuntime, composeContext, type Evaluator, type Message, type State, parseJSONObjectFromText } from 'bgent'
+import { type BgentRuntime, composeContext, type Evaluator, type Message, type State, parseJSONObjectFromText, SupabaseDatabaseAdapter } from 'bgent'
 
 const template = `You are collecting details about {{senderName}} based on their ongoing conversation with {{agentName}}.
 
@@ -53,10 +53,11 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
 
   const { name, age, location, gender } = responseData
 
-  const response = await runtime.supabase
+  // @ts-expect-error - supabase is private atm
+  const response = await (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase
     .from('accounts')
     .select('*')
-    .eq('id', message.senderId)
+    .eq('id', message.userId)
     .single()
   const { data: userRecord, error } = response
   if (error) {
@@ -81,7 +82,8 @@ const handler = async (runtime: BgentRuntime, message: Message) => {
     currentDetails.gender = gender
   }
 
-  const { error: updateError } = await runtime.supabase
+  // @ts-expect-error - supabase is private atm
+  const { error: updateError } = await (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase
     .from('accounts')
     .update({ details: currentDetails })
     .eq('id', userRecord.id)

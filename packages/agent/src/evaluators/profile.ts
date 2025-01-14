@@ -7,7 +7,8 @@ import {
   type Evaluator,
   type Memory,
   type Message,
-  type State
+  type State,
+  type SupabaseDatabaseAdapter
 } from 'bgent'
 import { type UUID } from 'crypto'
 
@@ -74,9 +75,8 @@ const handler = async (runtime: BgentRuntime, message: Message, state: State) =>
   state = state ?? (await runtime.composeState(message)) as State
 
   // read the description for the current user
-  const { senderId, agentId } = state
-  const descriptions = await runtime.descriptionManager.getMemoriesByIds({
-    userIds: [senderId, agentId] as UUID[],
+  const descriptions = await runtime.descriptionManager.getMemories({
+    room_id: message.room_id,
     count: 5
   })
   const profiles = descriptions
@@ -119,7 +119,9 @@ const handler = async (runtime: BgentRuntime, message: Message, state: State) =>
     const content = Object.values(responseData).join('\n')
 
     // find the user
-    const response = await runtime.supabase
+    // TODO: update supabase for access to this
+    // @ts-expect-error - supabase is private atm
+    const response = await (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase
       .from('accounts')
       .select('*')
       .eq('name', state.senderName)
@@ -141,7 +143,6 @@ const handler = async (runtime: BgentRuntime, message: Message, state: State) =>
 
     const descriptionMemory =
       await runtime.descriptionManager.addEmbeddingToMemory({
-        user_ids: [state.agentId, userRecord.id],
         user_id: state.agentId!,
         content: { content },
         room_id: relationshipRecord.room_id
@@ -186,7 +187,9 @@ const handler = async (runtime: BgentRuntime, message: Message, state: State) =>
     }
 
     // save the new description to the user's account
-    const response2 = await runtime.supabase
+    // TODO: update supabase for access to this
+    // @ts-expect-error - supabase is private atm
+    const response2 = await (runtime.databaseAdapter as SupabaseDatabaseAdapter).supabase
       .from('accounts')
       .update({ details: { ...details, ...responseData2 } })
       .eq('id', userRecord.id)
