@@ -69,6 +69,13 @@ const MobileSideMenu = (): JSX.Element => {
 									gap={"xl"}
 									align={"center"}
 									justify="space-between"
+									style={{
+										cursor: "pointer"
+									}}
+									onClick={() => {
+										navigate("/profile")
+										closeMenu()
+									}}
 								>
 									<Flex align={"center"} gap={5}>
 										<UserAvatar
@@ -94,10 +101,6 @@ const MobileSideMenu = (): JSX.Element => {
 											backgroundColor: "#292929",
 											color: "#757474",
 											width: "100%"
-										}}
-										onClick={() => {
-											navigate("/profile")
-											closeMenu()
 										}}
 										rightIcon={
 											<img

@@ -61,7 +61,12 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 						align={"center"}
 						justify="space-between"
 						style={{
-							borderTop: "0.0625rem solid #2A2A2A"
+							borderTop: "0.0625rem solid #2A2A2A",
+							cursor: "pointer"
+						}}
+						onClick={() => {
+							navigate("/profile")
+							closeMenu()
 						}}
 					>
 						<Flex align={"center"} gap={5}>
@@ -96,10 +101,6 @@ const SideMenu = ({ closeMenu }: { closeMenu: () => void }): JSX.Element => {
 									backgroundColor: "#292929",
 									paddingLeft: rem(20),
 									color: "#757474"
-								}}
-								onClick={() => {
-									navigate("/profile")
-									closeMenu()
 								}}
 							>
 								<Text mr={"md"}>My Account</Text>
