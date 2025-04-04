@@ -1,20 +1,29 @@
-import { Avatar, Group } from "@mantine/core"
+import { Avatar, Group, LoadingOverlay } from "@mantine/core"
 import React from "react"
 
 const UserAvatar = ({
   src,
   online,
-  size = "sm"
+  size = "sm",
+  loading
 }: {
   src: string
   online: boolean
   size?: string
+  loading?: boolean
 }) => {
   return (
     <>
       {size === "lg" ? (
         <Group position="center">
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative", cursor: "pointer" }}>
+            <LoadingOverlay
+              // @ts-expect-error
+             visible={loading}
+              zIndex={500}
+              radius="50%"
+              loaderProps={{ color: "green", type: "bars" }}
+            />
             <Avatar
               src={src}
               radius="50%"
@@ -33,14 +42,22 @@ const UserAvatar = ({
                 right: "0",
                 bottom: "0",
                 border: "2px solid white",
-                transform: "translate(-25%, -25%)"
+                transform: "translate(-25%, -25%)",
+                zIndex: "501"
               }}
             />
           </div>
         </Group>
       ) : (
         <Group position="center">
-          <div style={{ position: "relative" }}>
+            <div style={{ position: "relative", cursor: "pointer" }}>
+               <LoadingOverlay
+              // @ts-expect-error
+             visible={loading}
+              zIndex={500}
+              radius="50%"
+              loaderProps={{ color: "green", type: "bars" }}
+            />
             <Avatar src={src} size="md" radius="50%" />
             <div
               style={{
@@ -52,7 +69,8 @@ const UserAvatar = ({
                 right: "0",
                 bottom: "0",
                 border: "1px solid white",
-                transform: "translate(20%, 0%)"
+                  transform: "translate(20%, 0%)",
+                zIndex: "501"
               }}
             />
           </div>
