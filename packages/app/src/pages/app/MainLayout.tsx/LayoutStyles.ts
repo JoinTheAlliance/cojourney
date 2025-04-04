@@ -12,9 +12,6 @@ const useRoomStyles = createStyles(() => ({
 
 		"@media (min-width: 768px)": {
 			paddingTop: 0
-		},
-		"@media (min-width: 1024px)": {
-			paddingLeft: "380px"
 		}
 	},
 	header: {

@@ -15,7 +15,7 @@
     "react-dom": "^18.2.0"
   },
   "scripts": {
-    "dev": "lerna run dev --ignore @cojourney/app-native --ignore @cojourney/docs",
+    "dev": "lerna run dev  --ignore @cojourney/app-native --ignore @cojourney/docs -- --host",
     "dev:all": "lerna run dev",
     "shell": "node --no-warnings scripts/shell.mjs",
     "shell:dev": "node --no-warnings scripts/shell.mjs --dev",
