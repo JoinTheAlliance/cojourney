@@ -14,6 +14,7 @@ import removeTypingIndicatorFromOfflineUsers from "../../helpers/removeTypingInd
 import useGlobalStore, { initialState } from "../../store/useGlobalStore"
 import OAuthUser from "./../../components/OAuthUser"
 import useRootStyles from "./useRootStyles"
+import FriendRequestPopup from "../../components/FriendShip/FriendRequestPopup"
 
 const Root = (): JSX.Element => {
 	const { getUserFriends, getUserRoomData } = useLoadUserData()
@@ -123,6 +124,7 @@ const Root = (): JSX.Element => {
 		>
 			{!isMobile && <SideMenu closeMenu={(): void => {}} />}
 			<div className={classes.content}>
+				<FriendRequestPopup />
 				<Outlet />
 			</div>
 		</div>
